@@ -100,7 +100,6 @@ skin.inverseBindMatrices = novoAcessor(IBM, 'MAT4', skin.joints.length)
 // --- pesos de pele: separar dedos e polegar dentro da mão ---
 let movidos = 0
 for (const lado of ['R', 'L']) {
-  const sx = lado === 'R' ? 1 : -1
   const H = mundo(idx(`Hand.${lado}`))
   const hand = idxJunta[`Hand.${lado}`]
   const id = (n) => idxJunta[`${n}.${lado}`]
