@@ -869,6 +869,16 @@
 .fig-polegar {
   fill: var(--cinza-800);
 }
+.fig-dial {
+  fill: var(--cinza-100);
+  stroke: var(--cinza-700);
+  stroke-width: 3;
+}
+.fig-faixa {
+  stroke: var(--cinza-200);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
 .fig-seta {
   fill: none;
   stroke: var(--cinza-700);

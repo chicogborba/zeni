@@ -74,8 +74,34 @@ function Pulso({ ritmoSeg, parado }) {
   )
 }
 
-// A: cotovelo dobrado, ZENI de pé; a palma vira para cima e para baixo (a mão "vira" e mostra o polegar de cada lado)
-// E: o mesmo movimento, em velocidade constante, com 15 pontos que acendem um a um
+// A: cotovelo dobrado, ZENI de pé; o antebraço gira junto e a palma vira para cima e para baixo.
+// Ao lado da figura, uma vista de cima do ZENI: um círculo com um ponto (o polegar) que percorre um arco de
+// cerca de 140 graus, indo e voltando, no ritmo do giro do punho. Sem seta (decisão de 25/11).
+// E: o mesmo movimento, com repetição constante, sem variar a velocidade, e 15 pontos que acendem um a um.
+const DIAL = [250, 178]
+const DIAL_R = 38
+const ARCO = 70 // metade de 140 graus
+
+function VistaDeCima({ parado, constante, periodo }) {
+  const [cx, cy] = DIAL
+  const ponto = (graus, raio) => {
+    const r = ((graus - 90) * Math.PI) / 180 // 0 graus = em cima
+    return [cx + raio * Math.cos(r), cy + raio * Math.sin(r)]
+  }
+  const [x1, y1] = ponto(-ARCO, DIAL_R + 10)
+  const [x2, y2] = ponto(ARCO, DIAL_R + 10)
+  return (
+    <g>
+      <path className="fig-trilha" d={`M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${DIAL_R + 10} ${DIAL_R + 10} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)}`} />
+      <circle className="fig-dial" cx={cx} cy={cy} r={DIAL_R} />
+      <g>
+        <Anim tipo="rotate" valores={rodar([ARCO, -ARCO, ARCO], DIAL)} dur={periodo} suave={!constante} parado={parado} />
+        <circle className="fig-polegar" cx={cx} cy={cy - DIAL_R + 11} r="8" />
+      </g>
+    </g>
+  )
+}
+
 function GirarPunho({ parado, constante, periodo }) {
   const ang = [-30, 210]
   return (
@@ -85,6 +111,11 @@ function GirarPunho({ parado, constante, periodo }) {
         <line className="fig-braco" x1={OMBRO[0]} y1={OMBRO[1]} x2={COTOVELO[0]} y2={COTOVELO[1]} />
         <g transform={`rotate(${ang[1]} ${COTOVELO.join(' ')})`}>
           <line className="fig-braco" x1={COTOVELO[0]} y1={COTOVELO[1]} x2={PUNHO[0]} y2={PUNHO[1]} />
+          {/* o antebraço gira junto: a faixa clara muda de lado enquanto a palma vira */}
+          <g>
+            <Anim tipo="translate" valores="5 0;-5 0;5 0" dur={periodo} suave={!constante} parado={parado} />
+            <line className="fig-faixa" x1={COTOVELO[0]} y1={COTOVELO[1] + 8} x2={PUNHO[0]} y2={PUNHO[1] - 10} />
+          </g>
           <g transform={`translate(${PUNHO.join(' ')}) rotate(${-(ang[0] + ang[1])})`}>
             <ZeniNaMao>
               <g>
@@ -95,10 +126,7 @@ function GirarPunho({ parado, constante, periodo }) {
           </g>
         </g>
       </g>
-      <Seta
-        d="M 165 56 A 34 14 0 0 1 233 56"
-        cabecas={['M 159 58 L 169 48 L 171 62 Z', 'M 239 58 L 229 48 L 227 62 Z']}
-      />
+      <VistaDeCima parado={parado} constante={constante} periodo={periodo} />
       {constante && <Repeticoes parado={parado} periodo={periodo} />}
     </>
   )

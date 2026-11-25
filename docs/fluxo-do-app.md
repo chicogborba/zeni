@@ -102,6 +102,8 @@ Valem mais que a imagem do fluxograma, mais que as decisões de 24/11 e mais que
 
     Quando o microfone está ouvindo, a tela mostra o indicador "Ouvindo" (ícone e texto). No Pausado há também o botão "Repetir".
 
+27. **Animação de A e E (giro do punho).** Ao lado da figura, uma vista de cima do ZENI: um círculo com um ponto (o polegar) que percorre um arco de cerca de 140 graus, indo e voltando, no ritmo do giro do punho. Sem seta. Na figura, o antebraço gira junto. O E usa a mesma animação, com repetição constante e sem variar a velocidade (15 repetições de 2 s).
+
 Efeito sobre as decisões de 24/11: a 4 (significado do bloco 7), a 6 (um único comando de voz) e a 7 (bloco 7 só por texto) ficam superadas. As demais continuam valendo.
 
 ⸻  
@@ -259,8 +261,8 @@ Decidir antes ou durante a execução. Não assumir sozinho.
 5. **Enviar link (4.3).** Na v1 é o texto-resumo (decisão 18). Na v2, com backend: para quem vai o link, a privacidade desses dados e o layout do PDF (design system, pendência 10).
 6. **Nota de 0 a 100.** Continua em 3.2 e 3.6 (design system, pendência 7).  
 7. **Numeração.** O fluxograma pula o número 5, e o bloco de casos de erro não tem número. No código, citar os blocos pelo nome.
-8. **Resolvidos em 25/11** (decisões 9 a 26): catálogo, Home, "Repetir", "Terminar" no meio da série (provisório), avatar, Exportar/Voltar, medidas do ZENI, detalhes da Home, regra da série, exportação, consentimento, permissões, exercício em tela cheia, legendas, nota em modal.
-9. ~~Textos das legendas.~~ Resolvido em 25/11 (decisão 23). Falta revisar as animações com pessoas reais e, se preciso, desenhar as de A e E com mais clareza: o giro da palma é mostrado em 2D, com a mão que "vira" e uma seta.
+8. **Resolvidos em 25/11** (decisões 9 a 27): catálogo, Home, "Repetir", "Terminar" no meio da série (provisório), avatar, Exportar/Voltar, medidas do ZENI, detalhes da Home, regra da série, exportação, consentimento, permissões, exercício em tela cheia, legendas, nota em modal.
+9. ~~Textos das legendas.~~ Resolvido em 25/11 (decisão 23). Falta revisar as animações com pessoas reais.
 10. ~~Cinza claro e contraste.~~ Resolvido em 25/11: rótulos do dashboard em cinza-800 e "–" em cinza-700 (seção 6.2 do design system).
 11. **Tela do microfone.** O texto da decisão 20 fala só da palavra "pausar", mas a v1 reconhece quatro comandos (decisão 5). Ajustar o texto ou manter. Falta também o rótulo do botão dessa tela.
 12. **Inicial do avatar.** O fluxo não coleta o nome da pessoa. Definir onde ela informa o nome (por exemplo, em Personalizar). Enquanto isso, o avatar mostra um ícone de pessoa quando não há nome guardado.
