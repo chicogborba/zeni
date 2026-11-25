@@ -13,7 +13,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import Aviso from '../componentes/Aviso.jsx'
 import Botao from '../componentes/Botao.jsx'
-import EtiquetaIA from '../componentes/EtiquetaIA.jsx'
 import IndicadorVoz from '../componentes/IndicadorVoz.jsx'
 import PainelInferior from '../componentes/PainelInferior.jsx'
 import TelaCarregamento from '../componentes/TelaCarregamento.jsx'
@@ -263,7 +262,6 @@ export default function Exercicio() {
             </Suspense>
           </div>
           <p className="instrucao-legenda">{exercicio.legenda}</p>
-          {indice === 0 && <EtiquetaIA>O app escolheu os exercícios de hoje.</EtiquetaIA>}
         </div>
       </PainelInferior>
     )
