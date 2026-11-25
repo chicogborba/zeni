@@ -56,7 +56,8 @@ Valem mais que a imagem do fluxograma, mais que as decisões de 24/11 e mais que
     - **Botão principal:** "Começar o exercício" (amarelo, com mais destaque). "Minha evolução" é o secundário (cinza).
     - **Pílula do ZENI:** com conexão, mostra o nível de bateria. Sem conexão, mostra "ZENI desconectado" em cinza claro, sem nível de bateria.
     - **Dashboard sem histórico:** o número grande fica como "–" em cinza claro, com o rótulo ("suavidade", "ritmo") abaixo. Sem texto explicativo.
-    - **Gradiente em bulb:** elipse radial grande, centralizada na horizontal, ocupando a área livre entre o topo e o dashboard. Vai de amarelo-100 no centro até transparente nas bordas, sem contorno, sobre o fundo da tela. Sem animação na home.
+    - **Gradiente em bulb:** elipse radial grande, centralizada na horizontal, ocupando a área livre entre o topo e o dashboard. Vai de amarelo-200 no centro (era amarelo-100, fraco demais na tela) até transparente nas bordas, em `ellipse closest-side`, sem contorno, sobre o fundo da tela. Sem animação na home.
+    - **Dashboard:** só cinzas, sem azul. Rótulos em cinza-800 e "–" em cinza-700, para manter o contraste (público de baixa visão). Detalhes no design system, seção 6.2.
 17. **Série do dia e instruções.** A série segue sempre esta ordem: amplitude (A ou B), ritmo (C ou D), manter a energia (E ou F). Para escolher entre os dois de cada grupo, vale a **paridade do dia do ano**: dia par escolhe o primeiro (A, C, E), dia ímpar escolhe o segundo (B, D, F). A instrução de cada exercício é uma frase curta de legenda mais a animação, em SVG, da figura segurando o ZENI:
 
     | Exercício | Animação |
@@ -234,5 +235,5 @@ Decidir antes ou durante a execução. Não assumir sozinho.
 7. **Numeração.** O fluxograma pula o número 5, e o bloco de casos de erro não tem número. No código, citar os blocos pelo nome.
 8. **Resolvidos em 25/11** (decisões 9 a 20): catálogo, Home, "Repetir", "Terminar" no meio da série (provisório), avatar, Exportar/Voltar, medidas do ZENI, detalhes da Home, regra da série, exportação, consentimento e permissões.
 9. **Textos das legendas.** Cada exercício (A a F) precisa da frase curta de legenda e do desenho em SVG. As legendas ainda não foram escritas.
-10. **Cinza claro e contraste.** A decisão 16 pede "cinza claro" no "–" do dashboard e em "ZENI desconectado". O design system só aceita texto a partir de `cinza-600` (4,5:1) ou de `cinza-500` em texto grande (3:1); `cinza-400` e mais claros não passam (seção 2.3). Escolher o token.
+10. ~~Cinza claro e contraste.~~ Resolvido em 25/11: rótulos do dashboard em cinza-800 e "–" em cinza-700 (seção 6.2 do design system).
 11. **Tela do microfone.** O texto da decisão 20 fala só da palavra "pausar", mas a v1 reconhece quatro comandos (decisão 5). Ajustar o texto ou manter. Falta também o rótulo do botão dessa tela.

@@ -1,6 +1,8 @@
 // Segue: fluxo-do-app.md, seção "Tela inicial (Home)", H.3, com a decisão da autora da Home:
 // em cima, uma faixa com os dados de saúde; embaixo, evolução (esquerda) e exercício (direita);
 // Personalizar como ícone no canto.
+// Layout (25/11): tudo encostado no rodapé; o espaço que sobra no topo é preenchido pelo gradiente em bulb.
+import { useEffect, useState } from 'react'
 import { ChartBarIcon, Cog6ToothIcon, PlayCircleIcon } from '@heroicons/react/24/outline'
 import AvisoConexao from '../componentes/AvisoConexao.jsx'
 import { telaDoExercicio } from '../fluxo.js'
@@ -14,18 +16,56 @@ import { CHAVES, ler } from '../storage.js'
 // `canto: true` = vira só um ícone no canto superior direito, fora da grade.
 // A ordem do array é a ordem na tela, da esquerda para a direita. Só o exercício usa o amarelo.
 const DESTINOS = [
-  { id: 'evolucao', titulo: 'Minha evolução', apoio: '7 ou 30 dias', tela: 'evolucao', gradiente: 'cinza', Icone: ChartBarIcon },
-  { id: 'exercicio', titulo: 'Começar o exercício', apoio: 'Veja o de hoje', tela: telaDoExercicio, gradiente: 'amarelo', Icone: PlayCircleIcon },
-  { id: 'personalizar', titulo: 'Personalizar', apoio: 'Do seu jeito', tela: 'personalizar', canto: true },
+  { id: 'evolucao', titulo: 'Minha evolução', tela: 'evolucao', gradiente: 'cinza', Icone: ChartBarIcon },
+  { id: 'exercicio', titulo: 'Começar o exercício', tela: telaDoExercicio, gradiente: 'amarelo', Icone: PlayCircleIcon },
+  { id: 'personalizar', titulo: 'Personalizar', tela: 'personalizar', canto: true },
 ]
 
-// TODO: dados de saúde da pessoa. Os documentos não dizem quais dados mostrar aqui nem de onde vêm.
-// Provisório: dois indicadores que o exercício avalia (fluxo-do-app.md, 3.1). Mostram o último exercício,
-// ou "—" enquanto não houver histórico.
+// TODO: os dados reais virão do MPU (sensor de movimento do ZENI). Por enquanto, o último exercício
+// guardado no aparelho (fluxo-do-app.md, 3.1). Sem histórico, o número fica como "–" (estado vazio).
 const DADOS = [
-  { id: 'suavidade', rotulo: 'Suavidade' },
-  { id: 'ritmo', rotulo: 'Ritmo' },
+  { id: 'suavidade', rotulo: 'suavidade' },
+  { id: 'ritmo', rotulo: 'ritmo' },
 ]
+
+// Duração da contagem: lê --dur-count do tokens.css. Com "reduzir movimento" o token vale 0ms.
+function duracaoDaContagem() {
+  const bruto = getComputedStyle(document.documentElement).getPropertyValue('--dur-count').trim()
+  const ms = bruto.endsWith('ms') ? parseFloat(bruto) : parseFloat(bruto) * 1000
+  return Number.isFinite(ms) ? ms : 0
+}
+
+// Conta de 0 até `alvo`. Sem alvo (estado vazio) ou sem movimento, devolve o valor direto.
+function useContagem(alvo) {
+  const [valor, setValor] = useState(0)
+  const [duracao] = useState(duracaoDaContagem)
+  useEffect(() => {
+    if (typeof alvo !== 'number' || duracao <= 0) return undefined
+    let quadro
+    const inicio = performance.now()
+    const passo = (agora) => {
+      const t = Math.min((agora - inicio) / duracao, 1)
+      setValor(Math.round(alvo * (1 - (1 - t) ** 3))) // desacelera no fim
+      if (t < 1) quadro = requestAnimationFrame(passo)
+    }
+    quadro = requestAnimationFrame(passo)
+    return () => cancelAnimationFrame(quadro)
+  }, [alvo, duracao])
+  return duracao <= 0 ? alvo : valor
+}
+
+function Dado({ rotulo, valor, ordem }) {
+  const temValor = typeof valor === 'number'
+  const contado = useContagem(valor)
+  return (
+    <div className={`dado${temValor ? ' dado--com-valor' : ''}`}>
+      <p className="dado-numero">{temValor ? contado : '–'}</p>
+      <p className="dado-rotulo entrada" style={{ '--i': ordem + 1 }}>
+        {rotulo}
+      </p>
+    </div>
+  )
+}
 
 export default function Home() {
   const { ir } = useNavegacao()
@@ -35,33 +75,31 @@ export default function Home() {
   return (
     <main className="tela tela--home">
       <AvisoConexao />
-      {/* TODO (design system, 6.9): a abertura diz "Olá, {nome}", mas o fluxo não coleta nome. Sem nome por enquanto. */}
+      {/* Decisão da autora da Home: só ícone. O alvo de toque segue os 64 px do design system (seção 7). */}
       <header className="home-topo">
-        <h1 className="home-titulo">Olá</h1>
-        {/* Decisão da autora da Home: só ícone. O alvo de toque segue os 64 px do design system (seção 7). */}
         <button type="button" className="home-icone" aria-label={canto.titulo} onClick={() => ir(canto.tela)}>
           <Cog6ToothIcon strokeWidth={1.5} aria-hidden="true" />
         </button>
       </header>
+      {/* Gradiente em bulb: preenche o espaço livre entre o topo e o dashboard (decisão 16 de 25/11) */}
+      <div className="home-bulb" aria-hidden="true" />
       <section className="home-dados" aria-label="Seus dados de saúde">
-        {DADOS.map((d) => (
-          <div key={d.id} className="dado">
-            <p className="dado-numero">{ultimo?.[d.id] ?? '—'}</p>
-            <p className="dado-rotulo">{d.rotulo}</p>
-          </div>
+        {DADOS.map((d, i) => (
+          <Dado key={d.id} rotulo={d.rotulo} valor={ultimo?.[d.id]} ordem={i} />
         ))}
       </section>
       <div className="home-grade">
-        {grade.map((d) => (
+        {grade.map((d, i) => (
           <button
             key={d.id}
             type="button"
             className={`cartao cartao--${d.gradiente}`}
             onClick={() => ir(typeof d.tela === 'function' ? d.tela() : d.tela)}
           >
-            <d.Icone className="cartao-icone" strokeWidth={1.5} aria-hidden="true" />
-            <span className="cartao-titulo">{d.titulo}</span>
-            <span className="cartao-apoio">{d.apoio}</span>
+            <d.Icone className="cartao-icone entrada" style={{ '--i': i + 3 }} strokeWidth={1.5} aria-hidden="true" />
+            <span className="cartao-titulo entrada" style={{ '--i': i + 3 }}>
+              {d.titulo}
+            </span>
           </button>
         ))}
       </div>

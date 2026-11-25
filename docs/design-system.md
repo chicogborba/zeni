@@ -166,7 +166,7 @@ Todo fundo de cor do app é um gradiente, para dar leveza e sensação de movime
 | `grad-azul-card` | 160°: blue-50 (0%), blue-200 (100%) | Cartões da home |
 | `grad-bruma-card` | 160°: porcelana (0%), bruma (100%) | Cartões da home |
 | `grad-cinza-card` | 160°: cinza-50 (0%), cinza-200 (100%) | Cartões da home |
-| `grad-bulb` | Radial, elipse: amarelo-100 (centro) até transparente (bordas) | Fundo da home (25/11) |
+| `grad-bulb` | Radial, `ellipse closest-side`: amarelo-200 (centro) até transparente (bordas). Era amarelo-100, mas ficava fraco na tela | Fundo da home (25/11) |
 
 Regras:
 
@@ -184,7 +184,7 @@ Regras:
 | Uso | Família | Pesos |
 |---|---|---|
 | Títulos, botões, nome da marca | **Chillax** (Indian Type Foundry, via Fontshare) | Medium 500, Semibold 600 |
-| Textos, números, rótulos | **JetBrains Mono** (JetBrains, licença OFL) | Regular 400, Medium 500 |
+| Textos, números, rótulos | **JetBrains Mono** (JetBrains, licença OFL) | Regular 400, Medium 500, Bold 700 (25/11, só no número do dashboard da Home) |
 
 Fallbacks:
 
@@ -199,7 +199,7 @@ Carregamento (para o protótipo; no produto, hospedar os arquivos localmente):
 <link rel="preconnect" href="https://api.fontshare.com">
 <link href="https://api.fontshare.com/v2/css?f[]=chillax@500,600&display=swap" rel="stylesheet">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 ```
 
 ### 3.2 Escala (mobile)
@@ -215,6 +215,7 @@ Carregamento (para o protótipo; no produto, hospedar os arquivos localmente):
 | Corpo em destaque | JetBrains Mono | 18 / 28 | 500 | Instruções do exercício |
 | Apoio | JetBrains Mono | 16 / 24 | 400 | Legendas e datas (tamanho mínimo da interface) |
 | Número grande | JetBrains Mono | 56 / 60 | 500 | Cronômetro, nota |
+| Número do dashboard | JetBrains Mono | 64 / 68 | 700 | Suavidade e ritmo na Home (25/11) |
 
 ### 3.3 Regras de uso
 
@@ -294,13 +295,13 @@ Decisão de 25/11: a grade de um cartão largo e quatro quadrados deixa de valer
 | -------- | ----- |
 | Avatar | Topo, alvo de no mínimo 64 × 64, com a inicial da pessoa (Título 3). `aria-label` "Abrir menu". Abre o menu suspenso com Personalizar e Conexão com o ZENI. Exceção à regra de ícone sozinho (6.7) |
 | Pílula do ZENI | Topo, ao lado do avatar. Raio `radius-full`, texto em Apoio (16 px). Não é tocável. Com conexão, mostra o nível de bateria. Sem conexão, mostra "ZENI desconectado" em cinza claro, sem nível de bateria |
-| Dashboard | Dois indicadores, **suavidade** e **ritmo**. Só leitura. Sem histórico: o número grande ("Número grande") fica como "–" em cinza claro, com o rótulo ("suavidade", "ritmo") abaixo. Sem texto explicativo |
+| Dashboard | Dois indicadores, **suavidade** e **ritmo**. Só leitura. Só cinzas, sem azul (ver a seção "Dashboard" abaixo). Sem histórico: o número fica como "–", com o rótulo ("suavidade", "ritmo") abaixo. Sem texto explicativo |
 | Botões | Dois, lado a lado: **Minha evolução** (esquerda, secundário, cinza) e **Começar o exercício** (direita, principal, amarelo, com mais destaque). Largura de cada um: (390 − 2 × 24 − 16) ÷ 2 = 163. Altura mínima 72. Texto em até duas linhas, sem cortar e sem hifenizar |
-| Fundo | `grad-bulb` (seção 2.5): elipse radial grande, centralizada na horizontal, ocupando a área livre entre o topo e o dashboard. Vai de `brand-amarelo-100` no centro até transparente nas bordas, sem contorno, sobre o fundo da tela. Sem animação na home |
+| Fundo | `grad-bulb` (seção 2.5): elipse radial grande, centralizada na horizontal, ocupando a área livre entre o topo e o dashboard. Vai de `brand-amarelo-200` no centro até transparente nas bordas (`ellipse closest-side`), clara o bastante para aparecer sem competir com o dashboard, sem contorno, sobre o fundo da tela. Sem animação na home |
 
 Distância entre os dois botões: 16 px (`space-4`). Margem lateral de 24 px e 24 px de margem inferior mais a área segura. O estado de toque dos botões segue a seção 6.1.
 
-Em aberto: o token do "cinza claro" (ver pendência 11). O aviso "O ZENI não está conectado" continua no topo, quando for o caso.
+O aviso "O ZENI não está conectado" continua no topo, quando for o caso.
 
 Cartão de conteúdo (dentro dos painéis): fundo `brand-porcelana`, raio 16, padding 24, sem borda, título (Título 3) e no máximo duas linhas de apoio.
 
@@ -385,6 +386,20 @@ Uma pergunta por tela. A pergunta usa Título 3 e o contador ("Pergunta 3 de 7")
 - Sim e Não têm a mesma aparência. Nenhuma resposta usa cor de alerta, ícone de aviso ou mensagem de risco.
 - Nenhuma resposta bloqueia o fluxo.
 - As perguntas e o uso das respostas estão em `docs/triagem-parq.md`.
+
+#### Dashboard da Home (25/11)
+
+Só a escala de cinzas (cinza-50 a cinza-900). Sem bruma, blue nem qualquer tom azulado. O amarelo fica só no botão "Começar o exercício" e no gradiente em bulb de fundo. O público tem baixa visão, então o contraste mínimo vale mais que um cinza mais claro.
+
+| Elemento | Regra |
+|---|---|
+| Div que contém os cards | `grad-cinza-card` (cinza-50 a cinza-200), `radius-2xl`, padding 16 |
+| Cards de suavidade e ritmo | Um tom mais escuros que a div: gradiente leve de 160°, cinza-100 a cinza-300. Nenhum ponto mais escuro que cinza-300. `radius-xl` |
+| Número | "Número do dashboard" (64 / 68, bold), `cinza-900`, centralizado no centro do card |
+| Rótulo | Apoio (16 px, o mínimo), minúsculas, `cinza-800`, logo abaixo do número. `cinza-700` dá só 3,89:1 em cinza-300 e reprova; `cinza-800` dá 5,94:1 |
+| Estado vazio | "–" em `cinza-700` (3,89:1 em cinza-300, passa os 3:1 de texto grande). `cinza-600` dá 2,61:1 no ponto mais escuro e reprova |
+| Ícones dos botões da home | `cinza-800`, o mesmo dos rótulos |
+| Entrada | Os números contam de 0 até o valor (`--dur-count`); os textos entram com fade e leve subida. Com "reduzir movimento", aparecem direto |
 
 ### 6.13 Exportar
 
@@ -525,7 +540,7 @@ Estas regras valem mais do que o gosto visual.
   --grad-azul-card: linear-gradient(160deg, var(--brand-blue-50) 0%, var(--brand-blue-200) 100%);
   --grad-bruma-card: linear-gradient(160deg, var(--brand-porcelana) 0%, var(--brand-bruma) 100%);
   --grad-cinza-card: linear-gradient(160deg, var(--cinza-50) 0%, var(--cinza-200) 100%);
-  --grad-bulb: radial-gradient(ellipse at center, var(--brand-amarelo-100) 0%, transparent 100%); /* 25/11: ainda falta em tokens.css */
+  --grad-bulb: radial-gradient(ellipse closest-side at center, var(--brand-amarelo-200) 0%, transparent 100%);
 }
 
 body {
@@ -584,7 +599,7 @@ Tom por situação: incentivo curto ao terminar ("Bom trabalho hoje."), nunca co
 8. **Logo e nome ZENI.** Definir o logotipo em Chillax, versões em cinza-900 e em brand-amarelo-300, e a área de respiro.
 9. **Modo escuro e alto contraste.** Fora do escopo desta versão.
 10. **Exportação para o fisioterapeuta.** Definir o layout do PDF, que pode ter regras tipográficas próprias.
-11. **Home.** (Atualizado em 25/11: a nova home está na seção 6.2 e os detalhes foram decididos. Fica em aberto o token do "cinza claro" do "–" do dashboard e de "ZENI desconectado": `cinza-400` e mais claros não passam como texto (seção 2.3); usar `cinza-500` só em texto grande e `cinza-600` em 16 a 18 px. Os cartões quadrados abaixo são histórico.)
+11. **Home.** (Atualizado em 25/11: a nova home está na seção 6.2. O "cinza claro" foi resolvido: rótulos em `cinza-800`, "–" em `cinza-700`. Ficam em aberto o dashboard sem histórico além do "–" e a pílula sem conexão. O texto abaixo sobre cartões quadrados é histórico.) Os cinco destinos vinham do fluxograma.
 12. **Um nível só de painel.** A seção 6.8 diz que o painel nunca abre outro e que "Voltar" leva sempre à home. "Personalizar" tem cinco itens com sequências próprias, e dele se pode abrir "Pedir ajuda ao ZENI". Definir se cada item vira um painel em sequência ou se a regra de um nível muda.
 13. **Perspectiva.** Interpretei como profundidade por raio grande e gradiente diagonal, sem inclinar cartões nem texto. Texto inclinado piora a leitura e o público já tem dificuldade de estabilidade. Perspectiva real só em material de divulgação, se quiser.
 14. **Gradiente parado após 5 segundos.** Pode parecer que o app travou. Testar a tela de espera com pessoas reais. O limite de 15 segundos para a mensagem de demora pode precisar baixar.
