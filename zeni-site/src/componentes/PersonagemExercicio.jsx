@@ -1,12 +1,12 @@
-// "Como fazer" em 3D: um personagem da cintura para cima (src/assets/zeni-personagem.glb) com esqueleto e 6 animações em
-// loop, uma por exercício (A a F, catálogo em src/simulacao.js). O exercício é feito com o braço direito; o nó Socket.R
+// "Como fazer" em 3D: um personagem da cintura para cima (src/assets/zeni-personagem.glb, gerado por scripts/preparar-modelo.mjs
+// a partir de "Wii fit - camisa lisa.glb": rig e animações feitos por código) com esqueleto e 6 animações em loop, uma por exercício (A a F, catálogo em src/simulacao.js). O exercício é feito com o braço direito; o nó Socket.R
 // marca a palma da mão direita, e o ZENI entra como filho dele. A instrução precisa ser entendida sem ler texto.
 // O ZENI é um LatheGeometry feito do perfil do modelo 3D (medidas em mm, escala 0,001). Não se carrega o STL.
 // Aparência: material fosco (roughness 1), normais suavizadas, luz hemisférica + direcional fraca, sem sombras duras,
-// fundo transparente, a cintura esmaecida por máscara em CSS. As cores vêm dos tokens (tokens.css).
+// fundo transparente, a cintura esmaecida no material (por vértice). As cores vêm dos tokens (tokens.css).
 // Sem movimento (`parado`, "reduzir movimento"): só a pose inicial, parada, e nada de loop de renderização.
 // Aba oculta: a renderização pausa.
-// Crédito do modelo base: Character Base, madtrollstudio (licença a confirmar). Ver docs/design-system.md.
+// Modelo de origem: "Wii fit - camisa lisa.glb" (autoria e licença a confirmar). Ver docs/design-system.md.
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
@@ -73,15 +73,12 @@ const PERFIL_MM = [
 ]
 const ESCALA = 0.001
 
-// Encaixe do ZENI no Socket.R (espaço local do nó). Em A, C e E, com o punho neutro (t = 0 dos clipes), o eixo longo
-// fica na vertical do mundo. Valores achados olhando o resultado, ver o relatório da fase.
-const ENCAIXE = {
-  posicao: [0, 0, 0],
-  rotacao: [0.855, 0.121, 0.265], // euler XYZ, em radianos
-}
+// Encaixe do ZENI no Socket.R. A posição é o ajuste fino dentro da mão (espaço local do nó). A rotação não é fixa: é
+// calculada ao carregar (encaixarZeni), para que em A, C e E, com o punho neutro (t = 0), o eixo longo fique na vertical.
+const POSICAO_ZENI = [0, 0, 0]
 
 // Câmera levemente de três quartos, enquadrando da cintura para cima
-const VISTA = { posicao: [-0.9, 0.72, 2.15], alvo: [-0.1, 0.51, 0.2] }
+const VISTA = { posicao: [-0.85, 0.64, 2.15], alvo: [-0.05, 0.34, 0.15] }
 
 const token = (nome) => getComputedStyle(document.documentElement).getPropertyValue(nome).trim()
 
@@ -89,8 +86,8 @@ const token = (nome) => getComputedStyle(document.documentElement).getPropertyVa
 // fundo aparece por dentro. Por isso DoubleSide. O esmaecimento da cintura é feito aqui, por vértice, e não por máscara
 // em CSS: só o tronco de baixo esmaece, braços e mãos (ossos Clavicle, UpperArm, Forearm, Hand) ficam sempre opacos.
 const OSSOS_DO_BRACO = /^(Clavicle|UpperArm|Forearm|Hand)/
-const FADE_DE = 0.26 // altura (na pose de repouso) onde o tronco começa a esmaecer
-const FADE_ATE = -0.02 // e onde some
+const FADE_DE = 0.14 // altura (em metros, na pose de repouso; Hips = 0) onde o tronco fica opaco
+const FADE_ATE = -0.03 // e onde some
 
 function materialDoCorpo(cor, geo, esqueleto) {
   const pos = geo.attributes.position
@@ -126,6 +123,18 @@ function criarZeni(cor) {
   return new THREE.Mesh(geo, material)
 }
 
+// Põe o ZENI de pé: com o clipe A em t = 0 (punho neutro), gira o ZENI no Socket.R até o eixo longo ficar na vertical do mundo.
+function encaixarZeni(raiz, zeni, socket, clip) {
+  const mixer = new THREE.AnimationMixer(raiz)
+  mixer.clipAction(clip).play()
+  mixer.setTime(0)
+  raiz.updateMatrixWorld(true)
+  zeni.quaternion.copy(socket.getWorldQuaternion(new THREE.Quaternion()).invert())
+  mixer.stopAllAction()
+  mixer.uncacheClip(clip)
+  mixer.uncacheRoot(raiz)
+}
+
 // A altura mais baixa que a base do ZENI alcança em um clipe: onde a mesa fica (D e F).
 function medirMesa(raiz, zeni, clip, socket) {
   const mixer = new THREE.AnimationMixer(raiz)
@@ -158,20 +167,16 @@ function Personagem({ exercicio, parado, vista }) {
     const corpos = []
     raiz.traverse((o) => {
       if (!o.isMesh) return
-      const original = o.geometry
-      const g = original.clone()
-      g.deleteAttribute('normal')
-      const suave = mergeVertices(g) // low poly sem facetas
-      suave.computeVertexNormals()
-      o.geometry = suave
-      o.material = materialDoCorpo(porcelana, suave, o.skeleton)
+      const g = o.geometry.clone() // cópia própria: leva o atributo `fade` e pode ser descartada (as normais suaves já vêm no arquivo)
+      o.geometry = g
+      o.material = materialDoCorpo(porcelana, g, o.skeleton)
       corpos.push(o)
     })
     const socket = raiz.getObjectByName('SocketR') ?? raiz.getObjectByName('Socket.R') // o GLTFLoader tira o ponto do nome
     const zeni = criarZeni(token('--brand-bruma'))
-    zeni.position.set(...ENCAIXE.posicao)
-    zeni.rotation.set(...ENCAIXE.rotacao)
+    zeni.position.set(...POSICAO_ZENI)
     socket.add(zeni)
+    encaixarZeni(raiz, zeni, socket, gltf.animations.find((c) => c.name === CLIPES.A))
     return { raiz, zeni, socket, corpos }
   }, [gltf])
 
@@ -269,6 +274,22 @@ function Personagem({ exercicio, parado, vista }) {
   )
 }
 
+// Área larga e baixa (tela de instrução): a câmera chega mais perto e olha um pouco mais para baixo, para a figura não ficar
+// pequena. Na tela cheia do exercício (alta e estreita) a vista é a de `VISTA`, sem mudança.
+function Camera({ vista }) {
+  const { camera, size, invalidate } = useThree()
+  useEffect(() => {
+    const aspecto = size.width / size.height
+    const k = THREE.MathUtils.clamp(1 - (aspecto - 0.56) * 0.2, 0.78, 1)
+    const alvo = new THREE.Vector3(...vista.alvo)
+    camera.position.copy(alvo).addScaledVector(new THREE.Vector3(...vista.posicao).sub(alvo), k)
+    alvo.y -= (1 - k) * 0.18
+    camera.lookAt(alvo)
+    invalidate()
+  }, [camera, size, vista, invalidate])
+  return null
+}
+
 function Luzes() {
   const ceu = useMemo(() => token('--white'), [])
   const chao = useMemo(() => token('--cinza-100'), [])
@@ -301,6 +322,7 @@ export default function PersonagemExercicio({ exercicio, parado, pulso = false, 
         camera={{ position: vista.posicao, fov: 29, near: 0.1, far: 20 }}
         onCreated={({ camera }) => camera.lookAt(...vista.alvo)}
       >
+        <Camera vista={vista} />
         <Luzes />
         <Suspense fallback={null}>
           <Personagem exercicio={exercicio} parado={parado} vista={vista} />
