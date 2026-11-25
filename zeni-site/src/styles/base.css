@@ -1,0 +1,43 @@
+/* Base mínima: só reset e estrutura. Toda cor, fonte e tamanho vem de tokens.css. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app {
+  min-height: 100dvh;
+  position: relative;
+}
+
+/* Conteúdo limitado a 560 px e centralizado (design system, seção 4) */
+.tela {
+  max-width: var(--content-max);
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: var(--space-16) var(--margin-x) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}

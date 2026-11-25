@@ -1,0 +1,691 @@
+/* Componentes base do design system (seção 6). Só tokens de tokens.css. */
+
+/* ---------- Botões (6.1) ---------- */
+.botao-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.botao {
+  width: 100%;
+  min-height: var(--target-min);
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-md);
+  font: var(--type-botao);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition:
+    transform var(--dur-press) ease-out,
+    background-color var(--dur-press) ease-out;
+}
+
+.botao:active {
+  transform: scale(var(--press-scale));
+}
+
+.botao--principal {
+  min-height: var(--target-primary);
+  background: var(--bg-accent);
+  color: var(--text-on-accent);
+}
+.botao--principal:active {
+  background: var(--bg-accent-pressed);
+}
+
+.botao--secundario {
+  background: var(--bg-inverse);
+  color: var(--text-on-inverse);
+}
+.botao--secundario:active {
+  background: var(--cinza-800);
+}
+
+.botao--vazado {
+  background: transparent;
+  border: var(--stroke) solid var(--border-strong);
+  color: var(--text-primary);
+}
+.botao--vazado:active {
+  background: var(--bg-subtle);
+}
+
+/* Desativado: mantém o contorno e o motivo fica escrito abaixo */
+.botao--desativado,
+.botao--desativado:active {
+  background: transparent;
+  border: var(--stroke) solid var(--border-strong);
+  color: var(--text-secondary);
+  transform: none;
+  cursor: default;
+}
+
+.botao-motivo {
+  font: var(--type-apoio);
+  color: var(--text-secondary);
+}
+
+/* ---------- Avisos (6.4) ---------- */
+.aviso {
+  --icone: 16px; /* área do ícone, design system 6.7 */
+  display: inline-flex;
+  gap: var(--space-3);
+  align-items: center;    
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+}
+
+.aviso-icone {
+  flex: none;
+  width: var(--icone);
+  height: var(--icone);
+}
+
+.aviso-titulo {
+  font: var(--type-corpo-destaque);
+}
+
+.aviso-texto {
+  font: var(--type-apoio);
+}
+
+.aviso--informacao {
+  background: var(--bg-highlight);
+}
+.aviso--informacao .aviso-icone {
+  color: var(--brand-blue-700);
+}
+
+.aviso--atencao {
+  background: var(--brand-amarelo-200);
+}
+
+.aviso--urgente {
+  background: var(--bg-inverse);
+  color: var(--text-on-inverse);
+}
+.aviso--urgente .aviso-icone {
+  color: var(--icon-on-inverse);
+}
+
+/* ---------- Painel inferior (6.8) ---------- */
+.painel-camada {
+  z-index: 1; /* acima do aviso de conexão da Home, abaixo do aviso de lembrete */
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.painel-pelicula {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+  animation: pelicula-entra var(--dur-panel) ease-out;
+}
+
+.painel {
+  position: relative;
+  width: 100%;
+  max-width: var(--content-max);
+  height: 88dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-page);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  animation: painel-sobe var(--dur-panel) ease-out;
+}
+
+.painel--total {
+  height: 100dvh;
+  border-radius: 0;
+}
+
+.painel:focus {
+  outline: none;
+}
+
+.painel-conteudo {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-8) var(--margin-x) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.painel-rodape {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--margin-x) calc(var(--space-6) + env(safe-area-inset-bottom));
+}
+
+@keyframes painel-sobe {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes pelicula-entra {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---------- Home: dois cartões grandes (decisão da autora; parte da 6.2) ---------- */
+.tela--home {
+  height: 100dvh; /* cabe em um viewport só: os cartões dividem o que sobra */
+  min-height: 0;
+  gap: var(--space-6);
+  padding-top: var(--space-6);
+  padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom));
+}
+
+.home-titulo {
+  font: var(--type-titulo-1);
+}
+
+/* Os cartões dividem a altura que sobra na tela, um sobre o outro */
+.home-grade {
+  flex: 2; /* o dobro da altura da faixa de dados */
+  display: flex;
+  flex-direction: row; /* evolução à esquerda, exercício à direita */
+  gap: var(--grid-gap);
+}
+
+/* Faixa de dados de saúde: fundo mais escuro (Bruma) com dois cartões mais claros */
+.home-dados {
+  flex: 1;
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--brand-bruma);
+  border-radius: var(--radius-2xl);
+}
+
+.dado {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-xl);
+  background: var(--bg-subtle);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.dado-numero {
+  font: var(--type-numero);
+  color: var(--brand-blue-600); /* número grande: 3:1 basta (texto grande, seção 2.3) */
+}
+
+.dado-rotulo {
+  font: var(--type-apoio);
+  color: var(--text-primary);
+}
+
+.cartao {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  padding: var(--space-4);
+  /* Cantos de cima e de baixo diferentes, como na referência: embaixo um pouco mais arredondado que em cima */
+  border-radius: var(--radius-2xl) var(--radius-2xl) calc(var(--radius-2xl) + var(--space-3)) calc(var(--radius-2xl) + var(--space-3));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-2);
+  text-align: center;
+  color: var(--text-primary); /* texto sobre gradiente é sempre cinza-900 */
+  transition: transform var(--dur-press) ease-out;
+}
+
+.cartao:active {
+  transform: scale(var(--press-scale));
+}
+
+/* Degradê suave focado em uma cor só por cartão. Só passos claros da paleta (design system 2.5),
+   então o texto cinza-900 mantém o contraste. */
+.cartao--amarelo {
+  background:
+    radial-gradient(circle at 15% 10%, var(--brand-amarelo-50) 0%, transparent 55%),
+    radial-gradient(circle at 90% 25%, var(--brand-amarelo-500) 0%, transparent 50%),
+    radial-gradient(circle at 30% 100%, var(--brand-amarelo-200) 0%, transparent 60%),
+    var(--brand-amarelo-300);
+}
+.cartao--cinza {
+  background:
+    radial-gradient(circle at 85% 10%, var(--cinza-50) 0%, transparent 55%),
+    radial-gradient(circle at 10% 35%, var(--cinza-200) 0%, transparent 55%),
+    radial-gradient(circle at 80% 100%, var(--cinza-300) 0%, transparent 60%),
+    var(--cinza-100);
+}
+
+.cartao-icone {
+  width: 28px; /* área do ícone, design system 6.7 */
+  height: 28px;
+}
+
+.cartao-titulo {
+  font: var(--type-titulo-3);
+}
+
+.cartao-apoio {
+  font: var(--type-apoio);
+}
+
+/* Ícone no canto superior direito da Home (Heroicons, traço de 2 px, área de 28 px: seção 6.7) */
+.home-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.home-icone {
+  flex: none;
+  width: var(--target-min);
+  height: var(--target-min);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  transition: transform var(--dur-press) ease-out;
+}
+.home-icone:active {
+  transform: scale(var(--press-scale));
+  background: var(--bg-subtle);
+}
+.home-icone svg {
+  width: 28px;
+  height: 28px;
+}
+
+/* ---------- Alternador (liga/desliga) ---------- */
+.alternador {
+  --trilho-largura: 72px;
+  --trilho-altura: 40px;
+  --bolinha: 28px;
+  --folga: 6px;
+  width: 100%;
+  min-height: var(--target-min);
+  padding: var(--space-3) var(--space-6);
+  border: var(--stroke) solid var(--border-strong);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  text-align: left;
+  color: var(--text-primary);
+}
+
+.alternador-texto {
+  display: flex;
+  flex-direction: column;
+}
+
+.alternador-rotulo {
+  font: var(--type-botao);
+}
+
+.alternador-estado {
+  font: var(--type-apoio);
+  color: var(--text-secondary);
+}
+
+.alternador-trilho {
+  flex: none;
+  position: relative;
+  width: var(--trilho-largura);
+  height: var(--trilho-altura);
+  border-radius: var(--radius-full);
+  border: var(--stroke) solid var(--border-strong);
+  background: transparent;
+  transition: background-color var(--dur-press) ease-out;
+}
+
+.alternador-bolinha {
+  position: absolute;
+  top: 50%;
+  left: var(--folga);
+  width: var(--bolinha);
+  height: var(--bolinha);
+  margin-top: calc(var(--bolinha) / -2);
+  border-radius: var(--radius-full);
+  background: var(--bg-inverse);
+  transition: transform var(--dur-press) ease-out;
+}
+
+.alternador--ligado .alternador-trilho {
+  background: var(--bg-accent);
+}
+.alternador--ligado .alternador-bolinha {
+  transform: translateX(calc(var(--trilho-largura) - var(--bolinha) - var(--folga) * 2 - var(--stroke) * 2));
+}
+
+/* ---------- Fundo da Home: a cor mais clara do design system (Porcelana) ---------- */
+.app {
+  background: var(--bg-subtle); /* = brand-porcelana */
+}
+
+/* ---------- Tela de espera (6.9) ---------- */
+.espera {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  /* o gradiente se desloca por até 5 s e para no último quadro (seção 8) */
+  background: var(--grad-amarelo);
+  background-size: 100% 200%;
+  animation: espera-desloca var(--dur-wait-gradient) ease-out forwards;
+}
+
+.espera-conteudo {
+  width: 100%;
+  max-width: var(--content-max);
+  padding: 30dvh var(--margin-x) 0; /* topo do texto a cerca de 30% da altura */
+}
+
+.espera-texto {
+  font: var(--type-titulo-1);
+  color: var(--text-primary);
+  max-width: 100%;
+}
+
+.espera-botoes {
+  width: 100%;
+  max-width: var(--content-max);
+  padding: 0 var(--margin-x) calc(var(--space-6) + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@keyframes espera-desloca {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 100%;
+  }
+}
+
+/* ---------- Conectar e triagem ---------- */
+.conectar-titulo {
+  font: var(--type-titulo-1);
+}
+
+.conectar-texto {
+  font: var(--type-corpo);
+}
+
+.conectar-destaque {
+  font: var(--type-corpo-destaque);
+}
+
+.conectar-numero {
+  font: var(--type-numero);
+}
+
+/* Selo de conexão feita: cinza-900 sobre amarelo-300, 200 ms (seção 8) */
+.selo {
+  --selo-tamanho: 72px;
+  width: var(--selo-tamanho);
+  height: var(--selo-tamanho);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-accent);
+  color: var(--text-on-accent);
+  animation: selo-entra var(--dur-screen) ease-out;
+}
+.selo svg {
+  width: 28px; /* área do ícone, seção 6.7 */
+  height: 28px;
+}
+
+@keyframes selo-entra {
+  from {
+    background: var(--cinza-100);
+  }
+}
+
+.parq-contador {
+  font: var(--type-apoio);
+  color: var(--text-secondary);
+}
+
+.parq-pergunta {
+  font: var(--type-titulo-3);
+}
+
+/* ---------- Aviso de conexão no topo da Home (por cima, fora do fluxo do layout) ---------- */
+.aviso-conexao {
+  position: fixed;
+  top: calc(var(--space-2) + env(safe-area-inset-top));
+  left: 50%;
+  z-index: 1;
+  width: min(100% - var(--space-6) * 2, var(--content-max) - var(--space-6) * 2);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  touch-action: pan-x; /* o arrastar para cima chega ao aviso em vez de rolar a página */
+  animation: aviso-desce var(--dur-screen) ease-out;
+}
+
+@keyframes aviso-desce {
+  from {
+    transform: translate(-50%, -100%);
+  }
+}
+
+/* ---------- Marca de IA (6.6) ---------- */
+.ia {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.ia-etiqueta {
+  height: 28px; /* seção 6.6 */
+  padding: 0 var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-full);
+  background: var(--bg-highlight);
+  color: var(--brand-blue-800);
+  font: var(--type-apoio);
+}
+
+.ia-frase {
+  font: var(--type-corpo);
+}
+
+/* ---------- Exercício em andamento ---------- */
+/* Ritmo guiado (seção 8): círculo amarelo que cresce e encolhe no ritmo; bem abaixo de 3 pulsos por segundo */
+.guia {
+  --guia-tamanho: 160px;
+  height: var(--guia-tamanho);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.guia-circulo {
+  width: var(--guia-tamanho);
+  height: var(--guia-tamanho);
+  border-radius: var(--radius-full);
+  background: var(--brand-amarelo-300);
+  animation: guia-pulsa var(--guia-ritmo, 1.6s) ease-in-out infinite alternate;
+}
+
+@keyframes guia-pulsa {
+  from {
+    transform: scale(0.6);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guia-circulo {
+    animation: none; /* "reduzir movimento": o círculo fica parado */
+  }
+}
+
+/* Tamanho do movimento: barra azul de marca (gráfico, seção 2.1) */
+.medidor {
+  margin-top: var(--space-2);
+  height: var(--space-4);
+  border-radius: var(--radius-full);
+  background: var(--cinza-100);
+  overflow: hidden;
+}
+
+.medidor-barra {
+  display: block;
+  height: 100%;
+  background: var(--brand-blue-600);
+  transition: width 250ms linear;
+}
+
+/* ---------- Gráfico de evolução (6.5) ---------- */
+.grafico {
+  width: 100%;
+  height: auto;
+}
+
+.grafico-linha {
+  fill: none;
+  stroke: var(--text-primary); /* cinza-900 */
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.grafico-area {
+  fill: var(--brand-amarelo-200);
+}
+
+.grafico-ponto {
+  fill: var(--text-primary);
+}
+
+.grafico-eixo {
+  stroke: var(--cinza-300);
+  stroke-width: 1;
+}
+
+.grafico-rotulo {
+  font: var(--type-apoio); /* rótulos de 16 px */
+  fill: var(--text-primary);
+}
+
+/* "Salvar em PDF" usa a impressão do navegador. Layout provisório (design system, pendência 10):
+   só o painel da evolução, sem botões. */
+@media print {
+  .app > div[inert],
+  .painel-pelicula,
+  .painel-rodape {
+    display: none;
+  }
+  .painel-camada,
+  .painel {
+    position: static;
+    height: auto;
+    animation: none;
+  }
+  .painel-conteudo {
+    overflow: visible;
+  }
+}
+
+/* O aviso de lembrete usa o mesmo lugar do aviso de conexão, acima dos painéis */
+.aviso-lembrete {
+  z-index: 2;
+}
+
+/* ---------- Lembretes: dias e horário ---------- */
+.dias {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+}
+
+.dia {
+  min-height: var(--target-min);
+  border: var(--stroke) solid var(--border-strong);
+  border-radius: var(--radius-md);
+  font: var(--type-botao);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  color: var(--text-primary);
+}
+
+/* O dia escolhido muda de fundo e ganha um visto: não depende só da cor */
+.dia--ligado {
+  background: var(--bg-inverse);
+  color: var(--text-on-inverse);
+}
+
+.dia-marca {
+  width: 20px;
+  height: 20px;
+}
+
+.hora {
+  display: grid;
+  grid-template-columns: var(--target-min) 1fr var(--target-min);
+  align-items: start;
+  gap: var(--space-4);
+}
+
+.hora-valor {
+  font: var(--type-numero);
+  text-align: center;
+}
+
+/* ---------- Campo de texto (6.3): 64 px de altura, borda de 2 px cinza-500 ---------- */
+.campo-rotulo {
+  display: block;
+  margin-bottom: var(--space-2);
+  font: var(--type-apoio);
+  color: var(--text-secondary);
+}
+
+.campo {
+  width: 100%;
+  min-height: var(--target-min);
+  padding: 0 var(--space-4);
+  border: var(--stroke) solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font: var(--type-corpo);
+}

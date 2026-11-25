@@ -1,0 +1,153 @@
+/*
+  ZENI: tokens de design.
+  Fonte: docs/design-system.md, seção 9 (bloco base) e seções 3.2, 5, 7 e 8 (bloco de apoio, no fim).
+  Mudou o design system, mude aqui. Não inventar valores fora destes tokens.
+*/
+
+/* Fontes (protótipo; no produto, hospedar os arquivos localmente) */
+@import url("https://api.fontshare.com/v2/css?f[]=chillax@500,600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap");
+
+:root {
+  /* Cinzas (neutros) */
+  --cinza-50: #F1F3F4;
+  --cinza-100: #E6EAEA;
+  --cinza-200: #CAD2D4;
+  --cinza-300: #ADBABD;
+  --cinza-400: #91A2A6;
+  --cinza-500: #758B8F;
+  --cinza-600: #5E7073;
+  --cinza-700: #475557;
+  --cinza-800: #30393B;
+  --cinza-900: #1A1F20;
+  --white: #FFFFFF;
+
+  /* Marca: amarelo */
+  --brand-amarelo-50: #FEFDF1;
+  --brand-amarelo-100: #FDFADD;
+  --brand-amarelo-200: #FAF4AD;
+  --brand-amarelo-300: #F7ED7E;
+  --brand-amarelo-400: #F4E64D;
+  --brand-amarelo-500: #F1E01D;
+
+  /* Marca: blue */
+  --brand-blue-50: #F0FBFF;
+  --brand-blue-100: #E3F7FF;
+  --brand-blue-200: #B3E9FF;
+  --brand-blue-600: #0080B2;
+  --brand-blue-700: #005B80;
+  --brand-blue-800: #00374D;
+
+  /* Marca: tons únicos */
+  --brand-bruma: #98B5BE;
+  --brand-seixo: #C4C4C4;
+  --brand-porcelana: #F5FAFE;
+
+  /* Semânticos */
+  --bg-page: var(--white);
+  --bg-subtle: var(--brand-porcelana);
+  --bg-highlight: var(--brand-blue-100);
+  --bg-accent: var(--brand-amarelo-300);
+  --bg-accent-pressed: var(--brand-amarelo-400);
+  --bg-inverse: var(--cinza-900);
+  --text-primary: var(--cinza-900);
+  --text-secondary: var(--cinza-700);
+  --text-link: var(--brand-blue-700);
+  --text-on-accent: var(--cinza-900);
+  --text-on-inverse: var(--white);
+  --icon-on-inverse: var(--brand-amarelo-300);
+  --border-strong: var(--cinza-500);
+  --border-subtle: var(--brand-seixo);
+
+  /* Tipografia */
+  --font-heading: "Chillax", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Espaço */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+
+  /* Forma */
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-full: 999px;
+
+  /* Toque */
+  --target-min: 64px;
+  --target-primary: 72px;
+  --grid-gap: var(--space-6);
+
+  /* Gradientes (texto sempre cinza-900) */
+  --grad-amarelo: linear-gradient(180deg, var(--brand-amarelo-50) 0%, var(--brand-amarelo-300) 55%, var(--brand-amarelo-500) 100%);
+  --grad-amarelo-card: linear-gradient(160deg, var(--brand-amarelo-100) 0%, var(--brand-amarelo-400) 100%);
+  --grad-azul-card: linear-gradient(160deg, var(--brand-blue-50) 0%, var(--brand-blue-200) 100%);
+  --grad-bruma-card: linear-gradient(160deg, var(--brand-porcelana) 0%, var(--brand-bruma) 100%);
+  --grad-cinza-card: linear-gradient(160deg, var(--cinza-50) 0%, var(--cinza-200) 100%);
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: calc(18px * var(--escala-texto, 1));
+  line-height: calc(28px * var(--escala-texto, 1));
+  color: var(--text-primary);
+  background: var(--bg-page);
+  font-variant-ligatures: none;
+  font-variant-numeric: tabular-nums;
+}
+
+h1, h2, h3, button { font-family: var(--font-heading); }
+
+:focus-visible {
+  outline: 3px solid var(--cinza-900);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--white);
+}
+
+/* ---------- Apoio: derivado das seções 3.2, 5, 7 e 8 do design system ---------- */
+:root {
+  /* Tipografia: escala mobile (seção 3.2). Uso: font: var(--type-titulo-1);
+     --escala-texto (1, 1.25 ou 1.5) é o tamanho do texto escolhido em Personalizar > Aparência. */
+  --type-display: 600 calc(40px * var(--escala-texto, 1)) / calc(44px * var(--escala-texto, 1)) var(--font-heading);
+  --type-titulo-1: 600 calc(32px * var(--escala-texto, 1)) / calc(38px * var(--escala-texto, 1)) var(--font-heading);
+  --type-titulo-2: 600 calc(26px * var(--escala-texto, 1)) / calc(32px * var(--escala-texto, 1)) var(--font-heading);
+  --type-titulo-3: 500 calc(22px * var(--escala-texto, 1)) / calc(28px * var(--escala-texto, 1)) var(--font-heading);
+  --type-botao: 500 calc(22px * var(--escala-texto, 1)) / calc(28px * var(--escala-texto, 1)) var(--font-heading);
+  --type-corpo: 400 calc(18px * var(--escala-texto, 1)) / calc(28px * var(--escala-texto, 1)) var(--font-body);
+  --type-corpo-destaque: 500 calc(18px * var(--escala-texto, 1)) / calc(28px * var(--escala-texto, 1)) var(--font-body);
+  --type-apoio: 400 calc(16px * var(--escala-texto, 1)) / calc(24px * var(--escala-texto, 1)) var(--font-body);
+  --type-numero: 500 calc(56px * var(--escala-texto, 1)) / calc(60px * var(--escala-texto, 1)) var(--font-body);
+
+  /* Layout e forma (seções 4, 5 e 6) */
+  --margin-x: var(--space-6);
+  --content-max: 560px;
+  --stroke: 2px;
+  --radius-2xl: 64px; /* NOVO: maior que radius-xl (32). Cartões grandes da Home. Não está no design system */
+  --scrim: rgb(26 31 32 / 0.4); /* cinza-900 a 40%, película do painel inferior */
+  --press-scale: 0.98;
+
+  /* Movimento (seções 7 e 8) */
+  --dur-press: 120ms;
+  --dur-screen: 200ms;
+  --dur-panel: 250ms;
+  --dur-count: 600ms;
+  --dur-wait-gradient: 5s;
+}
+
+/* "Reduzir movimento" do sistema: troca direta, sem transição (seções 7 e 8) */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-press: 0ms;
+    --dur-screen: 0ms;
+    --dur-panel: 0ms;
+    --dur-count: 0ms;
+    --dur-wait-gradient: 0s;
+  }
+}
