@@ -979,8 +979,29 @@
 .andamento .figura {
   position: relative;
 }
+.andamento-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+.voz-indicador {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  align-self: flex-start;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--brand-amarelo-200); /* amarelo claro: texto cinza-900 (14,7:1) */
+  font: var(--type-apoio);
+  color: var(--text-primary);
+}
+.voz-indicador-icone {
+  width: 20px;
+  height: 20px;
+}
 .exercicio-tempo {
-  align-self: flex-end;
+  margin-left: auto;
   font: var(--type-apoio);
   font-size: calc(var(--escala-texto, 1) * 16px - 2pt); /* 2 pt menor e mais discreto */
   color: var(--cinza-700);

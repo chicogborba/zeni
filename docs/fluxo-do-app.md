@@ -30,7 +30,7 @@ Valem mais que a imagem do fluxograma, mais que as decisões de 24/11 e mais que
 2. **O exercício diário é uma série de 3 exercícios.** A nota só aparece ao fim da série (3.2 e 3.6), não a cada exercício.
 3. **O bloco 7 "Pedir ajuda ao ZENI" sai da v1.** Deixa de ser destino da Home e de ser caminho a partir de Personalizar.
 4. **Minha evolução abre direto no dashboard**, com alternador 7/30 dias no topo. Embaixo: **Exportar** (Salvar em PDF ou Enviar link) à esquerda e **Voltar** à direita. Não há mais a escolha de 7 ou 30 dias antes dos gráficos (4.1).
-5. **Voz na v1, só durante o exercício:** pausar, continuar, terminar, repetir. Os botões ficam sempre na tela como alternativa.
+5. **Voz na v1, só durante o exercício:** pausar, continuar, terminar, repetir. Os botões ficam sempre na tela como alternativa. Detalhes na decisão 26.
 6. **Bottom sheets se ajustam à altura do conteúdo.** O botão Voltar tem um passo a menos de altura que o botão primário.
 7. **Luz, vibração e música do dispositivo continuam na v2.** Na v1 o ritmo é mostrado na tela por um pulso amarelo (2.6).
 8. **Catálogo de exercícios**, com nomes em linguagem leiga. Sem "manopla", "treino" ou "fisioterapia" na interface. O catálogo está na decisão 9.
@@ -91,6 +91,16 @@ Valem mais que a imagem do fluxograma, mais que as decisões de 24/11 e mais que
     Na v1 tudo é simulado pelo app: sem LED, vibração, áudio ou música. O ritmo aparece só como pulso amarelo na tela. Na interface não entram termos clínicos nem "manopla", "treino" ou "fisioterapia".
 24. **Série e nota.** A série do dia tem 3 exercícios, um de cada grupo, na ordem amplitude, ritmo, manter a energia (decisão 17). A nota só aparece depois do terceiro e usa tamanho do movimento, suavidade e ritmo (média dos três exercícios, com os mesmos pesos de antes).
 25. **Nota em modal centralizado:** número grande centralizado, o microtexto "sua nota" e uma descrição curta sobre tamanho do movimento, suavidade e ritmo. Um botão leva direto a Minha evolução. A nota fica gravada na evolução.
+26. **Voz: os quatro comandos.** Só durante o exercício, pela Web Speech API (sem suporte, sem microfone ou sem permissão, nada acontece e os botões seguem valendo). Cada comando só vale no estado certo:
+
+    | Comando | Quando vale | O que faz |
+    | ------- | ----------- | --------- |
+    | "pausar" | exercício em andamento | Pausa (estado Pausado) |
+    | "continuar" | Pausado ou Repetir | Retoma de onde parou |
+    | "terminar" | andamento, Pausado ou Repetir | Encerra a sessão sem nota e volta à Home. Os exercícios já concluídos ficam registrados sem nota (decisão 12) |
+    | "repetir" | andamento ou Pausado | Pausa o exercício e mostra de novo a animação de como fazer. "Continuar" retoma de onde parou. Não reinicia o exercício nem a série |
+
+    Quando o microfone está ouvindo, a tela mostra o indicador "Ouvindo" (ícone e texto). No Pausado há também o botão "Repetir".
 
 Efeito sobre as decisões de 24/11: a 4 (significado do bloco 7), a 6 (um único comando de voz) e a 7 (bloco 7 só por texto) ficam superadas. As demais continuam valendo.
 
@@ -249,9 +259,9 @@ Decidir antes ou durante a execução. Não assumir sozinho.
 5. **Enviar link (4.3).** Na v1 é o texto-resumo (decisão 18). Na v2, com backend: para quem vai o link, a privacidade desses dados e o layout do PDF (design system, pendência 10).
 6. **Nota de 0 a 100.** Continua em 3.2 e 3.6 (design system, pendência 7).  
 7. **Numeração.** O fluxograma pula o número 5, e o bloco de casos de erro não tem número. No código, citar os blocos pelo nome.
-8. **Resolvidos em 25/11** (decisões 9 a 25): catálogo, Home, "Repetir", "Terminar" no meio da série (provisório), avatar, Exportar/Voltar, medidas do ZENI, detalhes da Home, regra da série, exportação, consentimento, permissões, exercício em tela cheia, legendas, nota em modal.
+8. **Resolvidos em 25/11** (decisões 9 a 26): catálogo, Home, "Repetir", "Terminar" no meio da série (provisório), avatar, Exportar/Voltar, medidas do ZENI, detalhes da Home, regra da série, exportação, consentimento, permissões, exercício em tela cheia, legendas, nota em modal.
 9. ~~Textos das legendas.~~ Resolvido em 25/11 (decisão 23). Falta revisar as animações com pessoas reais e, se preciso, desenhar as de A e E com mais clareza: o giro da palma é mostrado em 2D, com a mão que "vira" e uma seta.
 10. ~~Cinza claro e contraste.~~ Resolvido em 25/11: rótulos do dashboard em cinza-800 e "–" em cinza-700 (seção 6.2 do design system).
 11. **Tela do microfone.** O texto da decisão 20 fala só da palavra "pausar", mas a v1 reconhece quatro comandos (decisão 5). Ajustar o texto ou manter. Falta também o rótulo do botão dessa tela.
 12. **Inicial do avatar.** O fluxo não coleta o nome da pessoa. Definir onde ela informa o nome (por exemplo, em Personalizar). Enquanto isso, o avatar mostra um ícone de pessoa quando não há nome guardado.
-13. **Falta implementar na tela do exercício:** "Repetir" (decisão 11) e os comandos de voz "continuar", "terminar" e "repetir" (decisão 5). Hoje só "pausar" por voz.
+13. **Tela do microfone (decisão 20).** Ainda não existe: o navegador pede a permissão sozinho quando o exercício começa. Falta a tela curta de explicação antes.

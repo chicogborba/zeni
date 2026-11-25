@@ -4,23 +4,24 @@
 // A série do dia tem 3 exercícios (um de cada grupo do catálogo, em src/simulacao.js), em TELA CHEIA.
 // Estados: preparando (tela de carregamento) -> instrucao (animação de como fazer) -> andamento (2.4 a 2.7)
 //          -> (próximo exercício: instrucao) ... -> depois do terceiro, a nota em modal (Avaliação).
-//          pausado (2.8a) | reconectando -> perguntando | encerrado (Terminar ou Voltar ao início no meio da série).
+//          pausado (2.8a) | repetindo (animação de novo, em pausa) | reconectando -> perguntando | encerrado (Terminar ou Voltar ao início no meio da série).
 // "Terminar" no meio da série (provisório, decisão 12): encerra a sessão e volta à Home, sem nota. Os exercícios já
 // concluídos ficam registrados como feitos, sem nota, e o em andamento é descartado.
 // Casos de erro (tabela do fluxo): perda de sinal (reconexão), bateria fraca (aviso discreto no topo, o exercício
 // continua) e muita dificuldade (pausa sozinho, mesma tela de Pausado, com o aviso urgente).
-// TODO: falta "Repetir" (decisão 11) e os comandos de voz "continuar", "terminar" e "repetir" (decisão 5).
+// Voz (decisões 5 e 11): "pausar", "continuar", "terminar" e "repetir" (src/voz.js). "Repetir" vai ao estado `repetindo`.
 import { useEffect, useRef, useState } from 'react'
 import Aviso from '../componentes/Aviso.jsx'
 import Botao from '../componentes/Botao.jsx'
 import EtiquetaIA from '../componentes/EtiquetaIA.jsx'
 import FiguraExercicio from '../componentes/FiguraExercicio.jsx'
+import IndicadorVoz from '../componentes/IndicadorVoz.jsx'
 import PainelInferior from '../componentes/PainelInferior.jsx'
 import TelaCarregamento from '../componentes/TelaCarregamento.jsx'
 import { useNavegacao } from '../navegacao.jsx'
 import { aliviarDificuldade, aoBateriaFraca, aoMudarSinal, emDificuldade, serieDoDia } from '../simulacao.js'
 import { CHAVES, guardar, ler } from '../storage.js'
-import { useComandoPausar } from '../voz.js'
+import { useComandosDeVoz } from '../voz.js'
 
 const DURACAO_S = 30 // duração de cada exercício (E: 15 repetições de 2 s, também 30 s)
 const RITMO_PADRAO_S = 1.6 // segundos por movimento, sem histórico (2.1a)
@@ -72,7 +73,6 @@ export default function Exercicio() {
     setMotivoPausa('pessoa')
     setEstado('pausado')
   }
-  useComandoPausar(estado === 'andamento', pausar)
 
   // Carregamento: espera simulada
   useEffect(() => {
@@ -200,6 +200,19 @@ export default function Exercicio() {
     setEstado('encerrado')
   }
 
+  // "Repetir": pausa o exercício e mostra de novo a animação de como fazer. "Continuar" retoma de onde parou.
+  const repetir = () => setEstado('repetindo')
+  const continuar = () => setEstado('andamento')
+
+  // Voz (decisão 5): pausar, continuar, terminar e repetir. Cada comando só vale no estado certo.
+  const vozAtiva = estado === 'andamento' || estado === 'pausado' || estado === 'repetindo'
+  const { ouvindo } = useComandosDeVoz(vozAtiva, {
+    pausar: estado === 'andamento' ? pausar : undefined,
+    continuar: estado === 'pausado' || estado === 'repetindo' ? continuar : undefined,
+    terminar: vozAtiva ? terminar : undefined,
+    repetir: estado === 'andamento' || estado === 'pausado' ? repetir : undefined,
+  })
+
   if (estado === 'preparando') {
     return (
       <TelaCarregamento
@@ -292,8 +305,11 @@ export default function Exercicio() {
         onFechar={() => {}}
         rodape={
           <>
-            <Botao variante="principal" onClick={() => setEstado('andamento')}>
+            <Botao variante="principal" onClick={continuar}>
               Continuar
+            </Botao>
+            <Botao variante="vazado" onClick={repetir}>
+              Repetir
             </Botao>
             <Botao variante="secundario" onClick={terminar}>
               Terminar
@@ -301,6 +317,7 @@ export default function Exercicio() {
           </>
         }
       >
+        <IndicadorVoz ouvindo={ouvindo} />
         <h2 className="conectar-titulo">Exercício pausado</h2>
         {motivoPausa === 'dificuldade' ? (
           <Aviso nivel="urgente" titulo="O exercício foi pausado.">
@@ -309,6 +326,36 @@ export default function Exercicio() {
         ) : (
           <p className="conectar-texto">Respire um pouco. Continue quando quiser.</p>
         )}
+      </PainelInferior>
+    )
+  }
+
+  // Repetir: a animação de como fazer, com o exercício em pausa. Continuar retoma de onde parou.
+  if (estado === 'repetindo') {
+    return (
+      <PainelInferior
+        titulo="Como fazer"
+        alturaTotal
+        onFechar={() => {}}
+        rodape={
+          <>
+            <Botao variante="principal" onClick={continuar}>
+              Continuar
+            </Botao>
+            <Botao variante="secundario" onClick={terminar}>
+              Terminar
+            </Botao>
+          </>
+        }
+      >
+        <IndicadorVoz ouvindo={ouvindo} />
+        <div className="instrucao">
+          <h2 className="instrucao-nome">{exercicio.nome}</h2>
+          <div className="instrucao-figura">
+            <FiguraExercicio exercicio={exercicio} ritmoSeg={ritmoSeg} parado={parado} />
+          </div>
+          <p className="instrucao-legenda">{exercicio.legenda}</p>
+        </div>
       </PainelInferior>
     )
   }
@@ -363,9 +410,12 @@ export default function Exercicio() {
           Você pode continuar.
         </Aviso>
       )}
-      <p className="exercicio-tempo" aria-label={`Faltam ${restam} segundos`}>
-        {mmss(restam)}
-      </p>
+      <div className="andamento-topo">
+        <IndicadorVoz ouvindo={ouvindo} />
+        <p className="exercicio-tempo" aria-label={`Faltam ${restam} segundos`}>
+          {mmss(restam)}
+        </p>
+      </div>
       <div className="andamento">
         <div
           className={`andamento-bulb${parado ? '' : ' andamento-bulb--pulsa'}`}

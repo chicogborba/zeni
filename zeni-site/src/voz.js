@@ -1,36 +1,52 @@
-// Voz na v1: um único comando, "pausar", só durante o exercício (fluxo-do-app.md, decisão 6).
-// O botão Pausar continua sempre na tela como alternativa. Usa a Web Speech API; sem suporte, nada acontece.
-// TODO (fluxo-do-app.md, ponto em aberto 3): o microfone não tem passo de permissão no fluxograma.
-import { useEffect, useRef } from 'react'
+// Voz na v1 (decisão 5 de 25/11): quatro comandos, só durante o exercício: "pausar", "continuar", "terminar" e
+// "repetir". Os botões continuam sempre na tela como alternativa. Usa a Web Speech API. Sem suporte, sem microfone ou
+// sem permissão, nada acontece (fallback silencioso): os botões seguem valendo. `ouvindo` diz quando o microfone está
+// ligado, para a tela mostrar um indicador.
+// TODO (fluxo-do-app.md, decisão 20): falta a tela curta de explicação antes do primeiro pedido de microfone.
+import { useEffect, useRef, useState } from 'react'
 
-const Reconhecimento = typeof window !== 'undefined' ? window.SpeechRecognition || window.webkitSpeechRecognition : null
+// Lido na hora de usar (não só ao carregar o arquivo), para os testes poderem simular o reconhecimento
+const obterReconhecimento = () => (typeof window !== 'undefined' ? window.SpeechRecognition || window.webkitSpeechRecognition : null)
 
-export const vozDisponivel = Boolean(Reconhecimento)
+export const vozDisponivel = () => Boolean(obterReconhecimento())
+
+const PALAVRAS = ['pausar', 'continuar', 'terminar', 'repetir']
+const INTERVALO_MS = 1500 // depois de um comando, ignora repetições do que acabou de ser ouvido
 
 const semAcento = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 
-export function useComandoPausar(ativo, aoPausar) {
-  const aoPausarRef = useRef(aoPausar)
+// `comandos`: { pausar, continuar, terminar, repetir }, cada um uma função ou undefined (comando que não vale agora).
+export function useComandosDeVoz(ativo, comandos) {
+  const comandosRef = useRef(comandos)
+  const [ouvindo, setOuvindo] = useState(false)
   useEffect(() => {
-    aoPausarRef.current = aoPausar
+    comandosRef.current = comandos
   })
 
   useEffect(() => {
+    const Reconhecimento = obterReconhecimento()
     if (!ativo || !Reconhecimento) return undefined
     let rodando = true
+    let ultimo = 0
     const rec = new Reconhecimento()
     rec.lang = 'pt-BR'
     rec.continuous = true
     rec.interimResults = true
+    rec.onstart = () => setOuvindo(true)
     rec.onresult = (e) => {
       for (let i = e.resultIndex; i < e.results.length; i++) {
-        if (semAcento(e.results[i][0].transcript).includes('pausar')) {
-          aoPausarRef.current()
+        const texto = semAcento(e.results[i][0].transcript)
+        const dito = PALAVRAS.find((p) => comandosRef.current[p] && new RegExp(`\\b${p}\\b`).test(texto))
+        if (dito && Date.now() - ultimo > INTERVALO_MS) {
+          ultimo = Date.now()
+          comandosRef.current[dito]()
+          rec.abort() // limpa o que foi ouvido; o onend religa o microfone
           return
         }
       }
     }
     rec.onend = () => {
+      setOuvindo(false)
       if (!rodando) return
       try {
         rec.start()
@@ -38,7 +54,9 @@ export function useComandoPausar(ativo, aoPausar) {
         // já estava ouvindo
       }
     }
-    rec.onerror = () => {} // sem microfone ou sem permissão: o botão Pausar segue valendo
+    rec.onerror = (e) => {
+      if (e.error === 'not-allowed' || e.error === 'service-not-allowed') rodando = false // sem permissão: fica em silêncio
+    }
     try {
       rec.start()
     } catch {
@@ -47,6 +65,9 @@ export function useComandoPausar(ativo, aoPausar) {
     return () => {
       rodando = false
       rec.abort()
+      setOuvindo(false)
     }
   }, [ativo])
+
+  return { ouvindo: ativo && ouvindo }
 }

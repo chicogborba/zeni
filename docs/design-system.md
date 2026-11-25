@@ -380,7 +380,7 @@ Se a espera passar de 15 segundos, o texto muda para uma frase calma ("Está dem
 
 ### 6.10 Pausado
 
-Tela do exercício em altura total (seção 6.8). Mostra "Exercício pausado" (Título 1) e uma frase calma de apoio (Corpo), sem tempo limite. Dois botões: **Continuar** (principal, 72), que retoma o exercício, e **Terminar** (secundário, 64), que encerra. Se a série de 3 ainda não acabou, Terminar leva à home, sem nota, e o exercício em andamento é descartado (provisório, 25/11). A avaliação só vem ao fim da série. Na voz, "repetir" mostra de novo a animação do exercício atual, com o exercício em pausa até "Continuar". Terminar segue a regra de "Desfazer" por 8 segundos (seção 7).
+Tela do exercício em altura total (seção 6.8). Mostra "Exercício pausado" (Título 1) e uma frase calma de apoio (Corpo), sem tempo limite. Três botões: **Continuar** (principal, 72), que retoma o exercício, **Repetir** (vazado, 64), que mostra de novo a animação de como fazer (tela "Repetir": nome, figura e legenda, com Continuar e Terminar), e **Terminar** (secundário, 64), que encerra. Se a série de 3 ainda não acabou, Terminar leva à home, sem nota, e o exercício em andamento é descartado (provisório, 25/11). A avaliação só vem ao fim da série. Na voz, "repetir" mostra de novo a animação do exercício atual, com o exercício em pausa até "Continuar". Terminar segue a regra de "Desfazer" por 8 segundos (seção 7).
 
 A pausa automática por dificuldade usa a mesma tela. A frase de apoio é o aviso urgente da seção 6.4 ("O exercício foi pausado. Vamos descansar um pouco.").
 
@@ -436,6 +436,8 @@ O exercício do dia é uma série de 3, em tela cheia (altura total, seção 6.8
 **Instrução.** De cima para baixo: o contador ("Exercício 1 de 3", Apoio), o nome do exercício (Título 2), a figura em animação (SVG, ocupa o meio da tela) e a legenda (Corpo em destaque, uma frase curta). Rodapé: **Começar** (principal, 72) e **Voltar** (`--target-voltar`). A figura é uma pessoa simples em cinzas, segurando o ZENI (o arquivo `zeni-silhueta.svg`), com setas e, quando há ritmo, um pulso em `brand-amarelo-300`. Não pisca mais de 3 vezes por segundo (seção 7). Com "reduzir movimento", a figura fica parada na pose do meio do movimento. A instrução precisa ser entendida sem ler o texto. Animações: ver a tabela da decisão 23 em `docs/fluxo-do-app.md`.
 
 **Em andamento.** Sem barra de progresso e sem círculo. Ao fundo, um bulb em gradiente amarelo (`grad-bulb-pulso`) pulsa suavemente no tempo do ritmo, e o tamanho do movimento muda a amplitude dele. No centro, a mesma figura da instrução. O contador de tempo fica no canto superior direito, 2 pt menor que o Apoio (16 px) e em `cinza-700`. O botão **Pausar** continua sempre na tela, na mesma posição.
+
+**Voz (25/11).** Durante o exercício a voz reconhece "pausar", "continuar", "terminar" e "repetir" (ver a decisão 26 em `docs/fluxo-do-app.md`). Quando o microfone está ouvindo, aparece no canto superior esquerdo o indicador "Ouvindo": ícone de microfone e texto, em `brand-amarelo-200` com `cinza-900`, `radius-full`. Os botões ficam sempre na tela. Sem suporte ou sem permissão, o indicador não aparece e nada mais muda.
 
 ### 6.16 Tela de carregamento do exercício (25/11)
 
