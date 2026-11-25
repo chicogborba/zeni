@@ -117,3 +117,15 @@ O modelo do Blender tem a mão aberta e só o osso `Hand`. O script acrescenta, 
 ## 10. Poses de A e D (scripts/ajustar-clipes.mjs)
 
 A e D foram redesenhados para serem bem diferentes: A é rotação parada (o ZENI gira na mão, no mesmo lugar); D é elevação grande (movimento vertical). Os ângulos de cotovelo do script são o ângulo interno (180° = esticado). Os valores ficam no topo do script (`A` e `D`). Durações e loop não mudam. B, C, E e F não foram alterados.
+
+## 11. Clipes novos G, H e I (scripts/ajustar-clipes.mjs)
+
+Três clipes além dos seis, mesma estrutura (mesmos ossos, 30 fps, 2,4 s de ciclo, primeira chave igual à última). **Ainda não estão ligados ao catálogo** (`simulacao.js`) nem ao `CLIPES` do componente: o app os ignora até o grupo decidir o catálogo.
+
+| Clipe | O que faz |
+|---|---|
+| `G_virar_a_mao_esticada` | braço esticado para o lado, na altura do ombro, cotovelo ~165°, parado; só o antebraço gira (±55°) |
+| `H_circulo_com_o_pulso` | cotovelo parado a ~100°; o punho faz um círculo contínuo (flexão ±28° e desvio ±20° defasados de 90°, mais ±15° de giro); sem pausa nas pontas |
+| `I_alcancar_a_frente` | da mão perto do corpo (cotovelo ~90°) até o braço esticado na horizontal à frente (~165°) e volta; o oposto do D |
+
+Ângulos e duração no topo do bloco "clipes novos" do script (`G`, `H`, `I`, `DUR_NOVOS`).
