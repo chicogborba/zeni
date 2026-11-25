@@ -10,11 +10,10 @@
 // Casos de erro (tabela do fluxo): perda de sinal (reconexão), bateria fraca (aviso discreto no topo, o exercício
 // continua) e muita dificuldade (pausa sozinho, mesma tela de Pausado, com o aviso urgente).
 // Voz (decisões 5 e 11): "pausar", "continuar", "terminar" e "repetir" (src/voz.js). "Repetir" vai ao estado `repetindo`.
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import Aviso from '../componentes/Aviso.jsx'
 import Botao from '../componentes/Botao.jsx'
 import EtiquetaIA from '../componentes/EtiquetaIA.jsx'
-import FiguraExercicio from '../componentes/FiguraExercicio.jsx'
 import IndicadorVoz from '../componentes/IndicadorVoz.jsx'
 import PainelInferior from '../componentes/PainelInferior.jsx'
 import TelaCarregamento from '../componentes/TelaCarregamento.jsx'
@@ -22,6 +21,9 @@ import { useNavegacao } from '../navegacao.jsx'
 import { aliviarDificuldade, aoBateriaFraca, aoMudarSinal, emDificuldade, serieDoDia } from '../simulacao.js'
 import { CHAVES, guardar, ler } from '../storage.js'
 import { useComandosDeVoz } from '../voz.js'
+
+// O personagem 3D (three) é pesado: só carrega ao entrar no exercício
+const PersonagemExercicio = lazy(() => import('../componentes/PersonagemExercicio.jsx'))
 
 const DURACAO_S = 30 // duração de cada exercício (E: 15 repetições de 2 s, também 30 s)
 const RITMO_PADRAO_S = 1.6 // segundos por movimento, sem histórico (2.1a)
@@ -247,7 +249,9 @@ export default function Exercicio() {
           <p className="instrucao-contador">{`Exercício ${indice + 1} de ${serie.length}`}</p>
           <h2 className="instrucao-nome">{exercicio.nome}</h2>
           <div className="instrucao-figura">
-            <FiguraExercicio exercicio={exercicio} ritmoSeg={ritmoSeg} parado={parado} />
+            <Suspense fallback={null}>
+              <PersonagemExercicio exercicio={exercicio} parado={parado} pulso={exercicio.grupo === 'ritmo'} />
+            </Suspense>
           </div>
           <p className="instrucao-legenda">{exercicio.legenda}</p>
           {indice === 0 && <EtiquetaIA>O app escolheu os exercícios de hoje.</EtiquetaIA>}
@@ -352,7 +356,9 @@ export default function Exercicio() {
         <div className="instrucao">
           <h2 className="instrucao-nome">{exercicio.nome}</h2>
           <div className="instrucao-figura">
-            <FiguraExercicio exercicio={exercicio} ritmoSeg={ritmoSeg} parado={parado} />
+            <Suspense fallback={null}>
+              <PersonagemExercicio exercicio={exercicio} parado={parado} pulso={exercicio.grupo === 'ritmo'} />
+            </Suspense>
           </div>
           <p className="instrucao-legenda">{exercicio.legenda}</p>
         </div>
@@ -422,7 +428,9 @@ export default function Exercicio() {
           style={{ '--guia-ritmo': `${ritmoSeg}s`, '--amplitude': tamanho / 100 }}
           aria-hidden="true"
         />
-        <FiguraExercicio exercicio={exercicio} ritmoSeg={ritmoSeg} parado={parado} />
+        <Suspense fallback={null}>
+          <PersonagemExercicio exercicio={exercicio} parado={parado} />
+        </Suspense>
       </div>
     </PainelInferior>
   )

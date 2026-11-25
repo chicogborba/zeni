@@ -845,87 +845,6 @@
   flex: 1;
 }
 
-/* Figura humana (SVG): só cinzas, o pulso em amarelo */
-.figura {
-  width: 100%;
-  height: auto;
-  max-height: 46dvh;
-}
-.fig-corpo {
-  fill: var(--cinza-200);
-}
-.fig-braco {
-  fill: none;
-  stroke: var(--cinza-400);
-  stroke-width: 16;
-  stroke-linecap: round;
-}
-.fig-braco--parado {
-  stroke: var(--cinza-300);
-}
-.fig-mao {
-  fill: var(--cinza-500);
-}
-.fig-polegar {
-  fill: var(--cinza-800);
-}
-.fig-dial {
-  fill: var(--cinza-100);
-  stroke: var(--cinza-700);
-  stroke-width: 3;
-}
-.fig-faixa {
-  stroke: var(--cinza-200);
-  stroke-width: 5;
-  stroke-linecap: round;
-}
-.fig-seta {
-  fill: none;
-  stroke: var(--cinza-700);
-  stroke-width: 3;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.fig-seta .fig-seta-ponta {
-  fill: var(--cinza-700);
-  stroke: none;
-}
-.fig-trilha {
-  fill: none;
-  stroke: var(--cinza-400);
-  stroke-width: 3;
-  stroke-dasharray: 6 8;
-  stroke-linecap: round;
-}
-.fig-mesa {
-  fill: var(--cinza-700);
-}
-.fig-mesa-topo {
-  fill: var(--cinza-100);
-}
-.fig-ponto {
-  fill: var(--cinza-700);
-}
-.fig-pulso {
-  fill: var(--brand-amarelo-300);
-}
-.fig-pulso--anima {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: fig-pulso var(--fig-ritmo) ease-in-out infinite; /* no tempo do ritmo, no máximo 3 pulsos por segundo (seção 7) */
-}
-@keyframes fig-pulso {
-  0%,
-  100% {
-    transform: scale(0.6);
-    opacity: 0.6;
-  }
-  50% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
 /* Instrução (tela cheia): contador, nome, figura e legenda */
 .instrucao {
   display: flex;
@@ -943,7 +862,7 @@
 }
 .instrucao-figura {
   flex: 1;
-  min-height: 0;
+  min-height: 260px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -985,9 +904,6 @@
   50% {
     opacity: 1;
   }
-}
-.andamento .figura {
-  position: relative;
 }
 .andamento-topo {
   display: flex;
@@ -1126,4 +1042,26 @@
 .modal .botao-grupo {
   width: 100%;
   margin-top: var(--space-4);
+}
+
+/* Personagem 3D do "como fazer" (25/11): fundo transparente, a cintura esmaecida para não ter corte seco */
+.personagem {
+  position: relative;
+  align-self: stretch;
+  width: 100%;
+  min-height: 260px; /* no maior tamanho de texto a tela rola, e a figura não encolhe */
+}
+/* o Canvas ocupa 100% deste quadro, que tem tamanho definido por ser absoluto */
+.personagem-quadro {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  -webkit-mask-image: linear-gradient(to bottom, var(--cinza-900) 68%, transparent 100%);
+  mask-image: linear-gradient(to bottom, var(--cinza-900) 68%, transparent 100%);
+}
+.personagem-pulso {
+  z-index: 0;
+}
+.andamento .personagem {
+  flex: 1;
 }

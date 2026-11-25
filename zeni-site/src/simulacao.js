@@ -16,8 +16,8 @@ import { CHAVES, apagar, guardar } from './storage.js'
 export const CATALOGO = [
   { id: 'A', grupo: 'amplitude', nome: 'Girar o punho', legenda: 'Cotovelo dobrado, ZENI de pé. Vire a palma para cima e para baixo, o máximo que conseguir.' },
   { id: 'B', grupo: 'amplitude', nome: 'Levantar até o ombro', legenda: 'Leve o ZENI da cintura até a altura do ombro e volte devagar.' },
-  { id: 'C', grupo: 'ritmo', nome: 'No ritmo', legenda: 'Mexa o punho no tempo do pulso amarelo na tela.' },
-  { id: 'D', grupo: 'ritmo', nome: 'Tocar na mesa', legenda: 'Levante o ZENI e apoie de volta na mesa no tempo do pulso.' },
+  { id: 'C', grupo: 'ritmo', nome: 'No ritmo', legenda: 'Mexa o punho no tempo do pulso amarelo na tela.', ritmoSeg: 1.0 },
+  { id: 'D', grupo: 'ritmo', nome: 'Tocar na mesa', legenda: 'Levante o ZENI e apoie de volta na mesa no tempo do pulso.', ritmoSeg: 1.2 },
   { id: 'E', grupo: 'energia', nome: 'Mesma força até o fim', legenda: 'Gire o punho 15 vezes, sempre na mesma velocidade, da primeira à última.', ritmoSeg: 2, repeticoes: 15 },
   { id: 'F', grupo: 'energia', nome: 'Lado a lado', legenda: 'Com o antebraço apoiado na mesa, vá de um lado para o outro sem parar no meio.' },
 ]
