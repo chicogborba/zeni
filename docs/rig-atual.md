@@ -1,6 +1,6 @@
 # Rig atual do personagem (contrato do modelo)
 
-Arquivo: `zeni-site/src/assets/zeni-personagem.glb`. Hoje ele vem do **Blender** (`zeni-site/scripts/fonte/zeni-personagem-blender.glb`, exportado por você a partir do rig gerado por código) e passa por dois scripts, nesta ordem: `node scripts/alinhar-ossos.mjs scripts/fonte/zeni-personagem-blender.glb scripts/zeni-personagem-alinhado.glb` e `node scripts/adicionar-dedos.mjs`. O primeiro acerta os ossos do braço à malha (a malha do Blender tem os braços inclinados ~11° para dentro e os ossos estavam no lugar antigo; sem esse passo o ZENI sai da mão e o giro do punho gira fora do braço). O segundo cria os ossos dos dedos e a pegada do ZENI (seção 9). O ponto de partida é `node scripts/preparar-modelo.mjs`, que gera o rig e os clipes a partir de `scripts/fonte/wii-fit-camisa-lisa.glb` (saída em `scripts/zeni-personagem-gerado.glb`). Código que usa o arquivo: `zeni-site/src/componentes/PersonagemExercicio.jsx`.
+Arquivo: `zeni-site/src/assets/zeni-personagem.glb`. Hoje ele vem do **Blender** (`zeni-site/scripts/fonte/zeni-personagem-blender.glb`, exportado por você a partir do rig gerado por código) e passa por três scripts, que `scripts/montar-personagem.sh` roda em ordem (na pasta `zeni-site`): `alinhar-ossos.mjs`, `ajustar-clipes.mjs` e `adicionar-dedos.mjs`. O primeiro acerta os ossos do braço à malha (a malha do Blender tem os braços inclinados ~11° para dentro e os ossos estavam no lugar antigo; sem esse passo o ZENI sai da mão e o giro do punho gira fora do braço). O segundo reescreve as poses de A e D (seção 3). O terceiro cria os ossos dos dedos e a pegada do ZENI (seção 9). O ponto de partida é `node scripts/preparar-modelo.mjs`, que gera o rig e os clipes a partir de `scripts/fonte/wii-fit-camisa-lisa.glb` (saída em `scripts/zeni-personagem-gerado.glb`). Código que usa o arquivo: `zeni-site/src/componentes/PersonagemExercicio.jsx`.
 
 **Durações dos clipes:** o arquivo do Blender tem clipes ~21% mais curtos (A 1,9 s, B 2,53 s, C 0,8 s, D 0,93 s, E 0,8 s, F 1,27 s). O componente ajusta o tempo de cada clipe às durações abaixo ao carregar (`DURACAO_CLIPE_S`), então a tabela da seção 3 continua valendo para o app.
 
@@ -55,10 +55,10 @@ Tracks (as mesmas 8 em todos): `UpperArm.R`, `Forearm.R`, `Hand.R`, `Clavicle.R`
 
 | Clipe | Duração | Viradas (velocidade zero) | O que move (braço direito) |
 | ----- | ------- | ------------------------- | -------------------------- |
-| `A_girar_o_punho` | 2,4 s | 0,6 s e 1,8 s | giro do antebraço e da mão em torno do próprio eixo, ±70° (palma para cima e para baixo) |
+| `A_girar_o_punho` | 2,4 s | 0,6 s e 1,8 s | **só o antebraço gira** em torno do próprio eixo (±55°, metade no antebraço e metade na mão); ombro, cotovelo (~100° interno) e posição da mão parados |
 | `B_levantar_ate_o_ombro` | 3,2 s | 0 s e 1,6 s | braço 18°→26° para a frente, cotovelo 72°→118°: da cintura ao ombro |
 | `C_no_ritmo` | 1,0 s | 0,25 s e 0,75 s | mão sobe e desce ±16° (desvio do punho) |
-| `D_tocar_na_mesa` | 1,2 s | 0 s (apoio) e 0,6 s | cotovelo 40°→66°; a mão compensa para o ZENI ficar de pé; braço fixo a 35° |
+| `D_tocar_na_mesa` | 1,2 s | 0 s (apoio) e 0,6 s | **elevação grande**: cotovelo de ~155° (quase esticado, mão na mesa) a ~50° (mão perto do queixo) e volta; braço fixo a 44° à frente; o punho compensa para o ZENI ficar de pé na mesa e se inclinar um pouco no alto; sem giro do antebraço |
 | `E_mesma_forca_ate_o_fim` | 1,0 s | 0,25 s e 0,75 s | giro do punho ±45° (toca a 0,5×: 2 s por repetição) |
 | `F_lado_a_lado` | 1,6 s | 0,4 s e 1,2 s | braço inteiro gira em torno da vertical, de −12° a +30° (passa pelo centro do corpo); antebraço apoiado na horizontal |
 
@@ -113,3 +113,7 @@ O modelo do Blender tem a mão aberta e só o osso `Hand`. O script acrescenta, 
 - **Esmaecimento:** o material não esmaece vértices cujos ossos comecem por `Clavicle`, `UpperArm`, `Forearm`, `Hand`, `Fingers` ou `Thumb`. Ossos novos na mão precisam entrar nessa lista (`OSSOS_DO_BRACO`).
 - **Contrato:** se o modelo vier do Blender já com dedos, o script `adicionar-dedos.mjs` deixa de ser necessário; o `Socket.R` deve ficar dentro da mão, e o eixo longo do ZENI é o eixo z da mão (cruza a palma).
 - Limite: a pegada é a mesma em todos os exercícios (os dedos não se mexem durante o movimento).
+
+## 10. Poses de A e D (scripts/ajustar-clipes.mjs)
+
+A e D foram redesenhados para serem bem diferentes: A é rotação parada (o ZENI gira na mão, no mesmo lugar); D é elevação grande (movimento vertical). Os ângulos de cotovelo do script são o ângulo interno (180° = esticado). Os valores ficam no topo do script (`A` e `D`). Durações e loop não mudam. B, C, E e F não foram alterados.

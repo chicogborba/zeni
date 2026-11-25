@@ -2,13 +2,12 @@
 // Por mão: Fingers (dedos, base), FingersTip (pontas), Thumb (polegar) e ThumbTip. Calcula os pesos de pele pela posição
 // dos vértices da mão (dedos abaixo da linha dos nós dos dedos; polegar à frente), acrescenta ao esqueleto e aos 6 clipes
 // uma track constante de fechar a mão (a direita segura o ZENI; a esquerda fica relaxada) e põe o Socket no centro da pegada.
-// Entrada: scripts/zeni-personagem-alinhado.glb (saída de alinhar-ossos.mjs). Saída: src/assets/zeni-personagem.glb.
-// Uso (na pasta zeni-site): node scripts/alinhar-ossos.mjs scripts/fonte/zeni-personagem-blender.glb scripts/zeni-personagem-alinhado.glb
-//                           node scripts/adicionar-dedos.mjs
+// Entrada: scripts/zeni-personagem-clipes.glb (saída de ajustar-clipes.mjs). Saída: src/assets/zeni-personagem.glb.
+// Uso: scripts/montar-personagem.sh (roda os três passos em ordem)
 import fs from 'node:fs'
 import { lerGlb } from './glb-ler.mjs'
 
-const ENTRADA = process.argv[2] ?? new URL('./zeni-personagem-alinhado.glb', import.meta.url).pathname
+const ENTRADA = process.argv[2] ?? new URL('./zeni-personagem-clipes.glb', import.meta.url).pathname
 const SAIDA = process.argv[3] ?? new URL('../src/assets/zeni-personagem.glb', import.meta.url).pathname
 
 // --- medidas (metros), relativas ao osso da mão no lado direito; no esquerdo o x é espelhado ---
