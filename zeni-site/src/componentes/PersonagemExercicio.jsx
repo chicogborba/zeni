@@ -26,6 +26,44 @@ const CLIPES = {
 const COM_MESA = ['D', 'F'] // exercícios com a mesa desenhada
 const FADE_S = 0.4 // troca de animação com crossFadeTo
 
+// Movimento calmo (público com Parkinson: nada brusco nem rápido). Os clipes já são suaves; por cima deles o tempo do clipe
+// é remapeado aqui, sem clipe novo: velocidade menor, pausa curta nos pontos de virada (onde a velocidade já é zero, então
+// não há solavanco), partida gradual e uma leve respiração no tronco.
+//   escala: velocidade do clipe (1 = a do arquivo). Em C e D fica 1, porque o ritmo é o do pulso amarelo (1,0 s e 1,2 s).
+//   pausas: [tempo do clipe em s, segundos parado]. Só em pontos onde o clipe já para (A: viradas do punho; B: repouso e ombro).
+//   F não para: a legenda pede para trocar de sentido sem parar no meio.
+const CALMA = {
+  A: { escala: 0.7, pausas: [[0.6, 0.6], [1.8, 0.6]] },
+  B: { escala: 0.8, pausas: [[0, 0.5], [1.6, 0.8]] },
+  F: { escala: 0.75, pausas: [] },
+}
+const PARTIDA_S = 1.5 // a velocidade sobe de 0 a 100% nos primeiros segundos
+const RESPIRA_S = 4.5 // ciclo da respiração
+const RESPIRA_RAD = 0.035 // cerca de 2 graus no tronco
+
+// Divide um ciclo em trechos: andando no clipe ou parado. `real` = segundos reais do trecho.
+function planoDoCiclo(duracao, escala, pausas) {
+  const plano = []
+  let t = 0
+  for (const [em, parada] of [...pausas].sort((a, b) => a[0] - b[0])) {
+    if (em > t) plano.push({ real: (em - t) / escala, de: t, ate: em })
+    plano.push({ real: parada, de: em, ate: em })
+    t = em
+  }
+  if (t < duracao) plano.push({ real: (duracao - t) / escala, de: t, ate: duracao })
+  return { trechos: plano, ciclo: plano.reduce((a, x) => a + x.real, 0) }
+}
+
+// Tempo do clipe para uma fase (segundos reais) dentro do ciclo
+function tempoDoClipe({ trechos, ciclo }, fase) {
+  let f = fase % ciclo
+  for (const x of trechos) {
+    if (f <= x.real) return x.real === 0 ? x.de : x.de + ((x.ate - x.de) * f) / x.real
+    f -= x.real
+  }
+  return trechos.at(-1).ate
+}
+
 // Perfil do ZENI: [z em mm da base ao topo, raio em mm]. Escala 0,001: 160 mm = 0,16 unidades.
 const PERFIL_MM = [
   [0, 29.2], [10, 30.0], [20, 30.1], [30, 28.5], [40, 27.0], [50, 25.2], [60, 23.8], [70, 22.9], [80, 22.7],
@@ -108,6 +146,8 @@ function Personagem({ exercicio, parado, vista }) {
 
   const mixer = useMemo(() => new THREE.AnimationMixer(raiz), [raiz])
   const atual = useRef(null)
+  const movimento = useRef({ plano: null, fase: 0, decorrido: 0 })
+  const peito = useMemo(() => raiz.getObjectByName('Chest'), [raiz])
 
   // Onde fica a mesa em D e F, medido no clipe
   const mesas = useMemo(() => {
@@ -121,9 +161,14 @@ function Personagem({ exercicio, parado, vista }) {
     const clip = gltf.animations.find((c) => c.name === CLIPES[exercicio.id])
     const proxima = mixer.clipAction(clip)
     proxima.setLoop(THREE.LoopRepeat, Infinity)
+    // O tempo do clipe é conduzido a mão (useFrame): timeScale 0, e `action.time` vem do plano do ciclo
     // E: mesma velocidade do começo ao fim, no ritmo do catálogo (ex.: 2 s por repetição)
-    proxima.timeScale = exercicio.repeticoes && exercicio.ritmoSeg ? clip.duration / exercicio.ritmoSeg : 1
+    const calma = CALMA[exercicio.id]
+    const escala = exercicio.repeticoes && exercicio.ritmoSeg ? clip.duration / exercicio.ritmoSeg : (calma?.escala ?? 1)
+    movimento.current = { plano: planoDoCiclo(clip.duration, escala, calma?.pausas ?? []), fase: 0, decorrido: 0 }
+    proxima.timeScale = 0
     proxima.reset().setEffectiveWeight(1).play()
+    proxima.time = 0
     if (parado) {
       mixer.stopAllAction()
       proxima.reset().play()
@@ -139,8 +184,18 @@ function Personagem({ exercicio, parado, vista }) {
     invalidate()
   }, [exercicio.id, exercicio.repeticoes, exercicio.ritmoSeg, gltf, mixer, parado, invalidate])
 
-  useFrame((_, dt) => {
-    if (!parado) mixer.update(Math.min(dt, 0.1))
+  useFrame((_, bruto) => {
+    if (parado) return
+    const dt = Math.min(bruto, 0.1)
+    const m = movimento.current
+    if (m.plano && atual.current) {
+      m.decorrido += dt
+      const q = Math.min(1, m.decorrido / PARTIDA_S)
+      m.fase += dt * q * q * (3 - 2 * q) // partida gradual (smoothstep)
+      atual.current.time = tempoDoClipe(m.plano, m.fase)
+    }
+    mixer.update(dt) // só cuida do crossFade, o tempo do clipe já foi posto
+    if (peito) peito.rotateX(RESPIRA_RAD * Math.sin((2 * Math.PI * m.decorrido) / RESPIRA_S)) // respiração leve
   })
 
   useEffect(
