@@ -1,6 +1,8 @@
 # Rig atual do personagem (contrato do modelo)
 
-Arquivo: `zeni-site/src/assets/zeni-personagem.glb`. **É gerado**, não editado à mão: `node scripts/preparar-modelo.mjs` (na pasta `zeni-site`) lê `zeni-site/scripts/fonte/wii-fit-camisa-lisa.glb` e escreve o `.glb`. Código que o usa: `zeni-site/src/componentes/PersonagemExercicio.jsx`.
+Arquivo: `zeni-site/src/assets/zeni-personagem.glb`. Hoje ele vem do **Blender** (`zeni-site/scripts/fonte/zeni-personagem-blender.glb`, exportado por você a partir do rig gerado por código) e passa por `node scripts/alinhar-ossos.mjs`, que acerta os ossos do braço à malha (a malha do Blender tem os braços inclinados ~11° para dentro e os ossos estavam no lugar antigo; sem esse passo o ZENI sai da mão e o giro do punho gira fora do braço). O ponto de partida é `node scripts/preparar-modelo.mjs`, que gera o rig e os clipes a partir de `scripts/fonte/wii-fit-camisa-lisa.glb` (saída em `scripts/zeni-personagem-gerado.glb`). Código que usa o arquivo: `zeni-site/src/componentes/PersonagemExercicio.jsx`.
+
+**Durações dos clipes:** o arquivo do Blender tem clipes ~21% mais curtos (A 1,9 s, B 2,53 s, C 0,8 s, D 0,93 s, E 0,8 s, F 1,27 s). O componente ajusta o tempo de cada clipe às durações abaixo ao carregar (`DURACAO_CLIPE_S`), então a tabela da seção 3 continua valendo para o app.
 
 O modelo de origem ("Wii fit - camisa lisa.glb") é uma malha **estática**: sem ossos, sem animações, em pose de ioga (pernas em afundo, braços abertos, cabeça virada de lado), com 4 texturas e a extensão `pbrSpecularGlossiness`. Tudo abaixo foi acrescentado por código, sem editar o arquivo de origem. **Autoria e licença do modelo de origem: a confirmar antes da entrega.** (O personagem anterior, Character Base de madtrollstudio, está em `scripts/fonte/zeni-personagem-v1.glb` só como referência.)
 

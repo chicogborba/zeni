@@ -23,6 +23,10 @@ const CLIPES = {
   E: 'E_mesma_forca_ate_o_fim',
   F: 'F_lado_a_lado',
 }
+// Duração de cada clipe no contrato do app (docs/rig-atual.md, seção 3): o pulso amarelo de C (1,0 s) e D (1,2 s) e as
+// pausas de A e B dependem delas. Ao carregar, o tempo de cada clipe é ajustado a estes valores, qualquer que seja a
+// duração com que o arquivo foi exportado (o .glb não é editado).
+const DURACAO_CLIPE_S = { A: 2.4, B: 3.2, C: 1.0, D: 1.2, E: 1.0, F: 1.6 }
 const COM_MESA = ['D', 'F'] // exercícios com a mesa desenhada
 const FADE_S = 0.4 // troca de animação com crossFadeTo
 
@@ -188,6 +192,12 @@ function Personagem({ exercicio, parado, vista }) {
     return gltf.animations.map((c) => {
       const f = c.clone()
       f.tracks = f.tracks.filter((t) => !OSSOS_FIXOS.includes(t.name.split('.')[0]))
+      const id = Object.keys(CLIPES).find((k) => CLIPES[k] === c.name)
+      const k = id ? DURACAO_CLIPE_S[id] / c.duration : 1
+      if (Math.abs(k - 1) > 1e-3) {
+        for (const t of f.tracks) t.times = t.times.map((x) => x * k) // novo array: não mexe no clipe original
+        f.resetDuration()
+      }
       return f
     })
   }, [gltf])

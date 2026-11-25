@@ -1,5 +1,5 @@
 // Prepara o personagem do ZENI a partir de "Wii fit - camisa lisa.glb" (malha estática, sem ossos nem animações).
-// Gera src/assets/zeni-personagem.glb com: malha da cintura para cima, braços baixados, cabeça virada para a frente,
+// Gera scripts/zeni-personagem-gerado.glb com: malha da cintura para cima, braços baixados, cabeça virada para a frente,
 // esqueleto de 13 ossos (mesmos nomes de docs/rig-atual.md), pesos de pele e os 6 clipes A–F, tudo por código.
 // Uso (na pasta zeni-site): node scripts/preparar-modelo.mjs
 // Não edita o arquivo de origem. Sem dependências além do three (só matemática de quaternion).
@@ -8,7 +8,9 @@ import * as THREE from 'three'
 import { lerGlb } from './glb-ler.mjs'
 
 const ORIGEM = new URL('./fonte/wii-fit-camisa-lisa.glb', import.meta.url).pathname
-const SAIDA = new URL('../src/assets/zeni-personagem.glb', import.meta.url).pathname
+// Não sobrescreve src/assets/zeni-personagem.glb: o arquivo do app vem do Blender (scripts/fonte/zeni-personagem-blender.glb)
+// e passa por scripts/alinhar-ossos.mjs. Para usar esta versão gerada, copie-a por cima.
+const SAIDA = new URL('./zeni-personagem-gerado.glb', import.meta.url).pathname
 
 // ---------- medidas achadas olhando a malha (unidades do arquivo de origem) ----------
 const ESCALA = 0.09 // unidades de origem -> metros (a mão fica com ~0,2 m e o ZENI com 0,16 m cabe nela)
