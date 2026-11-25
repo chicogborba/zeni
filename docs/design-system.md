@@ -2,7 +2,7 @@
 
 Interface mobile (app e site) do ZENI, dispositivo de cuidado motor usado por pessoas com Parkinson e tremores. Este documento define cor, tipografia, espaço, componentes e regras de acessibilidade. As cores e os nomes vêm do arquivo "tec embutida" no Figma.
 
-> **Atualização de 25/11.** As "Decisões do grupo (25/11)" em `docs/fluxo-do-app.md` valem mais que as regras deste documento. Três exceções às regras de menu, uma decisão por tela e bottom sheet: menu suspenso no avatar, exercício do dia em tela cheia e nota em modal centralizado. Bottom sheets se ajustam à altura do conteúdo. As seções 1 (princípio 2), 2.5, 6, 6.1, 6.2, 6.7, 6.8, 6.10, 6.11, 9 e 11 foram marcadas onde mudam. As seções 6.13 a 6.15 são novas.
+> **Atualização de 25/11.** As "Decisões do grupo (25/11)" em `docs/fluxo-do-app.md` valem mais que as regras deste documento. Três exceções às regras de menu, uma decisão por tela e bottom sheet: menu suspenso no avatar, exercício do dia em tela cheia e nota em modal centralizado. Bottom sheets se ajustam à altura do conteúdo. As seções 1 (princípio 2), 2.5, 6, 6.1, 6.2, 6.7, 6.8, 6.10, 6.11, 9 e 11 foram marcadas onde mudam. As seções 6.13 a 6.17 são novas.
 
 ---
 
@@ -166,6 +166,7 @@ Todo fundo de cor do app é um gradiente, para dar leveza e sensação de movime
 | `grad-azul-card` | 160°: blue-50 (0%), blue-200 (100%) | Cartões da home |
 | `grad-bruma-card` | 160°: porcelana (0%), bruma (100%) | Cartões da home |
 | `grad-cinza-card` | 160°: cinza-50 (0%), cinza-200 (100%) | Cartões da home |
+| `grad-bulb-pulso` | Radial, `ellipse closest-side`: amarelo-300 (centro) até transparente | Bulb que pulsa durante o exercício (25/11) |
 | `grad-bulb` | Radial, `ellipse closest-side`: amarelo-200 (centro) até transparente (bordas). Era amarelo-100, mas ficava fraco na tela | Fundo da home (25/11) |
 
 Regras:
@@ -428,9 +429,21 @@ Em "Minha evolução", tocar em Exportar abre um bottom sheet (seção 6.8) com 
 - **Microfone.** Pedido só ao começar o primeiro exercício, depois de uma tela curta de explicação: "O ZENI escuta só durante o exercício, para ouvir a palavra pausar". Se a pessoa negar, os botões continuam funcionando e a voz fica desligada.
 - **Bluetooth.** Sem permissão na v1, porque a conexão é simulada. Fica para a v2.
 
-### 6.15 Como fazer o exercício
+### 6.15 Exercício em tela cheia (25/11)
 
-Tela de instrução (2.2) e tela de "Repetir": uma frase curta de legenda e, acima dela, a animação em SVG da figura segurando o ZENI. Não pisca mais de 3 vezes por segundo (seção 7) e, com "reduzir movimento", mostra um quadro parado. Animação de cada exercício: ver a tabela da decisão 17 em `docs/fluxo-do-app.md`.
+O exercício do dia é uma série de 3, em tela cheia (altura total, seção 6.8). Cada exercício tem duas telas:
+
+**Instrução.** De cima para baixo: o contador ("Exercício 1 de 3", Apoio), o nome do exercício (Título 2), a figura em animação (SVG, ocupa o meio da tela) e a legenda (Corpo em destaque, uma frase curta). Rodapé: **Começar** (principal, 72) e **Voltar** (`--target-voltar`). A figura é uma pessoa simples em cinzas, segurando o ZENI (o arquivo `zeni-silhueta.svg`), com setas e, quando há ritmo, um pulso em `brand-amarelo-300`. Não pisca mais de 3 vezes por segundo (seção 7). Com "reduzir movimento", a figura fica parada na pose do meio do movimento. A instrução precisa ser entendida sem ler o texto. Animações: ver a tabela da decisão 23 em `docs/fluxo-do-app.md`.
+
+**Em andamento.** Sem barra de progresso e sem círculo. Ao fundo, um bulb em gradiente amarelo (`grad-bulb-pulso`) pulsa suavemente no tempo do ritmo, e o tamanho do movimento muda a amplitude dele. No centro, a mesma figura da instrução. O contador de tempo fica no canto superior direito, 2 pt menor que o Apoio (16 px) e em `cinza-700`. O botão **Pausar** continua sempre na tela, na mesma posição.
+
+### 6.16 Tela de carregamento do exercício (25/11)
+
+Fundo `white`. Ao centro, um bulb arredondado (cerca de 60% da largura, até 240 px) em `cinza-100`, que se preenche de baixo para cima com um gradiente amarelo (`amarelo-400` embaixo, `amarelo-300` no meio, `amarelo-100` em cima) durante o tempo de carregamento. Abaixo, o texto "Preparando o seu exercício de hoje" (Título 3). Sem barra de progresso e sem botão. Passando de 15 segundos, o texto muda para uma frase calma e aparecem "Tentar de novo" e "Voltar", como nas outras telas de espera (seção 6.9). Com "reduzir movimento", o bulb já aparece preenchido.
+
+### 6.17 Nota em modal (25/11)
+
+Modal centralizado (exceção da seção 6.8): fundo `white`, `radius-lg`, padding 32 / 24, sobre a película `cinza-900` a 40%, que não fecha ao tocar. De cima para baixo: o número grande (96 px, bold) centralizado, o microtexto "sua nota" (Apoio, minúsculas, `cinza-700`), uma descrição curta de tamanho do movimento, suavidade e ritmo, a frase de incentivo, a etiqueta de IA com a mensagem sobre a meta ou o cansaço, e o botão principal **Ver minha evolução**, que leva direto a Minha evolução. A nota só aparece depois do terceiro exercício e fica gravada na evolução.
 
 ---
 
@@ -552,6 +565,7 @@ Estas regras valem mais do que o gosto visual.
   --grad-azul-card: linear-gradient(160deg, var(--brand-blue-50) 0%, var(--brand-blue-200) 100%);
   --grad-bruma-card: linear-gradient(160deg, var(--brand-porcelana) 0%, var(--brand-bruma) 100%);
   --grad-cinza-card: linear-gradient(160deg, var(--cinza-50) 0%, var(--cinza-200) 100%);
+  --grad-bulb-pulso: radial-gradient(ellipse closest-side at center, var(--brand-amarelo-300) 0%, transparent 100%);
   --grad-bulb: radial-gradient(ellipse closest-side at center, var(--brand-amarelo-200) 0%, transparent 100%);
 }
 

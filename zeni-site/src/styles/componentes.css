@@ -720,55 +720,6 @@
   font: var(--type-corpo);
 }
 
-/* ---------- Exercício em andamento ---------- */
-/* Ritmo guiado (seção 8): círculo amarelo que cresce e encolhe no ritmo; bem abaixo de 3 pulsos por segundo */
-.guia {
-  --guia-tamanho: 160px;
-  height: var(--guia-tamanho);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.guia-circulo {
-  width: var(--guia-tamanho);
-  height: var(--guia-tamanho);
-  border-radius: var(--radius-full);
-  background: var(--brand-amarelo-300);
-  animation: guia-pulsa var(--guia-ritmo, 1.6s) ease-in-out infinite alternate;
-}
-
-@keyframes guia-pulsa {
-  from {
-    transform: scale(0.6);
-  }
-  to {
-    transform: scale(1);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .guia-circulo {
-    animation: none; /* "reduzir movimento": o círculo fica parado */
-  }
-}
-
-/* Tamanho do movimento: barra azul de marca (gráfico, seção 2.1) */
-.medidor {
-  margin-top: var(--space-2);
-  height: var(--space-4);
-  border-radius: var(--radius-full);
-  background: var(--cinza-100);
-  overflow: hidden;
-}
-
-.medidor-barra {
-  display: block;
-  height: 100%;
-  background: var(--brand-blue-600);
-  transition: width 250ms linear;
-}
-
 /* ---------- Gráfico de evolução (6.5) ---------- */
 .grafico {
   width: 100%;
@@ -887,4 +838,261 @@
   background: var(--bg-page);
   color: var(--text-primary);
   font: var(--type-corpo);
+}
+
+/* ---------- Exercício em tela cheia (25/11) ---------- */
+.painel--total .painel-conteudo {
+  flex: 1;
+}
+
+/* Figura humana (SVG): só cinzas, o pulso em amarelo */
+.figura {
+  width: 100%;
+  height: auto;
+  max-height: 46dvh;
+}
+.fig-corpo {
+  fill: var(--cinza-200);
+}
+.fig-braco {
+  fill: none;
+  stroke: var(--cinza-400);
+  stroke-width: 16;
+  stroke-linecap: round;
+}
+.fig-braco--parado {
+  stroke: var(--cinza-300);
+}
+.fig-mao {
+  fill: var(--cinza-500);
+}
+.fig-polegar {
+  fill: var(--cinza-800);
+}
+.fig-seta {
+  fill: none;
+  stroke: var(--cinza-700);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.fig-seta .fig-seta-ponta {
+  fill: var(--cinza-700);
+  stroke: none;
+}
+.fig-trilha {
+  fill: none;
+  stroke: var(--cinza-400);
+  stroke-width: 3;
+  stroke-dasharray: 6 8;
+  stroke-linecap: round;
+}
+.fig-mesa {
+  fill: var(--cinza-700);
+}
+.fig-mesa-topo {
+  fill: var(--cinza-100);
+}
+.fig-ponto {
+  fill: var(--cinza-700);
+}
+.fig-pulso {
+  fill: var(--brand-amarelo-300);
+}
+.fig-pulso--anima {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: fig-pulso var(--fig-ritmo) ease-in-out infinite; /* no tempo do ritmo, no máximo 3 pulsos por segundo (seção 7) */
+}
+@keyframes fig-pulso {
+  0%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Instrução (tela cheia): contador, nome, figura e legenda */
+.instrucao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  flex: 1;
+  min-height: 0;
+}
+.instrucao-contador {
+  font: var(--type-apoio);
+  color: var(--text-secondary);
+}
+.instrucao-nome {
+  font: var(--type-titulo-2);
+}
+.instrucao-figura {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.instrucao-legenda {
+  font: var(--type-corpo-destaque);
+}
+
+/* Exercício em andamento: bulb amarelo que pulsa ao fundo; o tamanho do movimento muda a amplitude.
+   Sem barra de progresso e sem círculo. O contador de tempo é discreto. */
+.andamento {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.andamento-bulb {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: min(100%, 420px);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  background: var(--grad-bulb-pulso);
+  pointer-events: none;
+  transform: scale(calc(0.7 + var(--amplitude, 0.5) * 0.45));
+  transition: transform 250ms ease-out;
+}
+.andamento-bulb--pulsa {
+  animation: bulb-pulsa var(--guia-ritmo) ease-in-out infinite; /* suave, no tempo do ritmo */
+}
+@keyframes bulb-pulsa {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.andamento .figura {
+  position: relative;
+}
+.exercicio-tempo {
+  align-self: flex-end;
+  font: var(--type-apoio);
+  font-size: calc(var(--escala-texto, 1) * 16px - 2pt); /* 2 pt menor e mais discreto */
+  color: var(--cinza-700);
+}
+
+/* Tela de carregamento: bulb arredondado ao centro, que se preenche com o gradiente */
+.carga {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  padding: var(--space-6);
+  background: var(--bg-page);
+}
+.carga-bulb {
+  --carga-duracao: 2.5s;
+  position: relative;
+  width: min(60vw, 240px);
+  aspect-ratio: 1 / 1.1;
+  border-radius: 50% 50% 48% 48% / 46% 46% 54% 54%;
+  background: var(--cinza-100);
+  overflow: hidden;
+}
+.carga-bulb::before {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 100%;
+  background: linear-gradient(0deg, var(--brand-amarelo-400) 0%, var(--brand-amarelo-300) 45%, var(--brand-amarelo-100) 100%);
+  transform-origin: bottom;
+  animation: carga-enche var(--carga-duracao) ease-out forwards;
+}
+@keyframes carga-enche {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+.carga-texto {
+  font: var(--type-titulo-3);
+  text-align: center;
+}
+.carga-botoes {
+  width: 100%;
+  max-width: var(--content-max);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+@media (prefers-reduced-motion: reduce) {
+  .carga-bulb::before {
+    animation: none;
+  }
+  .andamento-bulb--pulsa {
+    animation: none;
+  }
+}
+
+/* Nota em modal centralizado (exceção de 25/11) */
+.modal-camada {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+}
+.modal-pelicula {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+}
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: calc(var(--content-max) - var(--space-12));
+  max-height: calc(100dvh - var(--space-12));
+  overflow-y: auto;
+  padding: var(--space-8) var(--space-6) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  text-align: center;
+  background: var(--bg-page);
+  border-radius: var(--radius-lg);
+}
+.modal:focus {
+  outline: none;
+}
+.modal-numero {
+  font: var(--type-numero);
+  font-size: calc(var(--escala-texto, 1) * 96px);
+  line-height: 1;
+  font-weight: 700;
+}
+.modal-micro {
+  font: var(--type-apoio);
+  color: var(--text-secondary);
+  text-transform: lowercase;
+}
+.modal-texto {
+  font: var(--type-corpo);
+}
+.modal .botao-grupo {
+  width: 100%;
+  margin-top: var(--space-4);
 }

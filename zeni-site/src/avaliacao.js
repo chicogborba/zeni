@@ -43,3 +43,18 @@ export function avaliar(resumo, metaAtual) {
 
 // Palavras calmas, sem cobrança (design system, seção 10)
 export const palavra = (valor) => (valor >= 70 ? 'bom' : valor >= 40 ? 'regular' : 'pequeno')
+
+// Nota da série (3 exercícios): média de tamanho do movimento, suavidade e ritmo; nota com os mesmos pesos.
+// Cansaço: dois ou mais exercícios mostraram cansaço.
+export function avaliarSerie(exercicios, metaAtual) {
+  const partes = exercicios.map((e) => avaliar(e, metaAtual))
+  const m = (campo) => limitar(media(partes.map((p) => p[campo])))
+  const tamanho = m('tamanho')
+  const suavidade = m('suavidade')
+  const ritmo = m('ritmo')
+  const nota = limitar(tamanho * 0.4 + suavidade * 0.3 + ritmo * 0.3)
+  const cansaco = partes.filter((p) => p.cansaco).length >= 2
+  const aumentou = !cansaco && nota >= 70
+  const meta = aumentou ? Math.min(100, metaAtual + 5) : metaAtual
+  return { tamanho, suavidade, ritmo, nota, cansaco, aumentou, meta }
+}

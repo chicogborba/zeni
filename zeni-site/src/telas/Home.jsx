@@ -89,7 +89,8 @@ function Dado({ rotulo, valor, ordem }) {
 
 export default function Home() {
   const { ir } = useNavegacao()
-  const ultimo = ler(CHAVES.historico, []).at(-1)
+  // Exercícios encerrados antes do fim ficam registrados sem nota: o dashboard mostra o último que tem números
+  const ultimo = ler(CHAVES.historico, []).findLast((h) => Number.isFinite(h.nota))
   return (
     <main className="tela tela--home">
       <AvisoConexao />

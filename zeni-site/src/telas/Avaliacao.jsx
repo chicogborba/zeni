@@ -1,16 +1,14 @@
-// Segue: fluxo-do-app.md, bloco 3 "Avaliação" (3.1 a 3.7).
-// 3.1 avalia tamanho, suavidade e ritmo; 3.2 nota de 0 a 100; 3.3 cansaço?
-// 3.4 mantém ou aumenta a meta (não) | 3.5 sugere pausa ou exercício mais leve (sim)
-// 3.6 mostra a nota e um resumo simples com incentivo (etiqueta IA); 3.7 volta à Tela inicial.
+// Segue: fluxo-do-app.md, bloco 3 "Avaliação" (3.1 a 3.7) e decisões 2 e 6 de 25/11.
+// A nota só aparece depois do terceiro exercício da série, em modal centralizado: número grande, o microtexto
+// "sua nota" e uma descrição curta de tamanho do movimento, suavidade e ritmo. Um botão leva direto a Minha evolução.
+// A nota fica gravada na evolução (histórico no aparelho). 3.4/3.5: mantém ou aumenta a meta; cansaço sugere descanso.
 // TODO (design system, pendência 7 / fluxo-do-app.md, ponto em aberto 6): a nota de 0 a 100 pode soar como prova.
-// O tom da mensagem (animado ou discreto) vem de ajustes.tom, que hoje só muda por "Pedir ajuda ao ZENI".
-// TODO: falta o item Tom em Personalizar.
-// TODO: exercício com menos de 5 s de movimento não recebe nota nem entra no histórico. Falta decidir.
+// O tom da mensagem (animado ou discreto) vem de ajustes.tom. TODO: falta o item Tom em Personalizar.
 import { useEffect, useRef, useState } from 'react'
-import { AMOSTRAS_MINIMAS, avaliar, palavra } from '../avaliacao.js'
+import { AMOSTRAS_MINIMAS, avaliarSerie, palavra } from '../avaliacao.js'
 import Botao from '../componentes/Botao.jsx'
 import EtiquetaIA from '../componentes/EtiquetaIA.jsx'
-import PainelInferior from '../componentes/PainelInferior.jsx'
+import ModalCentral from '../componentes/ModalCentral.jsx'
 import { useNavegacao } from '../navegacao.jsx'
 import { EXEMPLO_DE_TOM, tomSalvo } from '../pedidos.js'
 import { CHAVES, guardar, ler } from '../storage.js'
@@ -39,18 +37,21 @@ function useContagem(alvo) {
   return valor
 }
 
+const SEM_EXERCICIOS = []
+
 export default function Avaliacao({ resumo }) {
-  const { voltarAoInicio } = useNavegacao()
-  const curto = !resumo || resumo.amostras.length < AMOSTRAS_MINIMAS
+  const { ir, voltarAoInicio } = useNavegacao()
+  const exercicios = resumo?.exercicios ?? SEM_EXERCICIOS
+  const curto = exercicios.length === 0 || exercicios.some((e) => e.amostras.length < AMOSTRAS_MINIMAS)
 
   const [resultado] = useState(() => {
     if (curto) return null
     const meta = ler(CHAVES.ajustes, {}).metaTamanho ?? META_INICIAL
-    return avaliar(resumo, meta)
+    return avaliarSerie(exercicios, meta)
   })
   const salvo = useRef(false)
 
-  // Guarda no aparelho (simula o servidor) e atualiza a meta
+  // Guarda a nota da série no aparelho (simula o servidor), na evolução, e atualiza a meta
   useEffect(() => {
     if (!resultado || salvo.current) return
     salvo.current = true
@@ -58,10 +59,10 @@ export default function Avaliacao({ resumo }) {
       ...ler(CHAVES.historico, []),
       {
         quando: new Date().toISOString(),
-        exercicio: resumo.exercicio,
-        duracaoSeg: resumo.duracaoSeg,
-        pausas: resumo.pausas,
-        terminouAntes: resumo.terminouAntes,
+        serie: exercicios.map((e) => e.exercicio),
+        exercicio: exercicios.map((e) => e.exercicio).join(''),
+        duracaoSeg: exercicios.reduce((s, e) => s + e.duracaoSeg, 0),
+        pausas: exercicios.reduce((s, e) => s + e.pausas, 0),
         ritmoSeg: resumo.ritmoSeg,
         nota: resultado.nota,
         tamanho: resultado.tamanho,
@@ -71,44 +72,42 @@ export default function Avaliacao({ resumo }) {
       },
     ])
     guardar(CHAVES.ajustes, { ...ler(CHAVES.ajustes, {}), metaTamanho: resultado.meta })
-  }, [resultado, resumo])
+  }, [resultado, resumo, exercicios])
 
   const nota = useContagem(resultado ? resultado.nota : null)
 
-  const rodape = (
-    <Botao variante="principal" onClick={voltarAoInicio}>
-      Voltar ao início
-    </Botao>
-  )
-
   if (curto) {
     return (
-      <PainelInferior titulo="Exercício curto" rodape={rodape}>
+      <ModalCentral titulo="Exercício curto" onFechar={voltarAoInicio}>
         <h2 className="conectar-titulo">Foi um exercício curto</h2>
         <p className="conectar-texto">Ainda não deu para ver o seu movimento. Quando quiser, tente de novo.</p>
-      </PainelInferior>
+        <Botao variante="principal" onClick={voltarAoInicio}>
+          Voltar ao início
+        </Botao>
+      </ModalCentral>
     )
   }
 
   return (
-    <PainelInferior titulo="Como foi" rodape={rodape}>
-      <p className="parq-contador">Sua nota</p>
-      <p className="conectar-numero" aria-label={`Sua nota: ${resultado.nota} de 100`}>
+    <ModalCentral titulo="Sua nota" onFechar={voltarAoInicio}>
+      <p className="modal-numero" aria-label={`Sua nota: ${resultado.nota} de 100`}>
         {nota}
+      </p>
+      <p className="modal-micro">sua nota</p>
+      <p className="modal-texto">
+        {`Tamanho do movimento: ${palavra(resultado.tamanho)}. Suavidade: ${palavra(resultado.suavidade)}. Ritmo: ${palavra(resultado.ritmo)}.`}
       </p>
       <p className="conectar-destaque">{EXEMPLO_DE_TOM[tomSalvo()]}</p>
       <EtiquetaIA>
-        {`Tamanho do movimento: ${palavra(resultado.tamanho)}. Suavidade: ${palavra(resultado.suavidade)}. Ritmo: ${palavra(resultado.ritmo)}.`}
-      </EtiquetaIA>
-      {resultado.cansaco ? (
-        <EtiquetaIA>Você mostrou cansaço. Que tal descansar? O próximo exercício será mais leve.</EtiquetaIA>
-      ) : (
-        <EtiquetaIA>
-          {resultado.aumentou
+        {resultado.cansaco
+          ? 'Você mostrou cansaço. Que tal descansar um pouco?'
+          : resultado.aumentou
             ? 'O app aumentou a sua meta um pouquinho, porque o exercício foi bem.'
             : 'O app manteve a sua meta, para você ir no seu tempo.'}
-        </EtiquetaIA>
-      )}
-    </PainelInferior>
+      </EtiquetaIA>
+      <Botao variante="principal" onClick={() => ir('evolucao')}>
+        Ver minha evolução
+      </Botao>
+    </ModalCentral>
   )
 }

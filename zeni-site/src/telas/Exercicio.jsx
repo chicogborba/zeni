@@ -1,25 +1,30 @@
-// Segue: fluxo-do-app.md, bloco 2 "Exercícios" (2.1 a 2.9), decisões 2, 5 e 6, e design-system.md 6.9, 6.10 e 6.11.
-// O ZENI e a IA são simulados por regras simples (CLAUDE.md, escopo da v1). Sem música (decisão 1).
-// Estados: preparando -> sugestao (2.1) -> posicao (2.2) -> andamento (2.4 a 2.7)
-//          -> pausado (2.8a) | reconectando -> perguntando -> fim (2.9) -> Avaliação (etapa 5).
-// Casos de erro (tabela do fluxo): perda de sinal (reconexão, acima), bateria fraca (aviso discreto no topo,
-// o exercício continua) e muita dificuldade (pausa sozinho, mesma tela de Pausado, com o aviso urgente).
-// TODO (fluxo-do-app.md, ponto em aberto 1): se a pessoa escolher "Voltar ao início" após a falha de
-//   reconexão, o exercício parcial hoje é descartado (nada é guardado). Falta decidir.
-// TODO: os exercícios abaixo (nomes, instruções e duração) são provisórios; os documentos não os definem.
+// Segue: fluxo-do-app.md, bloco 2 "Exercícios" (2.1 a 2.9), decisões 2, 5, 7, 9, 11, 12 e 17 de 25/11, e design-system.md
+// 6.10, 6.11 e 6.15. O ZENI e a IA são simulados por regras simples (CLAUDE.md, escopo da v1). Sem LED, vibração, áudio
+// ou música: o ritmo aparece só como pulso amarelo na tela.
+// A série do dia tem 3 exercícios (um de cada grupo do catálogo, em src/simulacao.js), em TELA CHEIA.
+// Estados: preparando (tela de carregamento) -> instrucao (animação de como fazer) -> andamento (2.4 a 2.7)
+//          -> (próximo exercício: instrucao) ... -> depois do terceiro, a nota em modal (Avaliação).
+//          pausado (2.8a) | reconectando -> perguntando | encerrado (Terminar ou Voltar ao início no meio da série).
+// "Terminar" no meio da série (provisório, decisão 12): encerra a sessão e volta à Home, sem nota. Os exercícios já
+// concluídos ficam registrados como feitos, sem nota, e o em andamento é descartado.
+// Casos de erro (tabela do fluxo): perda de sinal (reconexão), bateria fraca (aviso discreto no topo, o exercício
+// continua) e muita dificuldade (pausa sozinho, mesma tela de Pausado, com o aviso urgente).
+// TODO: falta "Repetir" (decisão 11) e os comandos de voz "continuar", "terminar" e "repetir" (decisão 5).
 import { useEffect, useRef, useState } from 'react'
 import Aviso from '../componentes/Aviso.jsx'
 import Botao from '../componentes/Botao.jsx'
 import EtiquetaIA from '../componentes/EtiquetaIA.jsx'
+import FiguraExercicio from '../componentes/FiguraExercicio.jsx'
 import PainelInferior from '../componentes/PainelInferior.jsx'
-import TelaEspera from '../componentes/TelaEspera.jsx'
+import TelaCarregamento from '../componentes/TelaCarregamento.jsx'
 import { useNavegacao } from '../navegacao.jsx'
-import { aliviarDificuldade, aoBateriaFraca, aoMudarSinal, emDificuldade } from '../simulacao.js'
-import { CHAVES, ler } from '../storage.js'
+import { aliviarDificuldade, aoBateriaFraca, aoMudarSinal, emDificuldade, serieDoDia } from '../simulacao.js'
+import { CHAVES, guardar, ler } from '../storage.js'
 import { useComandoPausar } from '../voz.js'
 
-const DURACAO_S = 30 // duração provisória do exercício
+const DURACAO_S = 30 // duração de cada exercício (E: 15 repetições de 2 s, também 30 s)
 const RITMO_PADRAO_S = 1.6 // segundos por movimento, sem histórico (2.1a)
+const PREPARO_MS = 2500 // tempo simulado de carregamento do exercício do dia
 const TENTATIVA_MS = 10000 // 10 s por tentativa de reconexão (decisão 2; ajustável com o hardware real)
 const TENTATIVAS = 2
 const DESFAZER_MS = 8000 // "Desfazer" por 8 segundos (design system, seção 7)
@@ -27,47 +32,40 @@ const BATERIA_MS = 10000 // quanto tempo o aviso discreto de bateria fica no top
 const JANELA_DIFICULDADE = 8 // últimas 8 amostras (2 s)
 const LIMITE_DIFICULDADE = 25 // média abaixo disto = movimento muito pequeno
 
-const EXERCICIOS = [
-  { id: 'subir-descer', nome: 'Subir e descer devagar', como: 'Levante o ZENI um pouco e abaixe, sem pressa.' },
-  { id: 'circulos', nome: 'Círculos pequenos', como: 'Desenhe círculos pequenos no ar, no ritmo do guia.' },
-  { id: 'lado-a-lado', nome: 'Balançar de lado a lado', como: 'Leve o ZENI para um lado e para o outro, com calma.' },
-]
-
-// 2.1 e 2.1a: regras simples no lugar da IA. Sem histórico, começa pelo mais leve.
-function sugerir(historico) {
-  const ultimo = historico.at(-1)
-  if (!ultimo) return { exercicio: EXERCICIOS[0], motivo: 'É o seu primeiro exercício. O app escolheu um começo tranquilo.' }
-  if (ultimo.cansaco) return { exercicio: EXERCICIOS[0], motivo: 'O último exercício cansou você. O app escolheu um mais leve.' }
-  return {
-    exercicio: EXERCICIOS[historico.length % EXERCICIOS.length],
-    motivo: 'O app escolheu este a partir do seu ritmo habitual.',
-  }
-}
-
 function ritmoHabitual(historico) {
   const recentes = historico.slice(-5).map((h) => h.ritmoSeg).filter(Number.isFinite)
   return recentes.length ? recentes.reduce((a, b) => a + b, 0) / recentes.length : RITMO_PADRAO_S
 }
 
 const mmss = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
+const semMovimento = () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 export default function Exercicio() {
   const { ir, voltarAoInicio } = useNavegacao()
   const [historico] = useState(() => ler(CHAVES.historico, []))
-  const [sugestao] = useState(() => sugerir(historico))
-  const [ritmoSeg] = useState(() => ritmoHabitual(historico))
+  const [serie] = useState(() => serieDoDia())
+  const [ritmoHabitualSeg] = useState(() => ritmoHabitual(historico))
+  const [parado] = useState(semMovimento)
 
   const [estado, setEstado] = useState('preparando')
+  const [indice, setIndice] = useState(0) // 0 a 2: qual exercício da série
   const [tentativaBusca, setTentativaBusca] = useState(0)
   const [restam, setRestam] = useState(DURACAO_S)
-  const [tamanho, setTamanho] = useState(0) // 0 a 100: o "tamanho do movimento" simulado
+  const [tamanho, setTamanho] = useState(50) // 0 a 100: o "tamanho do movimento" simulado
   const [tentativa, setTentativa] = useState(1)
   const [desfazer, setDesfazer] = useState(false)
   const [motivoPausa, setMotivoPausa] = useState('pessoa') // 'pessoa' | 'dificuldade'
   const [bateria, setBateria] = useState(false)
+
+  const exercicio = serie[indice]
+  const ritmoSeg = exercicio.ritmoSeg ?? ritmoHabitualSeg
+  const duracao = DURACAO_S
+
   const restamRef = useRef(DURACAO_S)
+  const indiceRef = useRef(0)
   const desdeAmostra = useRef(0) // a detecção de dificuldade só olha amostras depois da última pausa automática
-  const dados = useRef({ amostras: [], pausas: 0, terminouAntes: false })
+  const dados = useRef({ amostras: [], pausas: 0 }) // do exercício em andamento
+  const feitos = useRef([]) // exercícios concluídos nesta série
 
   const pausar = () => {
     dados.current.pausas += 1
@@ -76,12 +74,39 @@ export default function Exercicio() {
   }
   useComandoPausar(estado === 'andamento', pausar)
 
-  // Preparando: espera simulada
+  // Carregamento: espera simulada
   useEffect(() => {
     if (estado !== 'preparando') return undefined
-    const id = setTimeout(() => setEstado('sugestao'), 2500)
+    const id = setTimeout(() => setEstado('instrucao'), PREPARO_MS)
     return () => clearTimeout(id)
   }, [estado, tentativaBusca])
+
+  // Começa um exercício: zera o relógio e os dados de movimento
+  const comecar = () => {
+    restamRef.current = duracao
+    setRestam(duracao)
+    dados.current = { amostras: [], pausas: 0 }
+    desdeAmostra.current = 0
+    setEstado('andamento')
+  }
+
+  // Fim de um exercício: o próximo da série, ou a nota depois do terceiro
+  const concluir = () => {
+    feitos.current.push({
+      exercicio: serie[indiceRef.current].id,
+      amostras: dados.current.amostras,
+      pausas: dados.current.pausas,
+      duracaoSeg: duracao,
+      ritmoSeg: serie[indiceRef.current].ritmoSeg ?? ritmoHabitualSeg,
+    })
+    if (indiceRef.current < serie.length - 1) {
+      indiceRef.current += 1
+      setIndice(indiceRef.current)
+      setEstado('instrucao')
+    } else {
+      ir('avaliacao', { resumo: { exercicios: feitos.current, ritmoSeg: ritmoHabitualSeg } })
+    }
+  }
 
   // 2.4 a 2.7: o ciclo do exercício. Dados de movimento gerados pelo app.
   useEffect(() => {
@@ -110,12 +135,13 @@ export default function Exercicio() {
     const relogio = setInterval(() => {
       restamRef.current -= 1
       setRestam(restamRef.current)
-      if (restamRef.current <= 0) setEstado('fim') // 2.7: o exercício acabou
+      if (restamRef.current <= 0) concluir() // 2.7: o exercício acabou
     }, 1000)
     return () => {
       clearInterval(dado)
       clearInterval(relogio)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [estado, ritmoSeg])
 
   // 2.4: o sinal do ZENI cai e volta (simulado, ver src/simulacao.js)
@@ -156,78 +182,63 @@ export default function Exercicio() {
     return () => clearTimeout(id)
   }, [desfazer])
 
-  const terminar = () => {
-    dados.current.terminouAntes = true
-    setDesfazer(true)
-    setEstado('fim')
+  // Encerra a sessão no meio da série (provisório, decisão 12): os concluídos ficam registrados como feitos, sem nota;
+  // o exercício em andamento é descartado. Volta à Home.
+  const encerrarSessao = () => {
+    if (feitos.current.length > 0) {
+      const agora = new Date().toISOString()
+      guardar(CHAVES.historico, [
+        ...ler(CHAVES.historico, []),
+        ...feitos.current.map((f) => ({ quando: agora, exercicio: f.exercicio, duracaoSeg: f.duracaoSeg, semNota: true })),
+      ])
+    }
+    voltarAoInicio()
   }
 
-  const verComoFoi = () =>
-    ir('avaliacao', {
-      resumo: {
-        duracaoSeg: DURACAO_S - restam,
-        amostras: dados.current.amostras,
-        pausas: dados.current.pausas,
-        terminouAntes: dados.current.terminouAntes,
-        ritmoSeg,
-        exercicio: sugestao.exercicio.id,
-      },
-    })
+  const terminar = () => {
+    setDesfazer(true)
+    setEstado('encerrado')
+  }
 
   if (estado === 'preparando') {
     return (
-      <TelaEspera
+      <TelaCarregamento
         key={tentativaBusca}
         texto="Preparando o seu exercício de hoje"
+        duracaoMs={PREPARO_MS}
         onTentarDeNovo={() => setTentativaBusca((t) => t + 1)}
         onVoltar={voltarAoInicio}
       />
     )
   }
 
-  // 2.1: exercício do dia sugerido pelo app
-  if (estado === 'sugestao') {
+  // 2.1 a 2.3: o exercício em tela cheia, já com a instrução em animação, e Começar
+  if (estado === 'instrucao') {
     return (
       <PainelInferior
-        titulo="Exercício de hoje"
+        titulo={`Exercício ${indice + 1} de ${serie.length}`}
+        alturaTotal
+        onFechar={() => {}}
         rodape={
           <>
-            <Botao variante="principal" onClick={() => setEstado('posicao')}>
-              Ver como fazer
-            </Botao>
-            <Botao variante="voltar" onClick={voltarAoInicio}>
-              Voltar
-            </Botao>
-          </>
-        }
-      >
-        <h2 className="conectar-titulo">Exercício de hoje</h2>
-        <p className="parq-pergunta">{sugestao.exercicio.nome}</p>
-        <EtiquetaIA>{sugestao.motivo}</EtiquetaIA>
-      </PainelInferior>
-    )
-  }
-
-  // 2.2 e 2.3: como segurar e se posicionar, e Começar
-  if (estado === 'posicao') {
-    return (
-      <PainelInferior
-        titulo="Como fazer"
-        rodape={
-          <>
-            <Botao variante="principal" onClick={() => setEstado('andamento')}>
+            <Botao variante="principal" onClick={comecar}>
               Começar
             </Botao>
-            <Botao variante="voltar" onClick={() => setEstado('sugestao')}>
+            <Botao variante="voltar" onClick={encerrarSessao}>
               Voltar
             </Botao>
           </>
         }
       >
-        <h2 className="conectar-titulo">Como fazer</h2>
-        <p className="conectar-destaque">Sente-se com as costas apoiadas.</p>
-        <p className="conectar-destaque">Segure o ZENI com a mão que for mais confortável.</p>
-        <p className="conectar-destaque">{sugestao.exercicio.como}</p>
+        <div className="instrucao">
+          <p className="instrucao-contador">{`Exercício ${indice + 1} de ${serie.length}`}</p>
+          <h2 className="instrucao-nome">{exercicio.nome}</h2>
+          <div className="instrucao-figura">
+            <FiguraExercicio exercicio={exercicio} ritmoSeg={ritmoSeg} parado={parado} />
+          </div>
+          <p className="instrucao-legenda">{exercicio.legenda}</p>
+          {indice === 0 && <EtiquetaIA>O app escolheu os exercícios de hoje.</EtiquetaIA>}
+        </div>
       </PainelInferior>
     )
   }
@@ -261,7 +272,7 @@ export default function Exercicio() {
             >
               Tentar de novo
             </Botao>
-            <Botao variante="voltar" onClick={voltarAoInicio}>
+            <Botao variante="voltar" onClick={encerrarSessao}>
               Voltar ao início
             </Botao>
           </>
@@ -302,23 +313,22 @@ export default function Exercicio() {
     )
   }
 
-  // 2.9: fim do exercício. Se a pessoa tocou em Terminar, pode desfazer por 8 s.
-  if (estado === 'fim') {
+  // Terminar no meio da série: encerra, sem nota. Pode desfazer por 8 s (design system, seção 7).
+  if (estado === 'encerrado') {
     return (
       <PainelInferior
-        titulo="Fim do exercício"
+        titulo="Exercício encerrado"
         alturaTotal
         onFechar={() => {}}
         rodape={
           <>
-            <Botao variante="principal" onClick={verComoFoi}>
-              Ver como foi
+            <Botao variante="principal" onClick={encerrarSessao}>
+              Voltar ao início
             </Botao>
             {desfazer && (
               <Botao
                 variante="vazado"
                 onClick={() => {
-                  dados.current.terminouAntes = false
                   setDesfazer(false)
                   setEstado('pausado')
                 }}
@@ -329,13 +339,14 @@ export default function Exercicio() {
           </>
         }
       >
-        <h2 className="conectar-titulo">Fim do exercício</h2>
-        <p className="conectar-texto">Bom trabalho hoje.</p>
+        <h2 className="conectar-titulo">Exercício encerrado</h2>
+        <p className="conectar-texto">Tudo bem. O que você já fez hoje fica guardado, sem nota.</p>
       </PainelInferior>
     )
   }
 
-  // 2.4 a 2.6: em andamento. O botão Pausar fica sempre na tela, na mesma posição.
+  // 2.4 a 2.6: em andamento, em tela cheia. O botão Pausar fica sempre na tela, na mesma posição.
+  // O bulb amarelo ao fundo pulsa no tempo do ritmo; o tamanho do movimento muda a amplitude dele.
   return (
     <PainelInferior
       titulo="Exercício em andamento"
@@ -352,17 +363,16 @@ export default function Exercicio() {
           Você pode continuar.
         </Aviso>
       )}
-      <p className="conectar-numero" aria-label={`Faltam ${restam} segundos`}>
+      <p className="exercicio-tempo" aria-label={`Faltam ${restam} segundos`}>
         {mmss(restam)}
       </p>
-      <div className="guia" aria-hidden="true">
-        <span className="guia-circulo" style={{ '--guia-ritmo': `${ritmoSeg}s` }} />
-      </div>
-      <div>
-        <p className="conectar-destaque">Tamanho do movimento</p>
-        <div className="medidor" role="img" aria-label="Tamanho do movimento">
-          <span className="medidor-barra" style={{ width: `${tamanho}%` }} />
-        </div>
+      <div className="andamento">
+        <div
+          className={`andamento-bulb${parado ? '' : ' andamento-bulb--pulsa'}`}
+          style={{ '--guia-ritmo': `${ritmoSeg}s`, '--amplitude': tamanho / 100 }}
+          aria-hidden="true"
+        />
+        <FiguraExercicio exercicio={exercicio} ritmoSeg={ritmoSeg} parado={parado} />
       </div>
     </PainelInferior>
   )

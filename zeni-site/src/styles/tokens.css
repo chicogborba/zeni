@@ -92,6 +92,7 @@
   --grad-azul-card: linear-gradient(160deg, var(--brand-blue-50) 0%, var(--brand-blue-200) 100%);
   --grad-bruma-card: linear-gradient(160deg, var(--brand-porcelana) 0%, var(--brand-bruma) 100%);
   --grad-cinza-card: linear-gradient(160deg, var(--cinza-50) 0%, var(--cinza-200) 100%);
+  --grad-bulb-pulso: radial-gradient(ellipse closest-side at center, var(--brand-amarelo-300) 0%, transparent 100%); /* bulb que pulsa durante o exercício (25/11) */
   --grad-bulb: radial-gradient(ellipse closest-side at center, var(--brand-amarelo-200) 0%, transparent 100%); /* fundo da Home (25/11) */
 }
 

@@ -75,6 +75,22 @@ Valem mais que a imagem do fluxograma, mais que as decisões de 24/11 e mais que
     - **Enviar link:** sem backend na v1, usa a Web Share API com um texto-resumo. Se o navegador não suportar, copia o texto e mostra "Copiado". O link real depende do backend e fica para a v2.
 19. **Consentimento do PAR-Q** *(texto provisório, a revisar com profissional de saúde e LGPD)*: "O ZENI guarda suas respostas só neste aparelho, para ajustar os exercícios. O ZENI não substitui a orientação de um profissional de saúde." A segunda frase vale como frase fixa para todas as pessoas, independente das respostas. Botão: "Concordo e continuar".
 20. **Permissões.** O microfone é pedido apenas ao começar o primeiro exercício, depois de uma tela curta de explicação: "O ZENI escuta só durante o exercício, para ouvir a palavra pausar". Se a pessoa negar, os botões continuam funcionando e a voz fica desligada. **Bluetooth:** na v1 a conexão é simulada, então não há permissão real. A permissão de Bluetooth fica para a v2.
+21. **Exercício em tela cheia, com instrução em animação.** Tocar em "Começar o exercício" abre uma tela de carregamento: um bulb arredondado ao centro, com gradiente que se preenche enquanto o exercício do dia carrega. Depois, o exercício aparece em tela cheia (não em bottom sheet), já com a instrução em animação: uma figura humana simples, em SVG, movendo os braços e segurando o ZENI (a silhueta de `zeni-site/src/assets/zeni-silhueta.svg`; o modelo 3D não entra no site). A instrução precisa ser entendida sem ler texto; a legenda é uma frase curta.
+22. **Durante o exercício.** Sem barra de progresso e sem círculo. O tamanho do movimento segue a animação, com um bulb em gradiente amarelo que pulsa suavemente ao fundo. O contador de tempo fica 2 pt menor e mais discreto.
+23. **Catálogo, legendas e animações** (nomes e legendas na interface; dados em `simulacao.js`):
+
+    | Exercício | Nome | Legenda |
+    | --------- | ---- | ------- |
+    | A | Girar o punho | Cotovelo dobrado, ZENI de pé. Vire a palma para cima e para baixo, o máximo que conseguir. |
+    | B | Levantar até o ombro | Leve o ZENI da cintura até a altura do ombro e volte devagar. |
+    | C | No ritmo | Mexa o punho no tempo do pulso amarelo na tela. |
+    | D | Tocar na mesa | Levante o ZENI e apoie de volta na mesa no tempo do pulso. |
+    | E | Mesma força até o fim | Gire o punho 15 vezes, sempre na mesma velocidade, da primeira à última. |
+    | F | Lado a lado | Com o antebraço apoiado na mesa, vá de um lado para o outro sem parar no meio. |
+
+    Na v1 tudo é simulado pelo app: sem LED, vibração, áudio ou música. O ritmo aparece só como pulso amarelo na tela. Na interface não entram termos clínicos nem "manopla", "treino" ou "fisioterapia".
+24. **Série e nota.** A série do dia tem 3 exercícios, um de cada grupo, na ordem amplitude, ritmo, manter a energia (decisão 17). A nota só aparece depois do terceiro e usa tamanho do movimento, suavidade e ritmo (média dos três exercícios, com os mesmos pesos de antes).
+25. **Nota em modal centralizado:** número grande centralizado, o microtexto "sua nota" e uma descrição curta sobre tamanho do movimento, suavidade e ritmo. Um botão leva direto a Minha evolução. A nota fica gravada na evolução.
 
 Efeito sobre as decisões de 24/11: a 4 (significado do bloco 7), a 6 (um único comando de voz) e a 7 (bloco 7 só por texto) ficam superadas. As demais continuam valendo.
 
@@ -233,8 +249,9 @@ Decidir antes ou durante a execução. Não assumir sozinho.
 5. **Enviar link (4.3).** Na v1 é o texto-resumo (decisão 18). Na v2, com backend: para quem vai o link, a privacidade desses dados e o layout do PDF (design system, pendência 10).
 6. **Nota de 0 a 100.** Continua em 3.2 e 3.6 (design system, pendência 7).  
 7. **Numeração.** O fluxograma pula o número 5, e o bloco de casos de erro não tem número. No código, citar os blocos pelo nome.
-8. **Resolvidos em 25/11** (decisões 9 a 20): catálogo, Home, "Repetir", "Terminar" no meio da série (provisório), avatar, Exportar/Voltar, medidas do ZENI, detalhes da Home, regra da série, exportação, consentimento e permissões.
-9. **Textos das legendas.** Cada exercício (A a F) precisa da frase curta de legenda e do desenho em SVG. As legendas ainda não foram escritas.
+8. **Resolvidos em 25/11** (decisões 9 a 25): catálogo, Home, "Repetir", "Terminar" no meio da série (provisório), avatar, Exportar/Voltar, medidas do ZENI, detalhes da Home, regra da série, exportação, consentimento, permissões, exercício em tela cheia, legendas, nota em modal.
+9. ~~Textos das legendas.~~ Resolvido em 25/11 (decisão 23). Falta revisar as animações com pessoas reais e, se preciso, desenhar as de A e E com mais clareza: o giro da palma é mostrado em 2D, com a mão que "vira" e uma seta.
 10. ~~Cinza claro e contraste.~~ Resolvido em 25/11: rótulos do dashboard em cinza-800 e "–" em cinza-700 (seção 6.2 do design system).
 11. **Tela do microfone.** O texto da decisão 20 fala só da palavra "pausar", mas a v1 reconhece quatro comandos (decisão 5). Ajustar o texto ou manter. Falta também o rótulo do botão dessa tela.
 12. **Inicial do avatar.** O fluxo não coleta o nome da pessoa. Definir onde ela informa o nome (por exemplo, em Personalizar). Enquanto isso, o avatar mostra um ícone de pessoa quando não há nome guardado.
+13. **Falta implementar na tela do exercício:** "Repetir" (decisão 11) e os comandos de voz "continuar", "terminar" e "repetir" (decisão 5). Hoje só "pausar" por voz.
