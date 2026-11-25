@@ -28,6 +28,7 @@ const PersonagemExercicio = lazy(() => import('../componentes/PersonagemExercici
 const DURACAO_S = 30 // duração de cada exercício (E: 15 repetições de 2 s, também 30 s)
 const RITMO_PADRAO_S = 1.6 // segundos por movimento, sem histórico (2.1a)
 const PREPARO_MS = 2500 // tempo simulado de carregamento do exercício do dia
+const AUTOPLAY_MS = 3000 // entre os exercícios da série: o próximo começa sozinho 3 s depois da instrução
 const TENTATIVA_MS = 10000 // 10 s por tentativa de reconexão (decisão 2; ajustável com o hardware real)
 const TENTATIVAS = 2
 const DESFAZER_MS = 8000 // "Desfazer" por 8 segundos (design system, seção 7)
@@ -91,6 +92,14 @@ export default function Exercicio() {
     desdeAmostra.current = 0
     setEstado('andamento')
   }
+
+  // Autoplay: do segundo exercício em diante, a instrução aparece e o exercício começa sozinho após 3 s (o botão Começar
+  // continua na tela). O primeiro espera a pessoa tocar em Começar.
+  useEffect(() => {
+    if (estado !== 'instrucao' || indice === 0) return undefined
+    const id = setTimeout(comecar, AUTOPLAY_MS)
+    return () => clearTimeout(id)
+  }, [estado, indice]) // eslint-disable-line react-hooks/exhaustive-deps -- `comecar` só usa refs e setters
 
   // Fim de um exercício: o próximo da série, ou a nota depois do terceiro
   const concluir = () => {
