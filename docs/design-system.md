@@ -239,7 +239,7 @@ Base de 8 px.
 | `space-3` | 12 | Dentro de cartões compactos |
 | `space-4` | 16 | **Distância mínima entre alvos de toque** |
 | `space-6` | 24 | **Margem lateral da tela**, padding de cartão |
-| `space-8` | 32 | Entre grupos de conteúdo | **Decisão posterior:** a etiqueta e a frase "O app escolheu os exercícios de hoje" saíram da instrução do exercício (2.1); as demais continuam.
+| `space-8` | 32 | Entre grupos de conteúdo |
 | `space-12` | 48 | Entre seções |
 | `space-16` | 64 | Respiro acima de um título de tela |
 | `space-24` | 96 | Topo de telas de boas-vindas |
