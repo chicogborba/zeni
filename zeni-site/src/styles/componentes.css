@@ -1044,7 +1044,7 @@
   margin-top: var(--space-4);
 }
 
-/* Personagem 3D do "como fazer" (25/11): fundo transparente, a cintura esmaecida para não ter corte seco */
+/* Personagem 3D do "como fazer" (25/11): fundo transparente; a cintura esmaece no próprio material (PersonagemExercicio.jsx) */
 .personagem {
   position: relative;
   align-self: stretch;
@@ -1056,8 +1056,6 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  -webkit-mask-image: linear-gradient(to bottom, var(--cinza-900) 68%, transparent 100%);
-  mask-image: linear-gradient(to bottom, var(--cinza-900) 68%, transparent 100%);
 }
 .personagem-pulso {
   z-index: 0;

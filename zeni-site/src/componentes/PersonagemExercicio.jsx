@@ -28,7 +28,7 @@ const FADE_S = 0.4 // troca de animação com crossFadeTo
 
 // Movimento calmo (público com Parkinson: nada brusco nem rápido). Os clipes já são suaves; por cima deles o tempo do clipe
 // é remapeado aqui, sem clipe novo: velocidade menor, pausa curta nos pontos de virada (onde a velocidade já é zero, então
-// não há solavanco), partida gradual e uma leve respiração no tronco.
+// não há solavanco) e partida gradual. O tronco, o pescoço e a cabeça não se mexem.
 //   escala: velocidade do clipe (1 = a do arquivo). Em C e D fica 1, porque o ritmo é o do pulso amarelo (1,0 s e 1,2 s).
 //   pausas: [tempo do clipe em s, segundos parado]. Só em pontos onde o clipe já para (A: viradas do punho; B: repouso e ombro).
 //   F não para: a legenda pede para trocar de sentido sem parar no meio.
@@ -37,9 +37,11 @@ const CALMA = {
   B: { escala: 0.8, pausas: [[0, 0.5], [1.6, 0.8]] },
   F: { escala: 0.75, pausas: [] },
 }
+// Coluna, peito, pescoço e cabeça ficam em posição neutra e fixa: as tracks desses ossos são filtradas ao carregar o
+// arquivo (o .glb não é editado). Só a cadeia do braço direito (clavícula, ombro, cotovelo, punho, mão) se move.
+const OSSOS_FIXOS = ['Hips', 'Spine', 'Chest', 'Neck', 'Head']
+
 const PARTIDA_S = 1.5 // a velocidade sobe de 0 a 100% nos primeiros segundos
-const RESPIRA_S = 4.5 // ciclo da respiração
-const RESPIRA_RAD = 0.035 // cerca de 2 graus no tronco
 
 // Divide um ciclo em trechos: andando no clipe ou parado. `real` = segundos reais do trecho.
 function planoDoCiclo(duracao, escala, pausas) {
@@ -82,6 +84,35 @@ const ENCAIXE = {
 const VISTA = { posicao: [-0.9, 0.72, 2.15], alvo: [-0.1, 0.51, 0.2] }
 
 const token = (nome) => getComputedStyle(document.documentElement).getPropertyValue(nome).trim()
+
+// A malha do corpo é uma casca aberta (braços, mãos, pescoço e quadril sem tampa): com a face só de um lado (FrontSide) o
+// fundo aparece por dentro. Por isso DoubleSide. O esmaecimento da cintura é feito aqui, por vértice, e não por máscara
+// em CSS: só o tronco de baixo esmaece, braços e mãos (ossos Clavicle, UpperArm, Forearm, Hand) ficam sempre opacos.
+const OSSOS_DO_BRACO = /^(Clavicle|UpperArm|Forearm|Hand)/
+const FADE_DE = 0.26 // altura (na pose de repouso) onde o tronco começa a esmaecer
+const FADE_ATE = -0.02 // e onde some
+
+function materialDoCorpo(cor, geo, esqueleto) {
+  const pos = geo.attributes.position
+  const idx = geo.attributes.skinIndex
+  const pes = geo.attributes.skinWeight
+  const fade = new Float32Array(pos.count)
+  for (let i = 0; i < pos.count; i++) {
+    let braco = 0
+    for (let k = 0; k < 4; k++) {
+      if (OSSOS_DO_BRACO.test(esqueleto.bones[[idx.getX, idx.getY, idx.getZ, idx.getW][k].call(idx, i)].name)) braco += [pes.getX, pes.getY, pes.getZ, pes.getW][k].call(pes, i)
+    }
+    const t = THREE.MathUtils.smoothstep(pos.getY(i), FADE_ATE, FADE_DE) // 0 embaixo, 1 em cima
+    fade[i] = Math.min(1, t + Math.min(1, braco)) // braço pesa 1: nunca esmaece
+  }
+  geo.setAttribute('fade', new THREE.BufferAttribute(fade, 1))
+  const material = new THREE.MeshStandardMaterial({ color: cor, roughness: 1, metalness: 0, side: THREE.DoubleSide, transparent: true })
+  material.onBeforeCompile = (sh) => {
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nattribute float fade;\nvarying float vFade;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvFade = fade;')
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying float vFade;').replace('#include <opaque_fragment>', '#include <opaque_fragment>\ngl_FragColor.a *= vFade;')
+  }
+  return material
+}
 
 function criarZeni(cor) {
   const pontos = [new THREE.Vector2(0, 0), ...PERFIL_MM.map(([z, r]) => new THREE.Vector2(r * ESCALA, z * ESCALA)), new THREE.Vector2(0, 0.16)]
@@ -133,7 +164,7 @@ function Personagem({ exercicio, parado, vista }) {
       const suave = mergeVertices(g) // low poly sem facetas
       suave.computeVertexNormals()
       o.geometry = suave
-      o.material = new THREE.MeshStandardMaterial({ color: porcelana, roughness: 1, metalness: 0 })
+      o.material = materialDoCorpo(porcelana, suave, o.skeleton)
       corpos.push(o)
     })
     const socket = raiz.getObjectByName('SocketR') ?? raiz.getObjectByName('Socket.R') // o GLTFLoader tira o ponto do nome
@@ -147,18 +178,25 @@ function Personagem({ exercicio, parado, vista }) {
   const mixer = useMemo(() => new THREE.AnimationMixer(raiz), [raiz])
   const atual = useRef(null)
   const movimento = useRef({ plano: null, fase: 0, decorrido: 0 })
-  const peito = useMemo(() => raiz.getObjectByName('Chest'), [raiz])
+  // clipes só com a cadeia do braço: sem as tracks de coluna, peito, pescoço e cabeça
+  const clipes = useMemo(() => {
+    return gltf.animations.map((c) => {
+      const f = c.clone()
+      f.tracks = f.tracks.filter((t) => !OSSOS_FIXOS.includes(t.name.split('.')[0]))
+      return f
+    })
+  }, [gltf])
 
   // Onde fica a mesa em D e F, medido no clipe
   const mesas = useMemo(() => {
     const m = {}
-    for (const id of COM_MESA) m[id] = medirMesa(raiz, zeni, gltf.animations.find((c) => c.name === CLIPES[id]), socket)
+    for (const id of COM_MESA) m[id] = medirMesa(raiz, zeni, clipes.find((c) => c.name === CLIPES[id]), socket)
     return m
-  }, [raiz, zeni, socket, gltf])
+  }, [raiz, zeni, socket, clipes])
 
   // Cada exercício toca o seu clipe, com crossFadeTo de 0,4 s ao trocar
   useEffect(() => {
-    const clip = gltf.animations.find((c) => c.name === CLIPES[exercicio.id])
+    const clip = clipes.find((c) => c.name === CLIPES[exercicio.id])
     const proxima = mixer.clipAction(clip)
     proxima.setLoop(THREE.LoopRepeat, Infinity)
     // O tempo do clipe é conduzido a mão (useFrame): timeScale 0, e `action.time` vem do plano do ciclo
@@ -182,7 +220,7 @@ function Personagem({ exercicio, parado, vista }) {
     if (anterior && anterior !== proxima) anterior.crossFadeTo(proxima, FADE_S, false)
     atual.current = proxima
     invalidate()
-  }, [exercicio.id, exercicio.repeticoes, exercicio.ritmoSeg, gltf, mixer, parado, invalidate])
+  }, [exercicio.id, exercicio.repeticoes, exercicio.ritmoSeg, clipes, mixer, parado, invalidate])
 
   useFrame((_, bruto) => {
     if (parado) return
@@ -195,7 +233,6 @@ function Personagem({ exercicio, parado, vista }) {
       atual.current.time = tempoDoClipe(m.plano, m.fase)
     }
     mixer.update(dt) // só cuida do crossFade, o tempo do clipe já foi posto
-    if (peito) peito.rotateX(RESPIRA_RAD * Math.sin((2 * Math.PI * m.decorrido) / RESPIRA_S)) // respiração leve
   })
 
   useEffect(
