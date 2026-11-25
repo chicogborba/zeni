@@ -326,6 +326,8 @@ Avisos de atenção ficam no topo, discretos, e somem sozinhos só quando não e
 - A nota usa o estilo "Número grande" e vem sempre com uma frase de incentivo. A escala 0 a 100 é uma decisão pendente (ver Pendências).
 - Gráficos: uma série por vez, linha de 3 px em `cinza-900`, área em `brand-amarelo-200`, rótulos em 16 px. Uma segunda série, quando houver, usa `brand-blue-600` tracejada. Sem grades densas nem legenda com mais de duas entradas.
 
+**Tela "Minha evolução" (25/11).** Abre direto no dashboard, sem pergunta de período. De cima para baixo: alternador **7 dias / 30 dias** (dois botões de escolha do mesmo tamanho, 64 px, 16 px entre eles; o escolhido fica em `cinza-900` com texto branco), o gráfico e o resumo. Na base, lado a lado e alinhados pela base: **Exportar** à esquerda (principal, 72) e **Voltar** à direita (`--target-voltar`, 64), perto do polegar. Exportar abre o painel da seção 6.13. A coluna do eixo do gráfico tem folga para o "100" no maior tamanho de texto.
+
 ### 6.6 Marca de IA
 
 Pequena etiqueta ("IA") em `brand-blue-100` com texto `brand-blue-800` (11,50:1), raio total, altura 28 px. É o mesmo azul do bloco "O app pensa" do fluxograma. Aparece só onde o app adapta ou escreve algo para a pessoa: exercício do dia sugerido, ajuste da meta, resumo do exercício. Sempre acompanhada de uma frase que explica o que o app fez ("O app ajustou a sua meta porque o exercício mostrou cansaço").

@@ -1,12 +1,14 @@
-// Segue: fluxo-do-app.md, bloco 4 "Acompanhamento" (4.1 a 4.4) e design-system.md 6.5 (gráficos).
-// 4.1 escolher 7 ou 30 dias -> 4.2 ver o gráfico -> 4.3 salvar em PDF ou enviar link -> 4.4 volta à Tela inicial.
+// Segue: fluxo-do-app.md, bloco 4 "Acompanhamento" e decisões 4, 14 e 18 de 25/11, e design-system.md 6.5 e 6.13.
+// Minha evolução abre direto no dashboard: alternador 7 dias / 30 dias no topo, gráfico no meio e, na base,
+// Exportar (esquerda, abre as opções) e Voltar (direita, perto do polegar). Volta à Tela inicial.
 // Uma série por vez: a nota de cada exercício (linha de 3 px em cinza-900, área em amarelo-200, rótulos de 16 px).
-// TODO (fluxo-do-app.md, ponto em aberto 5 / design system, pendência 10): "Enviar link" não existe na v1 (sem
-//   backend; falta definir para quem vai e a privacidade) e o layout do PDF está em aberto. O PDF hoje é a
-//   impressão da própria tela, pelo navegador ("Salvar como PDF").
+// Salvar em PDF: impressão do navegador. Enviar link: Web Share API com texto-resumo; sem suporte, copia o texto.
+// O link real depende do backend (v2). TODO (design system, pendência 10): layout do PDF em aberto.
 import { useState } from 'react'
 import Botao from '../componentes/Botao.jsx'
+import LinhaNavegacao from '../componentes/LinhaNavegacao.jsx'
 import PainelInferior from '../componentes/PainelInferior.jsx'
+import SeletorPeriodo from '../componentes/SeletorPeriodo.jsx'
 import { useNavegacao } from '../navegacao.jsx'
 import { CHAVES, ler } from '../storage.js'
 
@@ -15,7 +17,7 @@ const DIA_MS = 24 * 60 * 60 * 1000
 // Medidas do desenho (coordenadas do SVG, que escala com a largura do painel)
 const L = 342
 const A = 200
-const ESQ = 32 // espaço para o rótulo do eixo
+const ESQ = 52 // espaço para o rótulo do eixo ("100" cabe até no maior tamanho de texto)
 const TOPO = 12
 const BASE = A - 28 // espaço embaixo para os rótulos de data
 
@@ -48,35 +50,17 @@ function Grafico({ pontos, dias, agora }) {
   )
 }
 
+const PERIODOS = [
+  { valor: 7, rotulo: '7 dias' },
+  { valor: 30, rotulo: '30 dias' },
+]
+
 export default function Evolucao() {
   const { voltarAoInicio } = useNavegacao()
-  const [dias, setDias] = useState(null) // null = escolhendo o período
+  const [dias, setDias] = useState(7)
+  const [exportando, setExportando] = useState(false)
+  const [aviso, setAviso] = useState('') // "Copiado" quando o envio cai para a cópia do texto
   const [agora] = useState(() => Date.now())
-
-  // 4.1: escolher 7 ou 30 dias
-  if (dias === null) {
-    return (
-      <PainelInferior
-        titulo="Minha evolução"
-        rodape={
-          <>
-            <Botao variante="principal" onClick={() => setDias(7)}>
-              7 dias
-            </Botao>
-            <Botao variante="principal" onClick={() => setDias(30)}>
-              30 dias
-            </Botao>
-            <Botao variante="voltar" onClick={voltarAoInicio}>
-              Voltar
-            </Botao>
-          </>
-        }
-      >
-        <h2 className="conectar-titulo">Minha evolução</h2>
-        <p className="conectar-texto">Quantos dias você quer ver?</p>
-      </PainelInferior>
-    )
-  }
 
   const desde = agora - dias * DIA_MS
   const pontos = ler(CHAVES.historico, [])
@@ -85,25 +69,92 @@ export default function Evolucao() {
     .sort((a, b) => a.quando - b.quando)
   const media = pontos.length ? Math.round(pontos.reduce((s, p) => s + p.nota, 0) / pontos.length) : null
 
-  // 4.2 e 4.3: gráfico, e salvar em PDF ou enviar link
-  return (
-    <PainelInferior
-      titulo={`Evolução em ${dias} dias`}
-      rodape={
-        <>
-          <Botao variante="principal" onClick={() => window.print()}>
-            Salvar em PDF
-          </Botao>
-          <Botao variante="vazado" desativado motivo="O envio por link ainda não está disponível.">
-            Enviar link
-          </Botao>
-          <Botao variante="voltar" onClick={() => setDias(null)}>
+  const resumo =
+    pontos.length === 0
+      ? `Minha evolução no ZENI, últimos ${dias} dias: ainda sem exercícios nesse período.`
+      : `Minha evolução no ZENI, últimos ${dias} dias: ${pontos.length} ${pontos.length === 1 ? 'exercício' : 'exercícios'}, nota média ${media}.`
+
+  // Salvar em PDF: fecha as opções e abre a impressão do navegador (só o dashboard sai na página)
+  const salvarPdf = () => {
+    setExportando(false)
+    setTimeout(() => window.print(), 100)
+  }
+
+  // Enviar link: sem backend na v1, compartilha o texto-resumo. Sem Web Share, copia e mostra "Copiado".
+  const enviarLink = async () => {
+    setAviso('')
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Minha evolução', text: resumo })
+      } catch {
+        // a pessoa fechou a janela de compartilhar: nada a fazer
+      }
+      return
+    }
+    try {
+      await navigator.clipboard.writeText(resumo)
+      setAviso('Copiado')
+    } catch {
+      setAviso('Não consegui copiar. Tente de novo.')
+    }
+  }
+
+  // Exportar: bottom sheet com duas linhas
+  if (exportando) {
+    return (
+      <PainelInferior
+        titulo="Exportar"
+        onFechar={() => {
+          setExportando(false)
+          setAviso('')
+        }}
+        rodape={
+          <Botao
+            variante="voltar"
+            onClick={() => {
+              setExportando(false)
+              setAviso('')
+            }}
+          >
             Voltar
           </Botao>
-        </>
+        }
+      >
+        <h2 className="conectar-titulo">Exportar</h2>
+        <div className="linhas">
+          <LinhaNavegacao chevron={false} onClick={salvarPdf}>
+            Salvar em PDF
+          </LinhaNavegacao>
+          <LinhaNavegacao chevron={false} onClick={enviarLink}>
+            Enviar link
+          </LinhaNavegacao>
+        </div>
+        {aviso && (
+          <p className="conectar-destaque" role="status">
+            {aviso}
+          </p>
+        )}
+      </PainelInferior>
+    )
+  }
+
+  // Dashboard da evolução
+  return (
+    <PainelInferior
+      titulo="Minha evolução"
+      rodape={
+        <div className="rodape-lado">
+          <Botao variante="principal" onClick={() => setExportando(true)}>
+            Exportar
+          </Botao>
+          <Botao variante="voltar" onClick={voltarAoInicio}>
+            Voltar
+          </Botao>
+        </div>
       }
     >
-      <h2 className="conectar-titulo">Últimos {dias} dias</h2>
+      <h2 className="conectar-titulo so-impressao">Minha evolução</h2>
+      <SeletorPeriodo opcoes={PERIODOS} valor={dias} onChange={setDias} />
       {pontos.length === 0 ? (
         <p className="conectar-texto">Ainda não há exercícios nesse período. Faça um exercício para ver a sua evolução.</p>
       ) : (

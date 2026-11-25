@@ -237,6 +237,44 @@
   color: var(--cinza-700);
 }
 
+/* ---------- Minha evolução: alternador de período e rodapé com dois botões lado a lado (25/11) ---------- */
+.seletor {
+  display: flex;
+  gap: var(--space-4);
+}
+.seletor-opcao {
+  flex: 1;
+  min-height: var(--target-min);
+  padding: var(--space-2) var(--space-4);
+  border: var(--stroke) solid var(--border-strong);
+  border-radius: var(--radius-md);
+  font: var(--type-botao);
+  color: var(--text-primary);
+  transition:
+    transform var(--dur-press) ease-out,
+    background-color var(--dur-press) ease-out;
+}
+.seletor-opcao:active {
+  transform: scale(var(--press-scale));
+}
+.seletor-opcao--ativa {
+  background: var(--bg-inverse);
+  border-color: var(--bg-inverse);
+  color: var(--text-on-inverse);
+}
+
+/* Exportar (72) à esquerda, Voltar (64) à direita, alinhados pela base */
+.rodape-lado {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); /* minmax: o texto grande não empurra o Voltar para fora */
+  gap: var(--space-4);
+  align-items: end;
+}
+
+.so-impressao {
+  display: none;
+}
+
 /* ---------- Home: dashboard e dois botões, encostados no rodapé (decisão da autora; parte da 6.2) ---------- */
 .tela--home {
   --home-botao-altura: 0.75; /* altura do botão = 0.75 × a largura dele (aspect-ratio 1 / 0.75) */
@@ -770,6 +808,9 @@
   .painel-pelicula,
   .painel-rodape {
     display: none;
+  }
+  .so-impressao {
+    display: block;
   }
   .painel-camada,
   .painel {
