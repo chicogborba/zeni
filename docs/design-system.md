@@ -293,8 +293,8 @@ Decisão de 25/11: a grade de um cartão largo e quatro quadrados deixa de valer
 
 | Elemento | Regra |
 | -------- | ----- |
-| Avatar | Topo, alvo de no mínimo 64 × 64, com a inicial da pessoa (Título 3). `aria-label` "Abrir menu". Abre o menu suspenso com Personalizar e Conexão com o ZENI. Exceção à regra de ícone sozinho (6.7) |
-| Pílula do ZENI | Topo, ao lado do avatar. Raio `radius-full`, texto em Apoio (16 px). Não é tocável. Com conexão, mostra o nível de bateria. Sem conexão, mostra "ZENI desconectado" em cinza claro, sem nível de bateria |
+| Avatar | Topo, alvo de no mínimo 64 × 64, com a inicial da pessoa (Título 3). `aria-label` "Abrir menu". Abre o menu suspenso com Personalizar e Conexão com o ZENI. Exceção à regra de ícone sozinho (6.7). Sem nome guardado, mostra um ícone de pessoa no lugar da inicial (provisório) |
+| Pílula do ZENI | Topo, ao lado do avatar. Raio `radius-full`, texto em Apoio (16 px). Não é tocável. Com conexão, mostra o nível de bateria. Sem conexão, mostra só "ZENI desconectado", sem nível de bateria, em `cinza-700` (o cinza mais claro com 4,5:1 em texto de 16 px) |
 | Dashboard | Dois indicadores, **suavidade** e **ritmo**. Só leitura. Só cinzas, sem azul (ver a seção "Dashboard" abaixo). Sem histórico: o número fica como "–", com o rótulo ("suavidade", "ritmo") abaixo. Sem texto explicativo |
 | Botões | Dois, lado a lado: **Minha evolução** (esquerda, secundário, cinza) e **Começar o exercício** (direita, principal, amarelo, com mais destaque). Largura de cada um: (390 − 2 × 24 − 16) ÷ 2 = 163. Altura mínima 72. Texto em até duas linhas, sem cortar e sem hifenizar |
 | Fundo | `grad-bulb` (seção 2.5): elipse radial grande, centralizada na horizontal, ocupando a área livre entre o topo e o dashboard. Vai de `brand-amarelo-200` no centro até transparente nas bordas (`ellipse closest-side`), clara o bastante para aparecer sem competir com o dashboard, sem contorno, sobre o fundo da tela. Sem animação na home |
@@ -386,6 +386,10 @@ Uma pergunta por tela. A pergunta usa Título 3 e o contador ("Pergunta 3 de 7")
 - Sim e Não têm a mesma aparência. Nenhuma resposta usa cor de alerta, ícone de aviso ou mensagem de risco.
 - Nenhuma resposta bloqueia o fluxo.
 - As perguntas e o uso das respostas estão em `docs/triagem-parq.md`.
+
+#### Menu do avatar (25/11)
+
+Aparece logo abaixo do avatar, ao tocar nele. Fundo `white`, borda de 2 px `cinza-500`, `radius-lg`, sem sombra. Dois itens de 64 px de altura mínima, 16 px entre eles: "Personalizar" e "Conexão com o ZENI". Fecha ao escolher um item, ao tocar fora ou com Esc. O avatar tem `aria-haspopup="menu"` e `aria-expanded`.
 
 #### Dashboard da Home (25/11)
 

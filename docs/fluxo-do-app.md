@@ -54,7 +54,7 @@ Valem mais que a imagem do fluxograma, mais que as decisões de 24/11 e mais que
 15. **Medidas do ZENI: vale o modelo 3D.** Comprimento de 160 mm, 60 mm de diâmetro nas pontas e cerca de 45 mm na cintura. Não há outras medidas válidas. As medidas antigas (zona central de 38 a 40 mm e bojo de 45 a 48 mm) não valem. Elas não estavam nos documentos deste repositório, então não havia o que remover; se aparecerem em outro lugar (apresentação, Figma), atualizar.
 16. **Home: detalhes.**
     - **Botão principal:** "Começar o exercício" (amarelo, com mais destaque). "Minha evolução" é o secundário (cinza).
-    - **Pílula do ZENI:** com conexão, mostra o nível de bateria. Sem conexão, mostra "ZENI desconectado" em cinza claro, sem nível de bateria.
+    - **Pílula do ZENI:** com conexão, mostra o nível de bateria. Sem conexão, mostra "ZENI desconectado" em cinza (cinza-700, por contraste), sem nível de bateria.
     - **Dashboard sem histórico:** o número grande fica como "–" em cinza claro, com o rótulo ("suavidade", "ritmo") abaixo. Sem texto explicativo.
     - **Gradiente em bulb:** elipse radial grande, centralizada na horizontal, ocupando a área livre entre o topo e o dashboard. Vai de amarelo-200 no centro (era amarelo-100, fraco demais na tela) até transparente nas bordas, em `ellipse closest-side`, sem contorno, sobre o fundo da tela. Sem animação na home.
     - **Dashboard:** só cinzas, sem azul. Rótulos em cinza-800 e "–" em cinza-700, para manter o contraste (público de baixa visão). Detalhes no design system, seção 6.2.
@@ -237,3 +237,4 @@ Decidir antes ou durante a execução. Não assumir sozinho.
 9. **Textos das legendas.** Cada exercício (A a F) precisa da frase curta de legenda e do desenho em SVG. As legendas ainda não foram escritas.
 10. ~~Cinza claro e contraste.~~ Resolvido em 25/11: rótulos do dashboard em cinza-800 e "–" em cinza-700 (seção 6.2 do design system).
 11. **Tela do microfone.** O texto da decisão 20 fala só da palavra "pausar", mas a v1 reconhece quatro comandos (decisão 5). Ajustar o texto ou manter. Falta também o rótulo do botão dessa tela.
+12. **Inicial do avatar.** O fluxo não coleta o nome da pessoa. Definir onde ela informa o nome (por exemplo, em Personalizar). Enquanto isso, o avatar mostra um ícone de pessoa quando não há nome guardado.

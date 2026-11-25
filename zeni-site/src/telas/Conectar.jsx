@@ -8,6 +8,7 @@ import Botao from '../componentes/Botao.jsx'
 import PainelInferior from '../componentes/PainelInferior.jsx'
 import TelaEspera from '../componentes/TelaEspera.jsx'
 import { useNavegacao } from '../navegacao.jsx'
+import { BATERIA_SIMULADA } from '../fluxo.js'
 import { CHAVES, guardar } from '../storage.js'
 
 const BUSCA_MS = 3000 // tempo simulado da busca
@@ -34,7 +35,7 @@ export default function Conectar() {
         setRestam(restam - 1)
         return
       }
-      guardar(CHAVES.zeni, { conectado: true, posicaoInicial: new Date().toISOString() })
+      guardar(CHAVES.zeni, { conectado: true, bateria: BATERIA_SIMULADA, posicaoInicial: new Date().toISOString() })
       setEstado('pronto')
     }, 1000)
     return () => clearTimeout(id)

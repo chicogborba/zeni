@@ -326,15 +326,23 @@
   }
 }
 
-/* Ícone no canto superior direito da Home (Heroicons, traço de 2 px, área de 28 px: seção 6.7) */
+/* Topo da Home: avatar (com menu) e pílula do ZENI, no canto superior esquerdo */
 .home-topo {
   position: absolute;
   top: var(--space-6);
-  right: var(--margin-x);
+  left: var(--margin-x);
   z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
 }
 
-.home-icone {
+.menu-avatar {
+  position: relative;
+}
+
+/* Avatar: alvo de 64 px (seção 7), a inicial da pessoa */
+.avatar {
   flex: none;
   width: var(--target-min);
   height: var(--target-min);
@@ -342,16 +350,76 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--bg-page);
+  border: var(--stroke) solid var(--border-strong);
+  color: var(--text-primary);
+  font: var(--type-titulo-3);
+  transition: transform var(--dur-press) ease-out;
+}
+.avatar:active {
+  transform: scale(var(--press-scale));
+}
+.avatar-icone {
+  width: 28px; /* área do ícone, design system 6.7 */
+  height: 28px;
+}
+
+/* Menu suspenso do avatar (exceção de 25/11): sem sombra, borda de 2 px, itens de 64 px */
+.menu {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  left: 0;
+  z-index: 2;
+  width: max-content;
+  max-width: calc(100vw - var(--margin-x) * 2);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4); /* distância mínima entre alvos */
+  background: var(--bg-page);
+  border: var(--stroke) solid var(--border-strong);
+  border-radius: var(--radius-lg);
+}
+.menu-item {
+  min-height: var(--target-min);
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-md);
+  text-align: left;
+  font: var(--type-botao);
   color: var(--text-primary);
   transition: transform var(--dur-press) ease-out;
 }
-.home-icone:active {
+.menu-item:active {
   transform: scale(var(--press-scale));
   background: var(--bg-subtle);
 }
-.home-icone svg {
+
+/* Pílula do ZENI: não é tocável */
+.pilula {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  background: var(--bg-page);
+  font: var(--type-apoio);
+  color: var(--text-primary);
+}
+.pilula--desconectado {
+  color: var(--cinza-700); /* cinza com contraste de 4,5:1 ou mais (texto de 16 px) */
+}
+.pilula-icone {
   width: 28px;
   height: 28px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 /* ---------- Alternador (liga/desliga) ---------- */
@@ -522,7 +590,7 @@
   position: fixed;
   top: calc(var(--space-2) + env(safe-area-inset-top));
   left: 50%;
-  z-index: 1;
+  z-index: 2; /* acima do topo da Home (avatar e pílula) enquanto o aviso estiver na tela */
   width: min(100% - var(--space-6) * 2, var(--content-max) - var(--space-6) * 2);
   transform: translateX(-50%);
   display: flex;

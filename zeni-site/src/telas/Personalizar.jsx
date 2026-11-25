@@ -2,7 +2,7 @@
 // Itens feitos: Lembretes e Aparência (tamanho do texto). Ficam para depois: Comandos de voz, Tom e Dados de saúde.
 // TODO (design system, pendência 12): definir se cada item é um painel em sequência ou se a regra de um nível
 //   muda. Provisório: cada item substitui este painel e o "Voltar" do item volta para cá.
-// Daqui também se segue para "Pedir ajuda ao ZENI" (6.0). O "ZENI já abre ouvindo" fica fora da v1 (decisão 7).
+// Abre pelo menu do avatar na Home (decisão 1a de 25/11). "Pedir ajuda ao ZENI" (bloco 7) saiu da v1 (decisão 3 de 25/11).
 import { useState } from 'react'
 import Botao from '../componentes/Botao.jsx'
 import PainelInferior from '../componentes/PainelInferior.jsx'
@@ -11,7 +11,7 @@ import Aparencia from './Aparencia.jsx'
 import Lembretes from './Lembretes.jsx'
 
 export default function Personalizar() {
-  const { ir, voltarAoInicio } = useNavegacao()
+  const { voltarAoInicio } = useNavegacao()
   const [item, setItem] = useState(null) // null | 'lembretes' | 'aparencia'
 
   if (item === 'lembretes') return <Lembretes onVoltar={() => setItem(null)} />
@@ -32,9 +32,6 @@ export default function Personalizar() {
       </Botao>
       <Botao variante="vazado" onClick={() => setItem('aparencia')}>
         Aparência
-      </Botao>
-      <Botao variante="vazado" onClick={() => ir('ajuda')}>
-        Pedir ajuda ao ZENI
       </Botao>
     </PainelInferior>
   )

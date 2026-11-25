@@ -1,11 +1,13 @@
 // Segue: fluxo-do-app.md, seção "Tela inicial (Home)", H.3, com a decisão da autora da Home:
 // em cima, uma faixa com os dados de saúde; embaixo, evolução (esquerda) e exercício (direita);
 // Personalizar como ícone no canto.
+// Topo (decisões 10, 13 e 16 de 25/11): avatar com menu (Personalizar e Conexão com o ZENI) e pílula do ZENI.
 // Layout (25/11): tudo encostado no rodapé; o espaço que sobra no topo é preenchido pelo gradiente em bulb.
 import { useEffect, useState } from 'react'
-import { ChartBarIcon, Cog6ToothIcon, PlayCircleIcon } from '@heroicons/react/24/outline'
+import { Battery0Icon, Battery50Icon, Battery100Icon, ChartBarIcon, PlayCircleIcon } from '@heroicons/react/24/outline'
 import AvisoConexao from '../componentes/AvisoConexao.jsx'
-import { telaDoExercicio } from '../fluxo.js'
+import MenuAvatar from '../componentes/MenuAvatar.jsx'
+import { bateriaDoZeni, telaDoExercicio, zeniConectado } from '../fluxo.js'
 import { useNavegacao } from '../navegacao.jsx'
 import { CHAVES, ler } from '../storage.js'
 
@@ -13,12 +15,10 @@ import { CHAVES, ler } from '../storage.js'
 // (fluxo-do-app.md, "O fluxograma não define a ordem nem o formato"; design system, pendência 11).
 // Para mudar, basta reordenar este array ou trocar o `gradiente`.
 // `tela` pode ser uma função: o exercício passa antes pela triagem e pela conexão (src/fluxo.js).
-// `canto: true` = vira só um ícone no canto superior direito, fora da grade.
 // A ordem do array é a ordem na tela, da esquerda para a direita. Só o exercício usa o amarelo.
 const DESTINOS = [
   { id: 'evolucao', titulo: 'Minha evolução', tela: 'evolucao', gradiente: 'cinza', Icone: ChartBarIcon },
   { id: 'exercicio', titulo: 'Começar o exercício', tela: telaDoExercicio, gradiente: 'amarelo', Icone: PlayCircleIcon },
-  { id: 'personalizar', titulo: 'Personalizar', tela: 'personalizar', canto: true },
 ]
 
 // TODO: os dados reais virão do MPU (sensor de movimento do ZENI). Por enquanto, o último exercício
@@ -54,6 +54,26 @@ function useContagem(alvo) {
   return duracao <= 0 ? alvo : valor
 }
 
+// Pílula do ZENI: com conexão, o nível de bateria; sem conexão, só "ZENI desconectado" (decisão 16 de 25/11).
+function PilulaZeni() {
+  if (!zeniConectado()) {
+    return (
+      <p className="pilula pilula--desconectado" role="status">
+        ZENI desconectado
+      </p>
+    )
+  }
+  const nivel = bateriaDoZeni()
+  const Icone = nivel <= 25 ? Battery0Icon : nivel <= 60 ? Battery50Icon : Battery100Icon
+  return (
+    <p className="pilula" role="status">
+      <Icone className="pilula-icone" strokeWidth={1.5} aria-hidden="true" />
+      <span className="sr-only">Bateria do ZENI: </span>
+      {nivel}%
+    </p>
+  )
+}
+
 function Dado({ rotulo, valor, ordem }) {
   const temValor = typeof valor === 'number'
   const contado = useContagem(valor)
@@ -70,16 +90,17 @@ function Dado({ rotulo, valor, ordem }) {
 export default function Home() {
   const { ir } = useNavegacao()
   const ultimo = ler(CHAVES.historico, []).at(-1)
-  const canto = DESTINOS.find((d) => d.canto)
-  const grade = DESTINOS.filter((d) => !d.canto)
   return (
     <main className="tela tela--home">
       <AvisoConexao />
-      {/* Decisão da autora da Home: só ícone. O alvo de toque segue os 64 px do design system (seção 7). */}
       <header className="home-topo">
-        <button type="button" className="home-icone" aria-label={canto.titulo} onClick={() => ir(canto.tela)}>
-          <Cog6ToothIcon strokeWidth={1.5} aria-hidden="true" />
-        </button>
+        <MenuAvatar
+          itens={[
+            { id: 'personalizar', rotulo: 'Personalizar', onEscolher: () => ir('personalizar') },
+            { id: 'conexao', rotulo: 'Conexão com o ZENI', onEscolher: () => ir('conectar') },
+          ]}
+        />
+        <PilulaZeni />
       </header>
       {/* Gradiente em bulb: preenche o espaço livre entre o topo e o dashboard (decisão 16 de 25/11) */}
       <div className="home-bulb" aria-hidden="true" />
@@ -89,7 +110,7 @@ export default function Home() {
         ))}
       </section>
       <div className="home-grade">
-        {grade.map((d, i) => (
+        {DESTINOS.map((d, i) => (
           <button
             key={d.id}
             type="button"
