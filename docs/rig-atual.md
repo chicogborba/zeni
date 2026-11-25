@@ -1,6 +1,6 @@
 # Rig atual do personagem (contrato do modelo)
 
-Arquivo: `zeni-site/src/assets/zeni-personagem.glb`. Hoje ele vem do **Blender** (`zeni-site/scripts/fonte/zeni-personagem-blender.glb`, exportado por você a partir do rig gerado por código) e passa por `node scripts/alinhar-ossos.mjs`, que acerta os ossos do braço à malha (a malha do Blender tem os braços inclinados ~11° para dentro e os ossos estavam no lugar antigo; sem esse passo o ZENI sai da mão e o giro do punho gira fora do braço). O ponto de partida é `node scripts/preparar-modelo.mjs`, que gera o rig e os clipes a partir de `scripts/fonte/wii-fit-camisa-lisa.glb` (saída em `scripts/zeni-personagem-gerado.glb`). Código que usa o arquivo: `zeni-site/src/componentes/PersonagemExercicio.jsx`.
+Arquivo: `zeni-site/src/assets/zeni-personagem.glb`. Hoje ele vem do **Blender** (`zeni-site/scripts/fonte/zeni-personagem-blender.glb`, exportado por você a partir do rig gerado por código) e passa por dois scripts, nesta ordem: `node scripts/alinhar-ossos.mjs scripts/fonte/zeni-personagem-blender.glb scripts/zeni-personagem-alinhado.glb` e `node scripts/adicionar-dedos.mjs`. O primeiro acerta os ossos do braço à malha (a malha do Blender tem os braços inclinados ~11° para dentro e os ossos estavam no lugar antigo; sem esse passo o ZENI sai da mão e o giro do punho gira fora do braço). O segundo cria os ossos dos dedos e a pegada do ZENI (seção 9). O ponto de partida é `node scripts/preparar-modelo.mjs`, que gera o rig e os clipes a partir de `scripts/fonte/wii-fit-camisa-lisa.glb` (saída em `scripts/zeni-personagem-gerado.glb`). Código que usa o arquivo: `zeni-site/src/componentes/PersonagemExercicio.jsx`.
 
 **Durações dos clipes:** o arquivo do Blender tem clipes ~21% mais curtos (A 1,9 s, B 2,53 s, C 0,8 s, D 0,93 s, E 0,8 s, F 1,27 s). O componente ajusta o tempo de cada clipe às durações abaixo ao carregar (`DURACAO_CLIPE_S`), então a tabela da seção 3 continua valendo para o app.
 
@@ -102,3 +102,14 @@ Cabelo, rosto, olhos, pele e roupa têm, portanto, **a mesma cor**: as 4 textura
 4. Escala em metros, origem na cintura, olhando para +z, direita em −x.
 5. Fechado ou coberto no pescoço, punhos e cintura, ou o esmaecimento e o `DoubleSide` escondem as bordas.
 6. Se o modelo vier já riggado (por exemplo, no Blender), basta substituir `src/assets/zeni-personagem.glb`; o script `preparar-modelo.mjs` deixa de ser necessário.
+
+## 9. Dedos e pegada do ZENI (criados por `scripts/adicionar-dedos.mjs`)
+
+O modelo do Blender tem a mão aberta e só o osso `Hand`. O script acrescenta, por mão, 4 ossos filhos de `Hand.X`: `Fingers.X` (os quatro dedos juntos, na linha dos nós), `FingersTip.X` (pontas), `Thumb.X` e `ThumbTip.X`. São 21 juntas no total.
+
+- **Pesos:** os vértices da mão são divididos por posição: abaixo da linha dos nós, dedos; à frente (z), polegar; a palma continua no `Hand`.
+- **Pegada:** cada clipe traz uma track constante de rotação (em torno do eixo z da mão) nesses ossos. Direita, segurando o ZENI: dedos 40° + 80° (relativos ao osso pai), polegar 25° + 40°. Esquerda, relaxada: 20°/25° e 8°/10°.
+- **Socket:** `Socket.R` fica no centro da pegada (0,044 m para dentro do nó dos dedos, que é o raio do ZENI mais a meia espessura do dedo), do lado de dentro da palma. `POSICAO_ZENI` no componente é `[0, 0, 0]`.
+- **Esmaecimento:** o material não esmaece vértices cujos ossos comecem por `Clavicle`, `UpperArm`, `Forearm`, `Hand`, `Fingers` ou `Thumb`. Ossos novos na mão precisam entrar nessa lista (`OSSOS_DO_BRACO`).
+- **Contrato:** se o modelo vier do Blender já com dedos, o script `adicionar-dedos.mjs` deixa de ser necessário; o `Socket.R` deve ficar dentro da mão, e o eixo longo do ZENI é o eixo z da mão (cruza a palma).
+- Limite: a pegada é a mesma em todos os exercícios (os dedos não se mexem durante o movimento).

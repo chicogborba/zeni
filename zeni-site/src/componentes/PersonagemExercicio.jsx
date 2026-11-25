@@ -89,7 +89,7 @@ const token = (nome) => getComputedStyle(document.documentElement).getPropertyVa
 // A malha do corpo é uma casca aberta (braços, mãos, pescoço e quadril sem tampa): com a face só de um lado (FrontSide) o
 // fundo aparece por dentro. Por isso DoubleSide. O esmaecimento da cintura é feito aqui, por vértice, e não por máscara
 // em CSS: só o tronco de baixo esmaece, braços e mãos (ossos Clavicle, UpperArm, Forearm, Hand) ficam sempre opacos.
-const OSSOS_DO_BRACO = /^(Clavicle|UpperArm|Forearm|Hand)/
+const OSSOS_DO_BRACO = /^(Clavicle|UpperArm|Forearm|Hand|Fingers|Thumb)/
 const FADE_DE = 0.14 // altura (em metros, na pose de repouso; Hips = 0) onde o tronco fica opaco
 const FADE_ATE = -0.03 // e onde some
 
