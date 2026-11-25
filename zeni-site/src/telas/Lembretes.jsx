@@ -1,9 +1,10 @@
 // Segue: fluxo-do-app.md, bloco 6, item "Lembretes": vê a lista, adiciona ou toca em um para editar,
-// escolhe os dias e o horário do exercício. "O app avisa no horário marcado" (src/App.jsx).
+// escolhe os dias e o horário do exercício. O aviso no horário marcado está em src/App.jsx.
 // Na v1 só avisa com o app aberto. TODO (fluxo-do-app.md, ponto em aberto 4): confirmar que é isso que a v1 entrega.
 import { CheckIcon } from '@heroicons/react/24/outline'
 import { useEffect, useState } from 'react'
 import Botao from '../componentes/Botao.jsx'
+import LinhaNavegacao from '../componentes/LinhaNavegacao.jsx'
 import PainelInferior from '../componentes/PainelInferior.jsx'
 import { DIAS, descreverDias, guardarLembretes, lerLembretes } from '../lembretes.js'
 
@@ -69,7 +70,7 @@ export default function Lembretes({ onVoltar }) {
                 Apagar
               </Botao>
             )}
-            <Botao variante="secundario" onClick={() => setEditando(null)}>
+            <Botao variante="voltar" onClick={() => setEditando(null)}>
               Voltar
             </Botao>
           </>
@@ -87,7 +88,7 @@ export default function Lembretes({ onVoltar }) {
                 aria-pressed={ligado}
                 onClick={() => alternarDia(d)}
               >
-                {ligado && <CheckIcon className="dia-marca" strokeWidth={2} aria-hidden="true" />}
+                {ligado && <CheckIcon className="icone dia-marca" aria-hidden="true" />}
                 {nome}
               </button>
             )
@@ -115,23 +116,25 @@ export default function Lembretes({ onVoltar }) {
       titulo="Lembretes"
       onFechar={onVoltar}
       rodape={
-        <>
-          <Botao variante="principal" onClick={() => setEditando({ id: Date.now(), dias: [1, 2, 3, 4, 5], hora: '08:00' })}>
-            Adicionar lembrete
-          </Botao>
-          <Botao variante="secundario" onClick={onVoltar}>
-            Voltar
-          </Botao>
-        </>
+        <Botao variante="voltar" onClick={onVoltar}>
+          Voltar
+        </Botao>
       }
     >
       <h2 className="conectar-titulo">Lembretes</h2>
       {lista.length === 0 && <p className="conectar-texto">Você ainda não tem lembretes.</p>}
-      {lista.map((l) => (
-        <Botao key={l.id} variante="vazado" onClick={() => setEditando(l)}>
-          {`${l.hora} · ${descreverDias(l.dias)}`}
-        </Botao>
-      ))}
+      <Botao variante="principal" onClick={() => setEditando({ id: Date.now(), dias: [1, 2, 3, 4, 5], hora: '08:00' })}>
+        Adicionar lembrete
+      </Botao>
+      {lista.length > 0 && (
+        <div className="linhas">
+          {lista.map((l) => (
+            <LinhaNavegacao key={l.id} onClick={() => setEditando(l)}>
+              {`${l.hora} · ${descreverDias(l.dias)}`}
+            </LinhaNavegacao>
+          ))}
+        </div>
+      )}
       {apagado && (
         <Botao
           variante="vazado"
@@ -145,7 +148,6 @@ export default function Lembretes({ onVoltar }) {
           Lembrete apagado. Desfazer
         </Botao>
       )}
-      <p className="conectar-texto">O ZENI avisa no horário marcado, com o app aberto.</p>
     </PainelInferior>
   )
 }

@@ -67,7 +67,7 @@ function PilulaZeni() {
   const Icone = nivel <= 25 ? Battery0Icon : nivel <= 60 ? Battery50Icon : Battery100Icon
   return (
     <p className="pilula" role="status">
-      <Icone className="pilula-icone" strokeWidth={1.5} aria-hidden="true" />
+      <Icone className="icone pilula-icone" aria-hidden="true" />
       <span className="sr-only">Bateria do ZENI: </span>
       {nivel}%
     </p>
@@ -117,7 +117,7 @@ export default function Home() {
             className={`cartao cartao--${d.gradiente}`}
             onClick={() => ir(typeof d.tela === 'function' ? d.tela() : d.tela)}
           >
-            <d.Icone className="cartao-icone entrada" style={{ '--i': i + 3 }} strokeWidth={1.5} aria-hidden="true" />
+            <d.Icone className="icone cartao-icone entrada" style={{ '--i': i + 3 }} aria-hidden="true" />
             <span className="cartao-titulo entrada" style={{ '--i': i + 3 }}>
               {d.titulo}
             </span>

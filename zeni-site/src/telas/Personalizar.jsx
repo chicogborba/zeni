@@ -5,6 +5,7 @@
 // Abre pelo menu do avatar na Home (decisão 1a de 25/11). "Pedir ajuda ao ZENI" (bloco 7) saiu da v1 (decisão 3 de 25/11).
 import { useState } from 'react'
 import Botao from '../componentes/Botao.jsx'
+import LinhaNavegacao from '../componentes/LinhaNavegacao.jsx'
 import PainelInferior from '../componentes/PainelInferior.jsx'
 import { useNavegacao } from '../navegacao.jsx'
 import Aparencia from './Aparencia.jsx'
@@ -21,18 +22,16 @@ export default function Personalizar() {
     <PainelInferior
       titulo="Personalizar"
       rodape={
-        <Botao variante="secundario" onClick={voltarAoInicio}>
+        <Botao variante="voltar" onClick={voltarAoInicio}>
           Voltar
         </Botao>
       }
     >
       <h2 className="conectar-titulo">Personalizar</h2>
-      <Botao variante="vazado" onClick={() => setItem('lembretes')}>
-        Lembretes
-      </Botao>
-      <Botao variante="vazado" onClick={() => setItem('aparencia')}>
-        Aparência
-      </Botao>
+      <div className="linhas">
+        <LinhaNavegacao onClick={() => setItem('lembretes')}>Lembretes</LinhaNavegacao>
+        <LinhaNavegacao onClick={() => setItem('aparencia')}>Aparência</LinhaNavegacao>
+      </div>
     </PainelInferior>
   )
 }

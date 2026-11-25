@@ -195,7 +195,7 @@ export default function Exercicio() {
             <Botao variante="principal" onClick={() => setEstado('posicao')}>
               Ver como fazer
             </Botao>
-            <Botao variante="secundario" onClick={voltarAoInicio}>
+            <Botao variante="voltar" onClick={voltarAoInicio}>
               Voltar
             </Botao>
           </>
@@ -218,7 +218,7 @@ export default function Exercicio() {
             <Botao variante="principal" onClick={() => setEstado('andamento')}>
               Começar
             </Botao>
-            <Botao variante="secundario" onClick={() => setEstado('sugestao')}>
+            <Botao variante="voltar" onClick={() => setEstado('sugestao')}>
               Voltar
             </Botao>
           </>
@@ -261,7 +261,7 @@ export default function Exercicio() {
             >
               Tentar de novo
             </Botao>
-            <Botao variante="secundario" onClick={voltarAoInicio}>
+            <Botao variante="voltar" onClick={voltarAoInicio}>
               Voltar ao início
             </Botao>
           </>

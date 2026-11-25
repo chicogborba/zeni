@@ -67,14 +67,14 @@ export default function Conectar() {
             >
               Pronto
             </Botao>
-            <Botao variante="secundario" onClick={voltarAoInicio}>
+            <Botao variante="voltar" onClick={voltarAoInicio}>
               Voltar
             </Botao>
           </>
         }
       >
         <span className="selo" aria-hidden="true">
-          <CheckIcon strokeWidth={2} />
+          <CheckIcon className="icone" />
         </span>
         <h2 className="conectar-titulo">Conectado</h2>
         <p className="conectar-texto">O ZENI vibrou suavemente.</p>
@@ -105,7 +105,7 @@ export default function Conectar() {
       }
     >
       <span className="selo" aria-hidden="true">
-        <CheckIcon strokeWidth={2} />
+        <CheckIcon className="icone" />
       </span>
       <h2 className="conectar-titulo">Tudo pronto</h2>
       <p className="conectar-texto">O ZENI guardou a sua posição inicial.</p>

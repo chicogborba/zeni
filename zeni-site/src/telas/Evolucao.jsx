@@ -66,7 +66,7 @@ export default function Evolucao() {
             <Botao variante="principal" onClick={() => setDias(30)}>
               30 dias
             </Botao>
-            <Botao variante="secundario" onClick={voltarAoInicio}>
+            <Botao variante="voltar" onClick={voltarAoInicio}>
               Voltar
             </Botao>
           </>
@@ -97,7 +97,7 @@ export default function Evolucao() {
           <Botao variante="vazado" desativado motivo="O envio por link ainda não está disponível.">
             Enviar link
           </Botao>
-          <Botao variante="secundario" onClick={() => setDias(null)}>
+          <Botao variante="voltar" onClick={() => setDias(null)}>
             Voltar
           </Botao>
         </>

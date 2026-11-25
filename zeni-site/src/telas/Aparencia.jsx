@@ -11,6 +11,8 @@ export default function Aparencia({ onVoltar }) {
   const [anterior] = useState(tamanhoSalvo)
   const [escolhido, setEscolhido] = useState(anterior)
 
+  const mudou = escolhido !== anterior
+
   const escolher = (id) => {
     setEscolhido(id)
     aplicarTamanho(id) // a tela muda na hora, para ver como fica
@@ -32,10 +34,15 @@ export default function Aparencia({ onVoltar }) {
       onFechar={desfazer}
       rodape={
         <>
-          <Botao variante="principal" onClick={confirmar}>
+          <Botao
+            variante="principal"
+            desativado={!mudou}
+            motivo="Escolha outro tamanho para confirmar."
+            onClick={confirmar}
+          >
             Confirmar
           </Botao>
-          <Botao variante="secundario" onClick={desfazer}>
+          <Botao variante="voltar" onClick={desfazer}>
             Voltar ao jeito anterior
           </Botao>
         </>

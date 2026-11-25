@@ -10,7 +10,7 @@ export default function EmConstrucao() {
     <PainelInferior
       titulo="Em construção"
       rodape={
-        <Botao variante="secundario" onClick={voltarAoInicio}>
+        <Botao variante="voltar" onClick={voltarAoInicio}>
           Voltar
         </Botao>
       }

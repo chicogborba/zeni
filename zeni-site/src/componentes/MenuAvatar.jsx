@@ -51,7 +51,7 @@ export default function MenuAvatar({ itens }) {
         aria-controls={aberto ? idMenu : undefined}
         onClick={() => setAberto((a) => !a)}
       >
-        {inicial ?? <UserIcon className="avatar-icone" strokeWidth={1.5} aria-hidden="true" />}
+        {inicial ?? <UserIcon className="icone avatar-icone" aria-hidden="true" />}
       </button>
       {aberto && (
         <div className="menu" id={idMenu} role="menu">

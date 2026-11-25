@@ -24,7 +24,7 @@ export default function TelaEspera({ texto, onTentarDeNovo, onVoltar }) {
           <Botao variante="principal" onClick={onTentarDeNovo}>
             Tentar de novo
           </Botao>
-          <Botao variante="secundario" onClick={onVoltar}>
+          <Botao variante="voltar" onClick={onVoltar}>
             Voltar
           </Botao>
         </div>

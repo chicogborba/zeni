@@ -42,7 +42,7 @@ export default function Parq() {
             >
               Concordo
             </Botao>
-            <Botao variante="secundario" onClick={voltarAoInicio}>
+            <Botao variante="voltar" onClick={voltarAoInicio}>
               Voltar
             </Botao>
           </>
@@ -80,7 +80,7 @@ export default function Parq() {
           <Botao variante="principal" onClick={() => responder('nao')}>
             Não
           </Botao>
-          <Botao variante="secundario" onClick={() => setPasso(passo - 1)}>
+          <Botao variante="voltar" onClick={() => setPasso(passo - 1)}>
             Voltar
           </Botao>
         </>

@@ -10,7 +10,7 @@
 .botao {
   width: 100%;
   min-height: var(--target-min);
-  padding: 0 var(--space-6);
+  padding: var(--space-2) var(--space-6); /* o respiro vertical evita que o texto grande encoste na borda */
   border-radius: var(--radius-md);
   font: var(--type-botao);
   display: flex;
@@ -35,12 +35,19 @@
   background: var(--bg-accent-pressed);
 }
 
-.botao--secundario {
+.botao--secundario,
+.botao--voltar {
   background: var(--bg-inverse);
   color: var(--text-on-inverse);
 }
-.botao--secundario:active {
+.botao--secundario:active,
+.botao--voltar:active {
   background: var(--cinza-800);
+}
+
+/* Voltar: um passo abaixo do botão primário (token --target-voltar) */
+.botao--voltar {
+  min-height: var(--target-voltar);
 }
 
 .botao--vazado {
@@ -111,6 +118,15 @@
   color: var(--icon-on-inverse);
 }
 
+/* Traço padrão dos ícones do site: mesma grossura em qualquer tamanho */
+.icone path,
+.icone circle,
+.icone line,
+.icone polyline {
+  vector-effect: non-scaling-stroke;
+  stroke-width: var(--stroke-icone);
+}
+
 /* ---------- Painel inferior (6.8) ---------- */
 .painel-camada {
   z-index: 1; /* acima do aviso de conexão da Home, abaixo do aviso de lembrete */
@@ -133,7 +149,7 @@
   position: relative;
   width: 100%;
   max-width: var(--content-max);
-  height: 88dvh;
+  max-height: calc(100dvh - var(--space-12)); /* altura do conteúdo; só rola se não couber (25/11) */
   display: flex;
   flex-direction: column;
   background: var(--bg-page);
@@ -143,6 +159,7 @@
 
 .painel--total {
   height: 100dvh;
+  max-height: none;
   border-radius: 0;
 }
 
@@ -151,7 +168,8 @@
 }
 
 .painel-conteudo {
-  flex: 1;
+  flex: 0 1 auto;
+  min-height: 0;
   overflow-y: auto;
   padding: var(--space-8) var(--margin-x) var(--space-6);
   display: flex;
@@ -182,6 +200,41 @@
   to {
     opacity: 1;
   }
+}
+
+/* ---------- Linhas de navegação (painéis): texto à esquerda, chevron à direita ---------- */
+.linhas {
+  display: flex;
+  flex-direction: column;
+}
+.linha-nav {
+  width: 100%;
+  min-height: var(--target-min);
+  padding: var(--space-2) 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  text-align: left;
+  font: var(--type-botao);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-subtle); /* divisor decorativo (seixo, seção 2.1) */
+  transition: background-color var(--dur-press) ease-out;
+}
+.linha-nav:last-child {
+  border-bottom: 0;
+}
+.linha-nav:active {
+  background: var(--bg-subtle);
+}
+.linha-nav-texto {
+  min-width: 0;
+}
+.linha-nav-chevron {
+  flex: none;
+  width: 28px; /* área do ícone, seção 6.7 */
+  height: 28px;
+  color: var(--cinza-700);
 }
 
 /* ---------- Home: dashboard e dois botões, encostados no rodapé (decisão da autora; parte da 6.2) ---------- */
@@ -226,12 +279,14 @@
   display: grid;
   grid-template-rows: 1fr auto 1fr;
   justify-items: center;
+  container-type: inline-size; /* o número se ajusta à largura do cartão (texto grande não estoura) */
   text-align: center;
 }
 
 .dado-numero {
   grid-row: 2;
   font: var(--type-numero-grande);
+  font-size: min(calc(64px * var(--escala-texto, 1)), 50cqw); /* 3 dígitos cabem em 50% da largura */
   color: var(--cinza-700); /* estado vazio ("–"): texto grande, 3:1. cinza-600 dá 2,6:1 no ponto mais escuro do cartão */
 }
 .dado--com-valor .dado-numero {
@@ -351,7 +406,6 @@
   align-items: center;
   justify-content: center;
   background: var(--bg-page);
-  border: var(--stroke) solid var(--border-strong);
   color: var(--text-primary);
   font: var(--type-titulo-3);
   transition: transform var(--dur-press) ease-out;
@@ -360,11 +414,11 @@
   transform: scale(var(--press-scale));
 }
 .avatar-icone {
-  width: 28px; /* área do ícone, design system 6.7 */
-  height: 28px;
+  width: 22px; /* 28 px (design system 6.7) menos 6 px, a pedido */
+  height: 22px;
 }
 
-/* Menu suspenso do avatar (exceção de 25/11): sem sombra, borda de 2 px, itens de 64 px */
+/* Menu suspenso do avatar (exceção de 25/11): sem sombra e sem borda, itens de 64 px */
 .menu {
   position: absolute;
   top: calc(100% + var(--space-2));
@@ -377,7 +431,6 @@
   flex-direction: column;
   gap: var(--space-4); /* distância mínima entre alvos */
   background: var(--bg-page);
-  border: var(--stroke) solid var(--border-strong);
   border-radius: var(--radius-lg);
 }
 .menu-item {

@@ -278,7 +278,7 @@ Estrutura do app: uma **home** com cartões grandes, e as outras telas abrem com
 | Tipo | Fundo | Texto | Altura | Uso |
 |---|---|---|---|---|
 | Principal | brand-amarelo-300 | cinza-900 | 72 | Uma por tela (Começar, Conectar o ZENI) |
-| Secundário | cinza-900 | white | 64 | Segunda ação (Pausar, Voltar). Regra de 25/11: o Voltar tem um passo (8 px) a menos que o primário |
+| Secundário | cinza-900 | white | 64 | Segunda ação (Pausar, Voltar). Regra de 25/11: o Voltar tem um passo (8 px) a menos que o primário, token `--target-voltar` (72 − 8 = 64) |
 | Vazado | transparente, borda 2 px cinza-500 | cinza-900 | 64 | Ação de baixa importância |
 
 - Todo botão ocupa a largura da tela menos as margens. Não existe botão de texto nem link tocável no app: se algo precisa ser tocado, vira botão.
@@ -332,7 +332,7 @@ Pequena etiqueta ("IA") em `brand-blue-100` com texto `brand-blue-800` (11,50:1)
 
 ### 6.7 Ícones
 
-Traço de 2 px, 28 px de área, cantos arredondados, `cinza-900`. Sempre com texto ao lado nas ações principais. Ícone nunca é alvo de toque sozinho. Única exceção (25/11): o avatar da home, que mostra a inicial da pessoa e identifica o botão.
+Traço de 1,75 px (token `--stroke-icone`, o do ícone do cartão Minha evolução), igual em todos os tamanhos de ícone. Área de 28 px, cantos arredondados, `cinza-900`. Sempre com texto ao lado nas ações principais. Ícone nunca é alvo de toque sozinho. Única exceção (25/11): o avatar da home, que mostra a inicial da pessoa e identifica o botão.
 
 ### 6.8 Painel inferior
 
@@ -346,7 +346,13 @@ Toda tela que não é a home abre como painel inferior, tocando num cartão ou n
 | Entrada e saída | Sobe e desce em 250 ms. Com "reduzir movimento", troca direta |
 | Alça e botão "X" | Não usar. Arrastar para fechar pode existir, mas nunca como único caminho |
 | Rodapé fixo | Botão principal (72) com o secundário "Voltar" (64) logo abaixo, 16 px entre eles, 24 px de margem inferior mais a área segura |
-| Conteúdo | Cabe sem rolagem. Se não couber, dividir em dois painéis em sequência |
+| Conteúdo | A altura é a do conteúdo, sem espaço vazio. Só rola se passar de 100% da tela menos 48 px (texto no maior tamanho). Itens de navegação são linhas, não botões com contorno (abaixo) |
+
+**Linhas de navegação (25/11).** Onde o painel só leva a outra tela (Personalizar: Lembretes e Aparência; lista de Lembretes), usar linhas em vez de botões com contorno: texto à esquerda (estilo Botão, `cinza-900`), chevron à direita (`cinza-700`, 28 px), altura mínima de 64 px e divisor de 1 px em `brand-seixo` entre linhas. Hierarquia do painel: título (Título 1), linhas, e o Voltar no rodapé. Botões com contorno ficam para ações (Apagar, Desfazer) e para escolhas (tamanho do texto).
+
+**Aparência.** O Confirmar fica desativado, com o motivo escrito abaixo, enquanto o tamanho escolhido for o atual.
+
+**Lembretes.** Sem lista, o painel mostra "Você ainda não tem lembretes." e, logo abaixo, o botão "Adicionar lembrete". O botão fica no topo do painel também quando há lembretes.
 
 ### 6.9 Telas de espera
 
@@ -389,7 +395,7 @@ Uma pergunta por tela. A pergunta usa Título 3 e o contador ("Pergunta 3 de 7")
 
 #### Menu do avatar (25/11)
 
-Aparece logo abaixo do avatar, ao tocar nele. Fundo `white`, borda de 2 px `cinza-500`, `radius-lg`, sem sombra. Dois itens de 64 px de altura mínima, 16 px entre eles: "Personalizar" e "Conexão com o ZENI". Fecha ao escolher um item, ao tocar fora ou com Esc. O avatar tem `aria-haspopup="menu"` e `aria-expanded`.
+Aparece logo abaixo do avatar, ao tocar nele. Fundo `white`, `radius-lg`, sem sombra e sem borda. Dois itens de 64 px de altura mínima, 16 px entre eles: "Personalizar" e "Conexão com o ZENI". Fecha ao escolher um item, ao tocar fora ou com Esc. O avatar tem `aria-haspopup="menu"` e `aria-expanded`.
 
 #### Dashboard da Home (25/11)
 

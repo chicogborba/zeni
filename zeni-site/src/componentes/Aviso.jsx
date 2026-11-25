@@ -25,11 +25,10 @@ export default function Aviso({ nivel = 'informacao', titulo, children }) {
   return (
     <div className={`aviso aviso--${nivel}`} role={nivel === 'urgente' ? 'alert' : 'status'}>
       <svg
-        className="aviso-icone"
+        className="icone aviso-icone"
         viewBox="0 0 28 28"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
         aria-hidden="true"

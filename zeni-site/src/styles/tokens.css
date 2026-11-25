@@ -83,6 +83,7 @@
   /* Toque */
   --target-min: 64px;
   --target-primary: 72px;
+  --target-voltar: calc(var(--target-primary) - var(--space-2)); /* NOVO (25/11): o Voltar fica um passo (8 px) abaixo do primário. 72 vira 64 */
   --grid-gap: var(--space-6);
 
   /* Gradientes (texto sempre cinza-900) */
@@ -131,6 +132,7 @@ h1, h2, h3, button { font-family: var(--font-heading); }
   --margin-x: var(--space-6);
   --content-max: 560px;
   --stroke: 2px;
+  --stroke-icone: 1.75px; /* traço de todos os ícones: o do cartão Minha evolução (1,5 em 24 × 28 px). Não muda com o tamanho do ícone */
   --radius-2xl: 64px; /* NOVO: maior que radius-xl (32). Cartões grandes da Home. Não está no design system */
   --scrim: rgb(26 31 32 / 0.4); /* cinza-900 a 40%, película do painel inferior */
   --press-scale: 0.98;
