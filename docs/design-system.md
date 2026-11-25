@@ -2,12 +2,14 @@
 
 Interface mobile (app e site) do ZENI, dispositivo de cuidado motor usado por pessoas com Parkinson e tremores. Este documento define cor, tipografia, espaço, componentes e regras de acessibilidade. As cores e os nomes vêm do arquivo "tec embutida" no Figma.
 
+> **Atualização de 25/11.** As "Decisões do grupo (25/11)" em `docs/fluxo-do-app.md` valem mais que as regras deste documento. Três exceções às regras de menu, uma decisão por tela e bottom sheet: menu suspenso no avatar, exercício do dia em tela cheia e nota em modal centralizado. Bottom sheets se ajustam à altura do conteúdo. As seções 1 (princípio 2), 6, 6.1, 6.2, 6.7, 6.8, 6.10, 6.11 e 11 foram marcadas onde mudam.
+
 ---
 
 ## 1. Princípios
 
 1. **Espaço em branco é conteúdo.** O vazio mostra o que importa e reduz a chance de erro de toque. Em dúvida, remova um elemento antes de reduzir o espaço.
-2. **Uma decisão por tela.** Cada tela tem uma ação principal, grande e óbvia. Ações secundárias ficam abaixo e com menos cor, mas nunca menores que 64 px de altura. Não existem botões pequenos, menus, abas nem barras de navegação.
+2. **Uma decisão por tela.** Cada tela tem uma ação principal, grande e óbvia. Ações secundárias ficam abaixo e com menos cor, mas nunca menores que 64 px de altura. Não existem botões pequenos, abas nem barras de navegação. Menu só um: o suspenso do avatar (exceção de 25/11).
 3. **Linguagem do usuário.** Nenhum termo técnico aparece na interface (ver glossário na seção 10).
 4. **Feito para mão com tremor.** Alvos de toque grandes, sem gestos de precisão, sem tempo limite para decidir.
 5. **Calma, não alarme.** Avisos informam e orientam. Não usam vermelho, piscadas ou mensagens de erro secas.
@@ -265,14 +267,16 @@ Sem sombras. A hierarquia vem de cor de fundo, gradiente e espaço. A sensação
 
 ## 6. Componentes
 
-Estrutura do app: uma **home** com cinco cartões grandes, e todas as outras telas abrem como **painel inferior** a partir da home. Não há menu, aba, barra de navegação nem botão pequeno. Todo toque cai num cartão ou num botão de 64 px ou mais.
+Estrutura do app: uma **home** com cartões grandes, e as outras telas abrem como **painel inferior** a partir da home. Não há aba, barra de navegação nem botão pequeno. Todo toque cai num cartão ou num botão de 64 px ou mais.
+
+**Exceções de 25/11:** (a) menu suspenso ao tocar no avatar, com Personalizar e Conexão com o ZENI; (b) o exercício do dia em tela cheia; (c) a nota em modal centralizado. A nova home está na seção 6.2.
 
 ### 6.1 Botões
 
 | Tipo | Fundo | Texto | Altura | Uso |
 |---|---|---|---|---|
 | Principal | brand-amarelo-300 | cinza-900 | 72 | Uma por tela (Começar, Conectar o ZENI) |
-| Secundário | cinza-900 | white | 64 | Segunda ação (Pausar, Voltar) |
+| Secundário | cinza-900 | white | 64 | Segunda ação (Pausar, Voltar). Regra de 25/11: o Voltar tem um passo (8 px) a menos que o primário |
 | Vazado | transparente, borda 2 px cinza-500 | cinza-900 | 64 | Ação de baixa importância |
 
 - Todo botão ocupa a largura da tela menos as margens. Não existe botão de texto nem link tocável no app: se algo precisa ser tocado, vira botão.
@@ -281,26 +285,21 @@ Estrutura do app: uma **home** com cinco cartões grandes, e todas as outras tel
 - Estado desativado: não usar cinza claro. Manter o contorno e escrever o motivo abaixo ("Conecte o ZENI para começar").
 - **Pausar** aparece em todas as telas de exercício, na mesma posição, 64 px de altura mínima.
 
-### 6.2 Cartões de atalho (home)
+### 6.2 Home
 
-A home mostra um cumprimento (Título 1) e uma grade de cinco cartões: **um largo e quatro quadrados**. Referência de tela: 390 × 844.
+Decisão de 25/11: a grade de um cartão largo e quatro quadrados deixa de valer. Referência de tela: 390 × 844. De cima para baixo:
 
-| Elemento | Medida |
-|---|---|
-| Cartão largo | 342 × 144, no topo da grade. É a ação principal do dia (ex.: "Começar o exercício") |
-| Cartões quadrados | 159 × 159, em 2 colunas × 2 linhas |
-| Espaço entre cartões | 24 px na horizontal e na vertical (`space-6`), maior que nas referências para dar respiro |
-| Raio | 32 (`radius-xl`) |
-| Padding | 24 no largo, 20 nos quadrados |
-| Fundo | Gradiente da seção 2.5, estático |
-| Conteúdo | Um título (Título 3) e uma linha de apoio (Apoio). Sem ícone, sem seta, sem botão dentro |
-| Toque | O cartão inteiro é o alvo. Estado de toque: reduz para 98% por 120 ms |
+| Elemento | Regra |
+| -------- | ----- |
+| Avatar | Topo, alvo de no mínimo 64 × 64, com a inicial da pessoa (Título 3). `aria-label` "Abrir menu". Abre o menu suspenso com Personalizar e Conexão com o ZENI. Exceção à regra de ícone sozinho (6.7) |
+| Pílula de bateria | Topo, ao lado do avatar. Raio `radius-full`, texto em Apoio (16 px). Informa a bateria do ZENI. Não é tocável |
+| Dashboard | Dois indicadores, **suavidade** e **ritmo**. Só leitura. Formato dos indicadores em aberto |
+| Botões | Dois, lado a lado: **Minha evolução** (esquerda) e **Começar o exercício** (direita). Largura de cada um: (390 − 2 × 24 − 16) ÷ 2 = 163. Altura mínima 72. Texto em até duas linhas, sem cortar e sem hifenizar |
+| Fundo | Gradiente em formato de bulb (forma exata em aberto). Estático. Texto sobre ele é sempre `cinza-900` e os pontos do gradiente seguem a seção 2.5 |
 
-Distribuição de gradientes: largo em `grad-amarelo-card`; quadrados em `grad-azul-card`, `grad-bruma-card`, `grad-cinza-card` e `grad-azul-card`, de modo que nenhum vizinho repita.
+Distância entre os dois botões: 16 px (`space-4`). Margem lateral de 24 px e 24 px de margem inferior mais a área segura. O estado de toque dos botões segue a seção 6.1.
 
-Os cinco destinos vêm do fluxograma: Conectar o ZENI, Começar o exercício, Minha evolução, Personalizar e Pedir ajuda ao ZENI. A ordem e o formato finais são definidos no código.
-
-Limite de texto nos quadrados: com 20 px de padding sobram cerca de 119 px de largura. Isso comporta cerca de 10 caracteres por linha em Título 3 e 12 em Apoio. Nomes como "Começar o exercício" e "Pedir ajuda ao ZENI" ocupam duas linhas: título de até duas linhas, apoio de uma linha curta ou nenhum. Com tamanho de fonte do sistema maior, o cartão cresce em altura e deixa de ser quadrado. Não cortar texto e não hifenizar.
+Em aberto: qual botão é o principal, o que a pílula mostra sem conexão, o que o dashboard mostra sem histórico e os pontos exatos do gradiente (ver pendência 11). O aviso "O ZENI não está conectado" continua no topo, quando for o caso.
 
 Cartão de conteúdo (dentro dos painéis): fundo `brand-porcelana`, raio 16, padding 24, sem borda, título (Título 3) e no máximo duas linhas de apoio.
 
@@ -331,15 +330,15 @@ Pequena etiqueta ("IA") em `brand-blue-100` com texto `brand-blue-800` (11,50:1)
 
 ### 6.7 Ícones
 
-Traço de 2 px, 28 px de área, cantos arredondados, `cinza-900`. Sempre com texto ao lado nas ações principais. Ícone nunca é alvo de toque sozinho.
+Traço de 2 px, 28 px de área, cantos arredondados, `cinza-900`. Sempre com texto ao lado nas ações principais. Ícone nunca é alvo de toque sozinho. Única exceção (25/11): o avatar da home, que mostra a inicial da pessoa e identifica o botão.
 
 ### 6.8 Painel inferior
 
-Toda tela que não é a home abre como painel inferior, tocando num cartão. Só existe um nível: o painel nunca abre outro painel, e "Voltar" sempre leva à home.
+Toda tela que não é a home abre como painel inferior, tocando num cartão ou no menu do avatar. Só existe um nível: o painel nunca abre outro painel, e "Voltar" sempre leva à home. **Exceções de 25/11:** o exercício do dia (tela cheia) e a nota (modal centralizado). Em "Minha evolução" (somente nessa tela), Exportar fica à esquerda, na altura do primário (72), e Voltar à direita, um passo menor (64), lado a lado e alinhados pela base.
 
 | Elemento | Regra |
 |---|---|
-| Altura | 88% da tela, deixando visível uma faixa da home. O exercício em andamento usa altura total |
+| Altura | Se ajusta à altura do conteúdo (25/11; antes: 88% da tela). O exercício em andamento usa altura total |
 | Forma | Fundo `white`, cantos superiores `radius-lg` (24) |
 | Película | Sobre a home, `cinza-900` a 40%. Tocar na película também fecha o painel |
 | Entrada e saída | Sobe e desce em 250 ms. Com "reduzir movimento", troca direta |
@@ -370,13 +369,13 @@ Se a espera passar de 15 segundos, o texto muda para uma frase calma ("Está dem
 
 ### 6.10 Pausado
 
-Tela do exercício em altura total (seção 6.8). Mostra "Exercício pausado" (Título 1) e uma frase calma de apoio (Corpo), sem tempo limite. Dois botões: **Continuar** (principal, 72), que retoma o exercício, e **Terminar** (secundário, 64), que encerra e leva à avaliação. Terminar segue a regra de "Desfazer" por 8 segundos (seção 7).
+Tela do exercício em altura total (seção 6.8). Mostra "Exercício pausado" (Título 1) e uma frase calma de apoio (Corpo), sem tempo limite. Dois botões: **Continuar** (principal, 72), que retoma o exercício, e **Terminar** (secundário, 64), que encerra. Se a série de 3 ainda não acabou, Terminar leva à home, sem nota, e o exercício em andamento é descartado (provisório, 25/11). A avaliação só vem ao fim da série. Na voz, "repetir" mostra de novo a animação do exercício atual, com o exercício em pausa até "Continuar". Terminar segue a regra de "Desfazer" por 8 segundos (seção 7).
 
 A pausa automática por dificuldade usa a mesma tela. A frase de apoio é o aviso urgente da seção 6.4 ("O exercício foi pausado. Vamos descansar um pouco.").
 
 ### 6.11 Reconexão durante o exercício
 
-Quando o sinal do ZENI cai, o exercício fica em pausa e aparece o aviso de informação "Reconectando ao ZENI…" (seção 6.4), sem botões. O app tenta duas vezes, com 10 segundos cada (valor ajustável). Se as duas falharem, a tela pergunta "Perdi o sinal do ZENI. Quer tentar de novo?", com **Tentar de novo** (principal) e **Voltar ao início** (secundário). Essa pergunta não tem limite de tempo.
+Quando o sinal do ZENI cai, o exercício fica em pausa e aparece o aviso de informação "Reconectando ao ZENI…" (seção 6.4), sem botões. O app tenta duas vezes, com 10 segundos cada (valor ajustável). Se as duas falharem, a tela pergunta "Perdi o sinal do ZENI. Quer tentar de novo?", com **Tentar de novo** (principal) e **Voltar ao início** (secundário). Essa pergunta não tem limite de tempo. Voltar ao início segue a regra de Terminar no meio da série: home, sem nota, exercício em andamento descartado (provisório, 25/11).
 
 ### 6.12 Perguntas de triagem (PAR-Q)
 
@@ -411,7 +410,7 @@ Estas regras valem mais do que o gosto visual.
 | Situação | Retorno no app |
 |---|---|
 | Conexão feita | Ícone muda para cinza-900 sobre brand-amarelo-300, 200 ms, mais mensagem de texto |
-| Ritmo guiado | Círculo `brand-amarelo-300` que cresce e encolhe no tempo do ritmo, sem passar de 3 pulsos por segundo |
+| Ritmo guiado | Círculo `brand-amarelo-300` que cresce e encolhe no tempo do ritmo, sem passar de 3 pulsos por segundo. Na v1 é o único guia de ritmo: luz, vibração e música do dispositivo ficam na v2 |
 | Fim do exercício | Nota aparece por contagem rápida de 600 ms |
 | Troca de tela | Deslize curto de 200 ms. Com "reduzir movimento", troca direta |
 | Painel inferior | Sobe e desce em 250 ms |
@@ -564,7 +563,7 @@ Tom por situação: incentivo curto ao terminar ("Bom trabalho hoje."), nunca co
 8. **Logo e nome ZENI.** Definir o logotipo em Chillax, versões em cinza-900 e em brand-amarelo-300, e a área de respiro.
 9. **Modo escuro e alto contraste.** Fora do escopo desta versão.
 10. **Exportação para o fisioterapeuta.** Definir o layout do PDF, que pode ter regras tipográficas próprias.
-11. **Home.** Os cinco destinos vêm do fluxograma. A ordem e o formato finais ficam para o código. "Começar o exercício" e "Pedir ajuda ao ZENI" ocupam duas linhas nos cartões quadrados. Conferir no código, com Chillax 22 px e com fonte do sistema ampliada.
+11. **Home.** (Atualizado em 25/11: a nova home está na seção 6.2. Ficam em aberto o botão principal, a pílula sem conexão, o dashboard sem histórico e os pontos do gradiente em bulb. O texto abaixo sobre cartões quadrados é histórico.) Os cinco destinos vinham do fluxograma. A ordem e o formato finais ficam para o código. "Começar o exercício" e "Pedir ajuda ao ZENI" ocupam duas linhas nos cartões quadrados. Conferir no código, com Chillax 22 px e com fonte do sistema ampliada.
 12. **Um nível só de painel.** A seção 6.8 diz que o painel nunca abre outro e que "Voltar" leva sempre à home. "Personalizar" tem cinco itens com sequências próprias, e dele se pode abrir "Pedir ajuda ao ZENI". Definir se cada item vira um painel em sequência ou se a regra de um nível muda.
 13. **Perspectiva.** Interpretei como profundidade por raio grande e gradiente diagonal, sem inclinar cartões nem texto. Texto inclinado piora a leitura e o público já tem dificuldade de estabilidade. Perspectiva real só em material de divulgação, se quiser.
 14. **Gradiente parado após 5 segundos.** Pode parecer que o app travou. Testar a tela de espera com pessoas reais. O limite de 15 segundos para a mensagem de demora pode precisar baixar.
