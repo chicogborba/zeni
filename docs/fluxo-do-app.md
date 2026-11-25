@@ -239,7 +239,7 @@ Aparecem tracejados no fluxograma.
 - **Home:** a grade de cinco cartões foi substituída em 25/11 (decisão 10). A seção 6.2 do design system descreve a nova Home.
 - **Avisos (seção 6.4):** "Reconectando" corresponde ao aviso de informação, bateria fraca ao de atenção e a pausa por dificuldade ao urgente.  
 - **Telas de espera (seção 6.9):** "procurando" corresponde ao passo 1.2 e "abertura" a H.2.  
-- **Etiqueta IA (seção 6.6):** o fluxograma marca 2.1, 2.1a, 2.5, 3.6 e 7.3 (o 7.3 fica fora da v1). O design system também prevê a etiqueta em "ajuste da meta" (3.4), que o fluxograma não marca.  
+- **Etiqueta IA (seção 6.6):** o fluxograma marca 2.1, 2.1a, 2.5, 3.6 e 7.3 (o 7.3 fica fora da v1). O design system também prevê a etiqueta em "ajuste da meta" (3.4), que o fluxograma não marca.   **Decisão posterior:** a etiqueta e a frase "O app escolheu os exercícios de hoje" saíram da instrução do exercício (2.1); as demais continuam.
 - **Vocabulário:** o fluxograma já fala "exercício" e "o ZENI". Os exemplos do design system ainda dizem "manopla" e "treino". No site, valem os termos do fluxograma.  
   
 ## Versão 2 (fora da v1)  
