@@ -23,7 +23,8 @@ PAR-Q (Physical Activity Readiness Questionnaire, ou Questionário de Prontidão
 - Cada resposta guarda: número da pergunta (1 a 7), resposta (sim ou não) e data e hora.
 - Na v1 o registro fica no aparelho, simulando o servidor. Depois, vai para o backend, para alimentar o entendimento do app sobre a pessoa.
 - Nenhuma resposta mostra alerta, ícone de aviso ou cor diferente.
-- O registro exige consentimento antes de guardar (texto a definir).
+- O registro exige consentimento antes de guardar. Texto provisório (decisão 19 de 25/11, a revisar com profissional de saúde e LGPD): "O ZENI guarda suas respostas só neste aparelho, para ajustar os exercícios. O ZENI não substitui a orientação de um profissional de saúde." Botão: "Concordo e continuar". Aparece antes das perguntas.
+- A segunda frase do consentimento é a frase fixa: todas as pessoas a veem, independente das respostas.
 
 ## Interpretação padrão do questionário (só referência)
 
@@ -35,5 +36,5 @@ O ZENI não aplica essa orientação sozinho: pela decisão do grupo, o "sim" s�
 ## Pendências
 
 1. **Linguagem leve.** O design system pede linguagem leiga, mas as perguntas acima são o texto original. Mudar a redação de um questionário de saúde precisa de revisão de profissional da área. Até lá, usar o texto original.
-2. **Consentimento.** Escrever o texto de consentimento para guardar dados de saúde (LGPD).
-3. **Frase fixa.** Decidir se todas as pessoas veem uma frase igual ao fim, independente das respostas (por exemplo, que o ZENI não substitui orientação profissional), já que um "sim" não mostra nada.
+2. **Consentimento.** Texto provisório registrado (acima). Falta a revisão por profissional de saúde e LGPD.
+3. **Frase fixa.** Decidido em 25/11: a segunda frase do consentimento vale para todas as pessoas.

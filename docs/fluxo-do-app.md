@@ -51,6 +51,29 @@ Valem mais que a imagem do fluxograma, mais que as decisões de 24/11 e mais que
 12. **"Terminar" no meio da série** *(provisório)*. Encerra a sessão e volta à Home, sem nota. Os exercícios já concluídos ficam registrados como feitos, sem nota, e o exercício em andamento é descartado. Vale também para "Voltar ao início" depois da falha de reconexão. Isto responde ao ponto aberto 1 de antes, também como provisório. A avaliação (bloco 3) só roda quando a série de 3 é concluída.
 13. **Avatar.** Alvo de toque de no mínimo 64 px (seção 7 do design system), com a **inicial da pessoa** como conteúdo e `aria-label` "Abrir menu". É exceção à regra "ícone nunca é alvo de toque sozinho" (seção 6.7), porque a inicial identifica o botão.
 14. **Exportar e Voltar lado a lado** em "Minha evolução", **somente nessa tela**, como exceção ao rodapé empilhado (seção 6.8). Exportar à esquerda, na altura do botão primário (72). Voltar à direita, um passo menor (64), alinhados pela base.
+15. **Medidas do ZENI: vale o modelo 3D.** Comprimento de 160 mm, 60 mm de diâmetro nas pontas e cerca de 45 mm na cintura. Não há outras medidas válidas. As medidas antigas (zona central de 38 a 40 mm e bojo de 45 a 48 mm) não valem. Elas não estavam nos documentos deste repositório, então não havia o que remover; se aparecerem em outro lugar (apresentação, Figma), atualizar.
+16. **Home: detalhes.**
+    - **Botão principal:** "Começar o exercício" (amarelo, com mais destaque). "Minha evolução" é o secundário (cinza).
+    - **Pílula do ZENI:** com conexão, mostra o nível de bateria. Sem conexão, mostra "ZENI desconectado" em cinza claro, sem nível de bateria.
+    - **Dashboard sem histórico:** o número grande fica como "–" em cinza claro, com o rótulo ("suavidade", "ritmo") abaixo. Sem texto explicativo.
+    - **Gradiente em bulb:** elipse radial grande, centralizada na horizontal, ocupando a área livre entre o topo e o dashboard. Vai de amarelo-100 no centro até transparente nas bordas, sem contorno, sobre o fundo da tela. Sem animação na home.
+17. **Série do dia e instruções.** A série segue sempre esta ordem: amplitude (A ou B), ritmo (C ou D), manter a energia (E ou F). Para escolher entre os dois de cada grupo, vale a **paridade do dia do ano**: dia par escolhe o primeiro (A, C, E), dia ímpar escolhe o segundo (B, D, F). A instrução de cada exercício é uma frase curta de legenda mais a animação, em SVG, da figura segurando o ZENI:
+
+    | Exercício | Animação |
+    | --------- | -------- |
+    | A "Girar o punho" | O antebraço gira com a palma virando para cima e para baixo, cotovelo dobrado |
+    | B "Levantar até o ombro" | O braço sobe da cintura até a altura do ombro e volta devagar |
+    | C "No ritmo" | Pequenas flexões do punho no tempo do pulso amarelo |
+    | D "Tocar na mesa" | O ZENI sobe um pouco e volta a tocar a mesa no tempo do pulso |
+    | E "Mesma força até o fim" | A mesma rotação do punho repetida, sempre na mesma velocidade |
+    | F "Lado a lado" | O antebraço apoiado na mesa vai de um lado para o outro, trocando de sentido sem parar |
+
+    A mesma instrução aparece em 2.2 e quando a pessoa pede "Repetir" (decisão 11).
+18. **Exportar** (em Minha evolução). Tocar em Exportar abre um bottom sheet com duas linhas: "Salvar em PDF" e "Enviar link".
+    - **Salvar em PDF:** gera o resumo da evolução do período escolhido (7 ou 30 dias) e abre a impressão do navegador.
+    - **Enviar link:** sem backend na v1, usa a Web Share API com um texto-resumo. Se o navegador não suportar, copia o texto e mostra "Copiado". O link real depende do backend e fica para a v2.
+19. **Consentimento do PAR-Q** *(texto provisório, a revisar com profissional de saúde e LGPD)*: "O ZENI guarda suas respostas só neste aparelho, para ajustar os exercícios. O ZENI não substitui a orientação de um profissional de saúde." A segunda frase vale como frase fixa para todas as pessoas, independente das respostas. Botão: "Concordo e continuar".
+20. **Permissões.** O microfone é pedido apenas ao começar o primeiro exercício, depois de uma tela curta de explicação: "O ZENI escuta só durante o exercício, para ouvir a palavra pausar". Se a pessoa negar, os botões continuam funcionando e a voz fica desligada. **Bluetooth:** na v1 a conexão é simulada, então não há permissão real. A permissão de Bluetooth fica para a v2.
 
 Efeito sobre as decisões de 24/11: a 4 (significado do bloco 7), a 6 (um único comando de voz) e a 7 (bloco 7 só por texto) ficam superadas. As demais continuam valendo.
 
@@ -79,12 +102,12 @@ Valem mais que a imagem do fluxograma.
 | Elemento | O que é |
 | -------- | ------- |
 | Avatar | Inicial da pessoa. Abre o menu suspenso com Personalizar (bloco 6) e Conexão com o ZENI (bloco 1) |
-| Pílula de bateria | Bateria do ZENI, no topo, ao lado do avatar |
-| Dashboard | Suavidade e ritmo |
-| Minha evolução | Botão, lado esquerdo (bloco 4) |
-| Começar o exercício | Botão, lado direito (bloco 2) |
+| Pílula do ZENI | No topo, ao lado do avatar. Com conexão, o nível de bateria. Sem conexão, "ZENI desconectado" (decisão 16) |
+| Dashboard | Suavidade e ritmo. Sem histórico, "–" com o rótulo embaixo |
+| Minha evolução | Botão secundário, lado esquerdo (bloco 4) |
+| Começar o exercício | Botão principal, lado direito (bloco 2) |
 
-O fundo é um gradiente em formato de bulb. "Pedir ajuda ao ZENI" (bloco 7) está fora da v1. A ordem e o formato visual dos itens estão no design system, seção 6.2.
+O fundo é um gradiente radial em formato de bulb (decisão 16). "Pedir ajuda ao ZENI" (bloco 7) está fora da v1. A ordem e o formato visual dos itens estão no design system, seção 6.2.
 
 ## 1. Conectar com o ZENI  
   
@@ -132,7 +155,7 @@ Os casos de erro saem de 2.4 (perda de sinal e bateria) e de 2.5 (muita dificuld
   
 - **4.1** [Pessoa] "Tocar em Minha Evolução e escolher 7 ou 30 dias".  
 - **4.2** [Vê] "Ver gráficos da evolução".  
-- **4.3** [Pessoa] "Salvar em PDF ou enviar link".  
+- **4.3** [Pessoa] "Salvar em PDF ou enviar link". Na v1: Exportar abre um bottom sheet com as duas opções (decisão 18).  
 - **4.4** Volta à Tela inicial.  
   
 ## 6. Personalizar o app  
@@ -203,13 +226,13 @@ Aparecem tracejados no fluxograma.
 Decidir antes ou durante a execução. Não assumir sozinho.  
   
 1. ~~Dados do exercício após falha de reconexão.~~ Respondido em 25/11 como provisório (decisão 12): o exercício em andamento é descartado, os concluídos ficam registrados sem nota.
-2. **PAR-Q.** O modelo é o PAR-Q de 7 perguntas (==docs/triagem-parq.md==). Falta o texto de consentimento para dados de saúde, a revisão da redação em linguagem leve por profissional da área e a decisão sobre uma frase fixa para todos, independente das respostas (por exemplo, que o ZENI não substitui orientação profissional), já que um "sim" não mostra nada à pessoa.  
-3. **Primeiro uso e permissões.** Sem histórico, 2.1 e 2.5 não têm ritmo de referência. O microfone (para "pausar") e o Bluetooth não têm passo de permissão no fluxograma.  
+2. **PAR-Q.** O modelo é o PAR-Q de 7 perguntas (==docs/triagem-parq.md==). O texto de consentimento e a frase fixa estão registrados como provisórios (decisão 19). Falta a revisão do consentimento por profissional de saúde e LGPD, e a revisão da redação das perguntas em linguagem leve.
+3. **Primeiro uso.** Permissões respondidas em 25/11 (decisão 20). Continua aberto: sem histórico, 2.1 e 2.5 não têm ritmo de referência (a série em si já tem regra, decisão 17).
 4. **Lembretes na v1.** "O app avisa no horário marcado" só funciona com o app aberto. Confirmar que é isso que a v1 entrega.  
-5. **Enviar link (4.3).** Falta definir para quem vai, a privacidade desses dados e o layout do PDF (design system, pendência 10).  
+5. **Enviar link (4.3).** Na v1 é o texto-resumo (decisão 18). Na v2, com backend: para quem vai o link, a privacidade desses dados e o layout do PDF (design system, pendência 10).
 6. **Nota de 0 a 100.** Continua em 3.2 e 3.6 (design system, pendência 7).  
 7. **Numeração.** O fluxograma pula o número 5, e o bloco de casos de erro não tem número. No código, citar os blocos pelo nome.
-8. **Resolvidos em 25/11** (decisões 9 a 14): catálogo, Home, "Repetir", "Terminar" no meio da série (provisório), avatar e Exportar/Voltar.
-9. **Regra simples da série do dia.** Falta definir como o exercício de cada grupo alterna a cada dia (por exemplo, por dia da semana ou em rodízio) e o que o app faz quando não há histórico. Também faltam a descrição e a animação de como fazer de cada exercício (A a F).
-10. **Home: detalhes.** Qual dos dois botões é o principal (amarelo, 72) e qual é o secundário; o que a pílula de bateria mostra quando o ZENI não está conectado; o que o dashboard mostra sem histórico; e os pontos exatos do gradiente em formato de bulb, dentro dos limites de contraste do design system (seção 2.5).
-11. **Enviar link e Salvar em PDF.** Como as duas opções aparecem ao tocar em Exportar (ver também o ponto 5).
+8. **Resolvidos em 25/11** (decisões 9 a 20): catálogo, Home, "Repetir", "Terminar" no meio da série (provisório), avatar, Exportar/Voltar, medidas do ZENI, detalhes da Home, regra da série, exportação, consentimento e permissões.
+9. **Textos das legendas.** Cada exercício (A a F) precisa da frase curta de legenda e do desenho em SVG. As legendas ainda não foram escritas.
+10. **Cinza claro e contraste.** A decisão 16 pede "cinza claro" no "–" do dashboard e em "ZENI desconectado". O design system só aceita texto a partir de `cinza-600` (4,5:1) ou de `cinza-500` em texto grande (3:1); `cinza-400` e mais claros não passam (seção 2.3). Escolher o token.
+11. **Tela do microfone.** O texto da decisão 20 fala só da palavra "pausar", mas a v1 reconhece quatro comandos (decisão 5). Ajustar o texto ou manter. Falta também o rótulo do botão dessa tela.

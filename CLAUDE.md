@@ -26,10 +26,12 @@ Seguir `docs/fluxo-do-app.md`. Ordem de prioridade: a seção "Decisões do grup
 - Sem backend. Os dados (respostas do PAR-Q, histórico, ajustes) ficam guardados no aparelho, simulando o servidor.
 - O ZENI (dispositivo) é simulado: a conexão e os dados de movimento são gerados pelo app. Bluetooth real fica para depois.
 - A IA é simulada por regras simples (sugestão do exercício, nota, resumo, ritmo habitual).
-- Home: avatar e pílula de bateria no topo, dashboard (suavidade e ritmo), dois botões lado a lado (Minha evolução e Começar o exercício) e gradiente de fundo em formato de bulb. A grade de cartões não vale mais.
-- O exercício diário é uma série de 3 exercícios, um de cada grupo do catálogo (decisão 9 de 25/11 em `docs/fluxo-do-app.md`), alternando por dia. A nota só aparece ao fim da série.
+- Home: avatar e pílula do ZENI no topo, dashboard (suavidade e ritmo), dois botões lado a lado e gradiente de fundo em bulb. "Começar o exercício" é o principal (amarelo), "Minha evolução" o secundário (cinza). Detalhes na decisão 16 de `docs/fluxo-do-app.md`. A grade de cartões não vale mais.
+- O exercício diário é uma série de 3 exercícios, um de cada grupo do catálogo (decisão 9 de 25/11 em `docs/fluxo-do-app.md`), sempre na ordem amplitude, ritmo, manter a energia. Entre os dois de cada grupo, a paridade do dia do ano decide (par: o primeiro, ímpar: o segundo). A nota só aparece ao fim da série.
 - "Terminar" no meio da série (e "Voltar ao início" após falha de reconexão) volta à Home sem nota. Os exercícios concluídos ficam registrados sem nota e o em andamento é descartado. Provisório.
-- Minha evolução abre direto no dashboard, com alternador 7/30 dias no topo. Embaixo: Exportar (Salvar em PDF ou Enviar link) à esquerda e Voltar à direita.
+- Minha evolução abre direto no dashboard, com alternador 7/30 dias no topo. Embaixo: Exportar à esquerda e Voltar à direita. Exportar abre um bottom sheet com "Salvar em PDF" (abre a impressão do navegador) e "Enviar link" (Web Share API com texto-resumo; sem suporte, copia e mostra "Copiado"). O link real fica para a v2.
+- Microfone: pedido só ao começar o primeiro exercício, depois de uma tela de explicação. Se negado, a voz fica desligada e os botões continuam. Bluetooth real é v2.
+- Medidas do ZENI: vale o modelo 3D. 160 mm de comprimento, 60 mm de diâmetro nas pontas e cerca de 45 mm na cintura.
 - Voz, só durante o exercício: pausar, continuar, terminar, repetir. Os botões ficam sempre na tela. "Repetir" mostra de novo a animação do exercício atual e pausa o exercício até "Continuar".
 - Ritmo: na v1 aparece na tela por um pulso amarelo. Luz, vibração e música do dispositivo ficam na v2.
 - Bloco 7 (Pedir ajuda ao ZENI) fora da v1.

@@ -2,7 +2,7 @@
 
 Interface mobile (app e site) do ZENI, dispositivo de cuidado motor usado por pessoas com Parkinson e tremores. Este documento define cor, tipografia, espaço, componentes e regras de acessibilidade. As cores e os nomes vêm do arquivo "tec embutida" no Figma.
 
-> **Atualização de 25/11.** As "Decisões do grupo (25/11)" em `docs/fluxo-do-app.md` valem mais que as regras deste documento. Três exceções às regras de menu, uma decisão por tela e bottom sheet: menu suspenso no avatar, exercício do dia em tela cheia e nota em modal centralizado. Bottom sheets se ajustam à altura do conteúdo. As seções 1 (princípio 2), 6, 6.1, 6.2, 6.7, 6.8, 6.10, 6.11 e 11 foram marcadas onde mudam.
+> **Atualização de 25/11.** As "Decisões do grupo (25/11)" em `docs/fluxo-do-app.md` valem mais que as regras deste documento. Três exceções às regras de menu, uma decisão por tela e bottom sheet: menu suspenso no avatar, exercício do dia em tela cheia e nota em modal centralizado. Bottom sheets se ajustam à altura do conteúdo. As seções 1 (princípio 2), 2.5, 6, 6.1, 6.2, 6.7, 6.8, 6.10, 6.11, 9 e 11 foram marcadas onde mudam. As seções 6.13 a 6.15 são novas.
 
 ---
 
@@ -166,6 +166,7 @@ Todo fundo de cor do app é um gradiente, para dar leveza e sensação de movime
 | `grad-azul-card` | 160°: blue-50 (0%), blue-200 (100%) | Cartões da home |
 | `grad-bruma-card` | 160°: porcelana (0%), bruma (100%) | Cartões da home |
 | `grad-cinza-card` | 160°: cinza-50 (0%), cinza-200 (100%) | Cartões da home |
+| `grad-bulb` | Radial, elipse: amarelo-100 (centro) até transparente (bordas) | Fundo da home (25/11) |
 
 Regras:
 
@@ -292,14 +293,14 @@ Decisão de 25/11: a grade de um cartão largo e quatro quadrados deixa de valer
 | Elemento | Regra |
 | -------- | ----- |
 | Avatar | Topo, alvo de no mínimo 64 × 64, com a inicial da pessoa (Título 3). `aria-label` "Abrir menu". Abre o menu suspenso com Personalizar e Conexão com o ZENI. Exceção à regra de ícone sozinho (6.7) |
-| Pílula de bateria | Topo, ao lado do avatar. Raio `radius-full`, texto em Apoio (16 px). Informa a bateria do ZENI. Não é tocável |
-| Dashboard | Dois indicadores, **suavidade** e **ritmo**. Só leitura. Formato dos indicadores em aberto |
-| Botões | Dois, lado a lado: **Minha evolução** (esquerda) e **Começar o exercício** (direita). Largura de cada um: (390 − 2 × 24 − 16) ÷ 2 = 163. Altura mínima 72. Texto em até duas linhas, sem cortar e sem hifenizar |
-| Fundo | Gradiente em formato de bulb (forma exata em aberto). Estático. Texto sobre ele é sempre `cinza-900` e os pontos do gradiente seguem a seção 2.5 |
+| Pílula do ZENI | Topo, ao lado do avatar. Raio `radius-full`, texto em Apoio (16 px). Não é tocável. Com conexão, mostra o nível de bateria. Sem conexão, mostra "ZENI desconectado" em cinza claro, sem nível de bateria |
+| Dashboard | Dois indicadores, **suavidade** e **ritmo**. Só leitura. Sem histórico: o número grande ("Número grande") fica como "–" em cinza claro, com o rótulo ("suavidade", "ritmo") abaixo. Sem texto explicativo |
+| Botões | Dois, lado a lado: **Minha evolução** (esquerda, secundário, cinza) e **Começar o exercício** (direita, principal, amarelo, com mais destaque). Largura de cada um: (390 − 2 × 24 − 16) ÷ 2 = 163. Altura mínima 72. Texto em até duas linhas, sem cortar e sem hifenizar |
+| Fundo | `grad-bulb` (seção 2.5): elipse radial grande, centralizada na horizontal, ocupando a área livre entre o topo e o dashboard. Vai de `brand-amarelo-100` no centro até transparente nas bordas, sem contorno, sobre o fundo da tela. Sem animação na home |
 
 Distância entre os dois botões: 16 px (`space-4`). Margem lateral de 24 px e 24 px de margem inferior mais a área segura. O estado de toque dos botões segue a seção 6.1.
 
-Em aberto: qual botão é o principal, o que a pílula mostra sem conexão, o que o dashboard mostra sem histórico e os pontos exatos do gradiente (ver pendência 11). O aviso "O ZENI não está conectado" continua no topo, quando for o caso.
+Em aberto: o token do "cinza claro" (ver pendência 11). O aviso "O ZENI não está conectado" continua no topo, quando for o caso.
 
 Cartão de conteúdo (dentro dos painéis): fundo `brand-porcelana`, raio 16, padding 24, sem borda, título (Título 3) e no máximo duas linhas de apoio.
 
@@ -384,6 +385,25 @@ Uma pergunta por tela. A pergunta usa Título 3 e o contador ("Pergunta 3 de 7")
 - Sim e Não têm a mesma aparência. Nenhuma resposta usa cor de alerta, ícone de aviso ou mensagem de risco.
 - Nenhuma resposta bloqueia o fluxo.
 - As perguntas e o uso das respostas estão em `docs/triagem-parq.md`.
+
+### 6.13 Exportar
+
+Em "Minha evolução", tocar em Exportar abre um bottom sheet (seção 6.8) com duas linhas, cada uma um botão de 64 px ou mais, 16 px entre elas:
+
+| Linha | O que faz |
+|---|---|
+| Salvar em PDF | Gera o resumo da evolução do período escolhido (7 ou 30 dias) e abre a impressão do navegador |
+| Enviar link | Sem backend na v1, usa a Web Share API com um texto-resumo. Se o navegador não suportar, copia o texto e mostra "Copiado". O link real depende do backend (v2) |
+
+### 6.14 Consentimento e microfone
+
+- **Consentimento do PAR-Q** (provisório, a revisar com profissional de saúde e LGPD). Tela antes das perguntas, com o texto "O ZENI guarda suas respostas só neste aparelho, para ajustar os exercícios. O ZENI não substitui a orientação de um profissional de saúde." e o botão principal "Concordo e continuar".
+- **Microfone.** Pedido só ao começar o primeiro exercício, depois de uma tela curta de explicação: "O ZENI escuta só durante o exercício, para ouvir a palavra pausar". Se a pessoa negar, os botões continuam funcionando e a voz fica desligada.
+- **Bluetooth.** Sem permissão na v1, porque a conexão é simulada. Fica para a v2.
+
+### 6.15 Como fazer o exercício
+
+Tela de instrução (2.2) e tela de "Repetir": uma frase curta de legenda e, acima dela, a animação em SVG da figura segurando o ZENI. Não pisca mais de 3 vezes por segundo (seção 7) e, com "reduzir movimento", mostra um quadro parado. Animação de cada exercício: ver a tabela da decisão 17 em `docs/fluxo-do-app.md`.
 
 ---
 
@@ -505,6 +525,7 @@ Estas regras valem mais do que o gosto visual.
   --grad-azul-card: linear-gradient(160deg, var(--brand-blue-50) 0%, var(--brand-blue-200) 100%);
   --grad-bruma-card: linear-gradient(160deg, var(--brand-porcelana) 0%, var(--brand-bruma) 100%);
   --grad-cinza-card: linear-gradient(160deg, var(--cinza-50) 0%, var(--cinza-200) 100%);
+  --grad-bulb: radial-gradient(ellipse at center, var(--brand-amarelo-100) 0%, transparent 100%); /* 25/11: ainda falta em tokens.css */
 }
 
 body {
@@ -563,7 +584,7 @@ Tom por situação: incentivo curto ao terminar ("Bom trabalho hoje."), nunca co
 8. **Logo e nome ZENI.** Definir o logotipo em Chillax, versões em cinza-900 e em brand-amarelo-300, e a área de respiro.
 9. **Modo escuro e alto contraste.** Fora do escopo desta versão.
 10. **Exportação para o fisioterapeuta.** Definir o layout do PDF, que pode ter regras tipográficas próprias.
-11. **Home.** (Atualizado em 25/11: a nova home está na seção 6.2. Ficam em aberto o botão principal, a pílula sem conexão, o dashboard sem histórico e os pontos do gradiente em bulb. O texto abaixo sobre cartões quadrados é histórico.) Os cinco destinos vinham do fluxograma. A ordem e o formato finais ficam para o código. "Começar o exercício" e "Pedir ajuda ao ZENI" ocupam duas linhas nos cartões quadrados. Conferir no código, com Chillax 22 px e com fonte do sistema ampliada.
+11. **Home.** (Atualizado em 25/11: a nova home está na seção 6.2 e os detalhes foram decididos. Fica em aberto o token do "cinza claro" do "–" do dashboard e de "ZENI desconectado": `cinza-400` e mais claros não passam como texto (seção 2.3); usar `cinza-500` só em texto grande e `cinza-600` em 16 a 18 px. Os cartões quadrados abaixo são histórico.)
 12. **Um nível só de painel.** A seção 6.8 diz que o painel nunca abre outro e que "Voltar" leva sempre à home. "Personalizar" tem cinco itens com sequências próprias, e dele se pode abrir "Pedir ajuda ao ZENI". Definir se cada item vira um painel em sequência ou se a regra de um nível muda.
 13. **Perspectiva.** Interpretei como profundidade por raio grande e gradiente diagonal, sem inclinar cartões nem texto. Texto inclinado piora a leitura e o público já tem dificuldade de estabilidade. Perspectiva real só em material de divulgação, se quiser.
 14. **Gradiente parado após 5 segundos.** Pode parecer que o app travou. Testar a tela de espera com pessoas reais. O limite de 15 segundos para a mensagem de demora pode precisar baixar.
