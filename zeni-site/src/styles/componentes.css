@@ -283,7 +283,7 @@
 
 /* ---------- Home: dashboard e dois botões, encostados no rodapé (decisão da autora; parte da 6.2) ---------- */
 .tela--home {
-  --home-botao-altura: 0.75; /* altura do botão = 0.75 × a largura dele (aspect-ratio 1 / 0.75) */
+  --home-botao-altura: 0.75; /* altura do botão = 0.75 × a largura dele + 20 px (ver .cartao) */
   --home-dados-altura: 188px; /* era 208 px; menos 20 px */
   position: relative;
   isolation: isolate;
@@ -351,6 +351,7 @@
 /* Dois botões lado a lado, mais baixos que um quadrado */
 .home-grade {
   flex: none;
+  container-type: inline-size; /* a altura dos cartões é calculada a partir da largura desta faixa */
   display: flex;
   flex-direction: row; /* evolução à esquerda, exercício à direita */
   gap: var(--grid-gap);
@@ -360,7 +361,8 @@
   flex: 1;
   min-width: 0;
   align-self: flex-start;
-  aspect-ratio: 1 / var(--home-botao-altura);
+  /* altura = 0,75 × a largura do cartão + 20 px (antes só 0,75 × a largura); min-height deixa o texto grande crescer */
+  min-height: calc((100cqw - var(--grid-gap)) / 2 * var(--home-botao-altura) + 20px);
   padding: var(--space-4);
   border-radius: var(--radius-xl); /* o mesmo raio em cima e embaixo */
   display: flex;
