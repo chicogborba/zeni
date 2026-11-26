@@ -299,7 +299,7 @@
   background: var(--grad-bulb);
 }
 
-/* Faixa de dados: só cinzas. Fundo = grad-cinza-card (cinza-50 a cinza-200); cartões um tom mais escuros (cinza-100 a cinza-300) */
+/* Faixa de dados: só cinzas. Fundo = grad-cinza-card (cinza-50 a cinza-200); cartões com o mesmo gradiente (cinza-50 a cinza-200), separados pelo glow interno */
 .home-dados {
   flex: none;
   height: var(--home-dados-altura);
@@ -317,7 +317,7 @@
   min-width: 0;
   padding: var(--space-3);
   border-radius: var(--radius-2xl); /* o mesmo raio do painel que envolve os cartões */
-  background: linear-gradient(160deg, var(--cinza-100) 0%, var(--cinza-300) 100%); /* nada mais escuro que cinza-300 */
+  background: linear-gradient(160deg, var(--cinza-50) 0%, var(--cinza-200) 100%); /* era cinza-100 a cinza-300 */
   box-shadow: var(--brilho-interno);
   display: grid;
   grid-template-rows: 1fr auto 1fr;
