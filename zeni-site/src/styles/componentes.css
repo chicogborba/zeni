@@ -316,7 +316,7 @@
   flex: 1;
   min-width: 0;
   padding: var(--space-3);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-2xl); /* o mesmo raio do painel que envolve os cartões */
   background: linear-gradient(160deg, var(--cinza-100) 0%, var(--cinza-300) 100%); /* nada mais escuro que cinza-300 */
   box-shadow: var(--brilho-interno);
   display: grid;
