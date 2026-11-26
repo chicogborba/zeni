@@ -117,7 +117,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 
 ## 4.1 Brilho interno
 
-`--brilho-interno` (branco 70%, 30 px, interno) está em: painel do dashboard, cartões de dados, cartões da home, e agora em todo componente de fundo colorido ou escuro: botões (principal e Voltar), avisos, selo, etiqueta de IA, indicador de voz, opção ativa do seletor de período, dias ligados e trilho do alternador. Componentes de fundo branco ou transparente (painel, modal, menu, avatar, pílula, campos, botão vazado e desativado) não mostram o brilho (seria branco sobre branco).
+`--brilho-interno` (branco 70%, 30 px, interno) está em: painel do dashboard, cartões de dados, cartões da home, e agora em componentes de fundo colorido ou escuro: avisos, selo, etiqueta de IA, indicador de voz, opção ativa do seletor de período, dias ligados e trilho do alternador. **Os botões (`.botao`, incluindo os das ações duplas dos bottom sheets) não têm brilho nem gradiente.** Componentes de fundo branco (painel, modal, menu, avatar, pílula, campos) também não mostram o brilho (seria branco sobre branco).
 
 ## 5.1 Títulos
 
@@ -150,4 +150,5 @@ Texto corrido e valores (`text-primary`), texto dos botões, texto de avisos (in
 | 26/11/2026 | Títulos (h1 a h3 e títulos dos cartões), rótulos (dashboard, gráfico, campos, contadores) e ícones (cartões da home, avatar, bateria, chevron, avisos de informação e atenção): de `cinza-900`, `cinza-800`, `cinza-700` e `blue-700` para `text-brand` (novo token, `blue-800`). |
 | 26/11/2026 | Painel do dashboard: de gradiente linear 160° para radial, `cinza-200` no centro e `cinza-100` nas bordas (mais claro nas bordas). |
 | 26/11/2026 | Painel do dashboard: centro do radial movido de 50% / 50% para 30% / 25%, deixando o canto superior esquerdo mais escuro. |
-| 26/11/2026 | Padronização: `.icone` todo em `text-brand`; `.conectar-destaque`, `.conectar-numero` e `.hora-valor` em `text-brand`; brilho interno em botões, avisos, selo, etiqueta de IA, indicador de voz, seletor ativo, dias ligados e trilho do alternador; botões duplos: Voltar preto à esquerda, principal amarelo à direita, em todos os bottom sheets. |
+| 26/11/2026 | Padronização: `.icone` todo em `text-brand`; `.conectar-destaque`, `.conectar-numero` e `.hora-valor` em `text-brand`; brilho interno em avisos, selo, etiqueta de IA, indicador de voz, seletor ativo, dias ligados e trilho do alternador; botões duplos: Voltar preto à esquerda, principal amarelo à direita, em todos os bottom sheets. |
+| 26/11/2026 | Botões (`.botao`) sem brilho interno nem gradiente, em qualquer lugar (inclusive nos bottom sheets). |

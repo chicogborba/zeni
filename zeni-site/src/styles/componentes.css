@@ -245,9 +245,8 @@
   color: var(--text-brand);
 }
 
-/* ---------- Brilho interno (26/11): todo componente com fundo colorido ou escuro ---------- */
+/* ---------- Brilho interno (26/11): componentes com fundo colorido ou escuro. Os botões (.botao) ficam sem brilho. ---------- */
 /* Os componentes de fundo branco (painel, modal, menu, avatar, pílula, campos, vazados) não mostram o brilho branco: o efeito é invisível neles. */
-.botao,
 .aviso,
 .selo,
 .ia-etiqueta,
@@ -256,10 +255,6 @@
 .dia--ligado,
 .alternador-trilho {
   box-shadow: var(--brilho-interno);
-}
-.botao--vazado,
-.botao--desativado {
-  box-shadow: none; /* transparentes sobre fundo branco */
 }
 
 /* ---------- Ação dupla em bottom sheets (26/11): voltar à esquerda, a outra ação à direita, 64 px ---------- */
