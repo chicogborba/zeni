@@ -888,25 +888,17 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-1);
-  /* não escolhido: cinza-600 (26/11); texto branco, 5,4:1 */
-  background: var(--cinza-600);
-  border-color: var(--cinza-600);
-  color: var(--text-on-inverse);
+  /* não escolhido: blue-200 (26/11); texto escuro */
+  background: var(--brand-blue-200);
+  border-color: var(--brand-blue-200);
+  color: var(--text-primary);
 }
 
-/* O dia escolhido muda de cor (blue-600) e ganha um visto: não depende só da cor */
+/* O dia escolhido muda para blue-600 com texto branco (sem visto). O estado também vai em aria-pressed. */
 .dia--ligado {
   background: var(--brand-blue-600);
   border-color: var(--brand-blue-600);
   color: var(--text-on-inverse);
-}
-
-.dia-marca {
-  width: 20px;
-  height: 20px;
-}
-.dia--ligado .dia-marca {
-  color: var(--text-on-inverse); /* sobre fundo escuro o ícone continua claro */
 }
 
 .hora {

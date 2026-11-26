@@ -17,7 +17,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | `cinza-300` | #ADBABD |
 | `cinza-400` | #91A2A6 (sem uso) |
 | `cinza-500` | #758B8F |
-| `cinza-600` | #5E7073 (dias não escolhidos do lembrete) |
+| `cinza-600` | #5E7073 (sem uso) |
 | `cinza-700` | #475557 |
 | `cinza-800` | #30393B |
 | `cinza-900` | #1A1F20 |
@@ -95,7 +95,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | Linha de navegação | texto `text-primary`; divisor `border-subtle`; chevron `text-brand`; pressionada `bg-subtle` |
 | Menu do avatar | fundo `bg-page`; item pressionado `bg-subtle` |
 | Alternador (liga/desliga) | borda `border-strong`; bolinha `bg-inverse`; ligado: trilho `bg-accent`; estado em `text-secondary` |
-| Seletor de dias (lembretes) | não escolhido: fundo e borda `cinza-600`, texto `text-on-inverse`; escolhido: fundo e borda `blue-600` (#0080B2), texto `text-on-inverse` e visto; sem brilho interno |
+| Seletor de dias (lembretes) | não escolhido: fundo e borda `blue-200`, texto `text-primary`; escolhido: fundo e borda `blue-600` (#0080B2), texto `text-on-inverse`; sem visto e sem brilho interno |
 | Campos | borda `border-strong`; fundo `bg-page`; rótulo `text-brand` |
 | Selo (nota) | fundo `bg-accent`, texto `text-on-accent` |
 | Modal central | fundo `bg-page`; película `--scrim`; texto de apoio `text-secondary` |
@@ -125,7 +125,7 @@ Todos os `h1`, `h2` e `h3` usam `text-brand` (regra em `base.css`), assim como `
 
 ## 6. Tokens definidos, sem uso
 
-`cinza-400`, `blue-50` (fora dos gradientes), `grad-cinza-card` (o painel do dashboard agora é `cinza-100` chapado), `grad-amarelo-card`, `grad-azul-card`, `grad-bruma-card`.
+`cinza-400`, `cinza-600`, `blue-50` (fora dos gradientes), `grad-cinza-card` (o painel do dashboard agora é `cinza-100` chapado), `grad-amarelo-card`, `grad-azul-card`, `grad-bruma-card`.
 
 ## 6.1 Fora da regra de `text-brand` (continuam como estavam)
 
@@ -153,3 +153,4 @@ Texto corrido e valores (`text-primary`), texto dos botões, texto de avisos (in
 | 26/11/2026 | Padronização: `.icone` todo em `text-brand`; `.conectar-destaque`, `.conectar-numero` e `.hora-valor` em `text-brand`; brilho interno em avisos, selo, etiqueta de IA, indicador de voz, seletor ativo, dias ligados e trilho do alternador; botões duplos: Voltar preto à esquerda, principal amarelo à direita, em todos os bottom sheets. |
 | 26/11/2026 | Botões (`.botao`) sem brilho interno nem gradiente, em qualquer lugar (inclusive nos bottom sheets). |
 | 26/11/2026 | Dias do lembrete: escolhidos em `blue-600`, não escolhidos em `cinza-600` (antes `bg-inverse` e branco com contorno); sem brilho interno. |
+| 26/11/2026 | Dias do lembrete: sem visto; não escolhidos de `cinza-600` para `blue-200` (texto `text-primary`). |

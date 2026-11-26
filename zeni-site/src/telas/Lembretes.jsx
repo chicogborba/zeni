@@ -1,7 +1,6 @@
 // Segue: fluxo-do-app.md, bloco 6, item "Lembretes": vê a lista, adiciona ou toca em um para editar,
 // escolhe os dias e o horário do exercício. O aviso no horário marcado está em src/App.jsx.
 // Na v1 só avisa com o app aberto. TODO (fluxo-do-app.md, ponto em aberto 4): confirmar que é isso que a v1 entrega.
-import { CheckIcon } from '@heroicons/react/24/outline'
 import { useEffect, useState } from 'react'
 import AcoesDuplas from '../componentes/AcoesDuplas.jsx'
 import Botao from '../componentes/Botao.jsx'
@@ -86,7 +85,6 @@ export default function Lembretes({ onVoltar }) {
                 aria-pressed={ligado}
                 onClick={() => alternarDia(d)}
               >
-                {ligado && <CheckIcon className="icone dia-marca" aria-hidden="true" />}
                 {nome}
               </button>
             )
