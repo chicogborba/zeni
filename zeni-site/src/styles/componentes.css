@@ -827,16 +827,24 @@
   align-items: baseline;
   gap: var(--space-4);
 }
+/* Nota média (26/11): bullet azul-600 com a tipografia vazada, na cor do fundo do bottom sheet */
 .nota-media {
   display: flex;
   align-items: baseline;
   gap: var(--space-2);
   margin-left: auto; /* embaixo da parte direita do gráfico */
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--brand-blue-600);
+  color: var(--bg-page);
+}
+.nota-media .rotulo-caps {
+  color: inherit;
 }
 .nota-media-valor {
   font: var(--type-apoio);
   font-weight: 700;
-  color: var(--text-primary);
+  color: inherit;
 }
 
 .grafico-rotulo {
