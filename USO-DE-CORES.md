@@ -56,7 +56,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | Elemento | Cor |
 |---|---|
 | Fundo da página (`.app`, vale para todas as telas) | `cinza-50` |
-| Fundo da Home | `--grad-home`: linear de `cinza-50` (topo), `cinza-300` (40%) até `blue-800` a 60% de opacidade (base), de ponta a ponta da tela |
+| Fundo da Home | `--grad-home`: linear de `cinza-50` (topo), `cinza-300` (40%) até `blue-800` a 80% de opacidade (base), de ponta a ponta da tela |
 | Avatar e pílula do ZENI | fundo `bg-page`; ícones (pessoa e bateria) `text-brand`; texto da pílula `text-primary`; "ZENI desconectado" em `cinza-700` |
 | **Painel do dashboard** (`.home-dados`) | **gradiente radial (elipse) centrado em 30% / 25%: `cinza-200` perto do canto superior esquerdo a `cinza-100` nas bordas**; glow interno `--brilho-interno` |
 | **Cartões de suavidade e ritmo** (`.dado`) | gradiente 160°, `cinza-50` a `cinza-200`; glow interno `--brilho-interno` |
@@ -174,3 +174,4 @@ Texto corrido e valores (`text-primary`), texto dos botões, texto de avisos (in
 | 26/11/2026 | Fundo da Home: azul do gradiente de 30% para 60% de opacidade. |
 | 26/11/2026 | Fundos dos cartões "minha evolução" e "começar o exercício" e do painel do dashboard a 80% de opacidade (só as cores do fundo, via `color-mix`; texto e ícones a 100%). Cartões de suavidade e ritmo ficam a 100%. |
 | 26/11/2026 | Fundo da Home (`--grad-home`) inteiro a 50% de opacidade, sobre o fundo da página (`cinza-50`). O azul, que já era 60% no token, fica com cerca de 30% efetivos. |
+| 26/11/2026 | Azul do `--grad-home` de 60% para 80%; com o gradiente a 50% na Home, o azul fica com cerca de 40% efetivos. |
