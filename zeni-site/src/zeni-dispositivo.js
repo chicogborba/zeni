@@ -529,16 +529,15 @@ export function zerarDirecao() {
   if (Math.hypot(f[0], f[2]) < 0.3) f = girar(q, [0, -1, 0]) // ZENI quase deitado: usa o "pé" no lugar da frente
   const ang = Math.atan2(f[0], f[2]) // giro da frente a partir de +z, em torno de y
   qDirecao = [0, Math.sin(-ang / 2), 0, Math.cos(-ang / 2)]
+  processador.zerarAltura()
   ouvintesReferencia.forEach((fn) => fn())
 }
 export const marcarReferencia = zerarDirecao // nome antigo
 
-// Orientação do ZENI para a tela: [x, y, z, w] no mundo do 3D (y para cima, z para a câmera), como um espelho
+// Orientação do ZENI no mundo do 3D: [x, y, z, w] (y para cima). O personagem É a pessoa (sem espelho): "para longe de
+// mim" é a frente do personagem (+z, para a câmera) e a direita da pessoa é a direita do personagem (−x).
 export function rotacaoDoZeni() {
-  const [x, y, z, w] = qMul(qDirecao, zeniNoMundo())
-  // Espelho: o personagem está de frente para a pessoa. A direita da pessoa fica à direita na tela e "para longe de
-  // mim" (frente do ZENI, +z) vem para a câmera, como num espelho. Refletir o eixo x de uma rotação é (x, −y, −z, w).
-  return [x, -y, -z, w]
+  return qMul(qDirecao, zeniNoMundo())
 }
 
 // Espera o ZENI ficar parado por `ms` e devolve a aceleração média (a direção da gravidade nos eixos do sensor).
@@ -547,7 +546,7 @@ export function rotacaoDoZeni() {
 // barato erra alguns centésimos de g conforme a posição (deitado, a leitura podia dar 1,07 g e nunca contava).
 // Um tremido curto (até 160 ms) não zera a contagem.
 const TOLERANCIA_TREMIDO = 8 // amostras ruins seguidas que ainda não zeram
-function esperarParado(ms, { condicao = () => true, limiteMs = 20000, aoProgresso } = {}) {
+function esperarParado(ms, { condicao = () => true, limiteMs = 20000, aoProgresso, giroMax = 10, variacaoMax = 0.05 } = {}) {
   return new Promise((resolve, reject) => {
     let inicio = null
     let soma = [0, 0, 0]
@@ -568,7 +567,7 @@ function esperarParado(ms, { condicao = () => true, limiteMs = 20000, aoProgress
       const a = [p.ax, p.ay, p.az]
       media = media ? media.map((v, i) => v + 0.15 * (a[i] - v)) : [...a]
       const variando = Math.hypot(a[0] - media[0], a[1] - media[1], a[2] - media[2])
-      const parado = Math.hypot(p.gx, p.gy, p.gz) < 10 && variando < 0.05 && condicao(unit(a))
+      const parado = Math.hypot(p.gx, p.gy, p.gz) < giroMax && variando < variacaoMax && condicao(unit(a))
       if (!parado) {
         ruins += 1
         if (ruins > TOLERANCIA_TREMIDO || !condicao(unit(a))) zerar()
@@ -588,38 +587,40 @@ function esperarParado(ms, { condicao = () => true, limiteMs = 20000, aoProgress
   })
 }
 
-// Para os desenhos: o ZENI já está deitado (mais de 60° longe do "de pé" calibrado)?
-export function estaDeitado() {
+const INCLINADO = Math.cos((30 * Math.PI) / 180) // 30° longe do "de pé" já conta como inclinado
+
+// Para os desenhos: o ZENI já está inclinado (30° ou mais longe do "de pé" calibrado)?
+export function estaInclinado() {
   const p = ultimoPacote
   if (!p || !cimaNoSensor) return false
-  return ponto(unit([p.ax, p.ay, p.az]), unit(cimaNoSensor)) < 0.5
+  return ponto(unit([p.ax, p.ay, p.az]), unit(cimaNoSensor)) < INCLINADO
 }
 
-// Passo 1 (e "Ajustar o ZENI"): de pé e parado por `ms`.
+// Passo 1 (e "Ajustar o ZENI"): de pé e parado por `ms`. Vale na mão: o tremido da mão entra na média e se anula.
 export async function calibrarDePe(ms = 1500, aoProgresso) {
-  cimaNoSensor = await esperarParado(ms, { aoProgresso })
+  cimaNoSensor = await esperarParado(ms, { aoProgresso, giroMax: 25, variacaoMax: 0.1 })
   montar()
   guardarMontagem()
   zerarDirecao()
 }
 
-// Passo 2: deitado (pelo menos 60° longe do "de pé") e parado. Guarda as costas no aparelho.
-export async function calibrarDeitado(ms = 1500, aoProgresso) {
+// Passo 2: inclinar o ZENI para longe da pessoa (30° ou mais), na mão mesmo, e segurar um instante. A gravidade passa
+// a ter um pedaço saindo pelas "costas" do ZENI, o que define frente e lados. Guarda no aparelho.
+export async function calibrarFrente(ms = 600, aoProgresso) {
   if (!cimaNoSensor) throw new Error('sem-de-pe')
   const cima = unit(cimaNoSensor)
-  const costas = await esperarParado(ms, { condicao: (a) => ponto(a, cima) < 0.5, aoProgresso, limiteMs: 30000 })
-  costasNoSensor = costas
+  costasNoSensor = await esperarParado(ms, { condicao: (a) => ponto(a, cima) < INCLINADO, aoProgresso, limiteMs: 30000, giroMax: 40, variacaoMax: 0.15 })
   montar()
   guardarMontagem()
   zerarDirecao()
 }
 
-// Inclinação ABSOLUTA do ZENI em relação à vertical, em graus, já no sentido da pessoa:
+// Inclinação ABSOLUTA do ZENI em relação à vertical, em graus, no sentido da pessoa:
 //   lado   + = para a direita da pessoa      frente + = para longe da pessoa (− = para trás)
 export function inclinacaoDoZeni() {
   const cima = girar(rotacaoDoZeni(), [0, 1, 0])
   const grau = 180 / Math.PI
-  return { lado: Math.atan2(cima[0], cima[1]) * grau, frente: Math.atan2(cima[2], cima[1]) * grau, total: Math.acos(Math.max(-1, Math.min(1, cima[1]))) * grau }
+  return { lado: Math.atan2(-cima[0], cima[1]) * grau, frente: Math.atan2(cima[2], cima[1]) * grau, total: Math.acos(Math.max(-1, Math.min(1, cima[1]))) * grau }
 }
 
 // ---------- Processamento por exercício ----------
@@ -637,6 +638,7 @@ function criarProcessador() {
   let variancia = [0, 0, 0] // para descobrir o eixo principal do giro
   let aquecendo = 0 // os filtros levam ~1 s para assentar: nesse tempo o tremor não conta
   let velocidade = 0 // m/s na vertical
+  let altura = 0 // m, desde o último zerar
   let semTremor = 0 // amostras: depois de uma batida, o tremido fica de fora por um instante
   let envelope = 0
   return {
@@ -645,7 +647,12 @@ function criarProcessador() {
       janela = []
       variancia = [0, 0, 0]
       velocidade = 0
+      altura = 0
       envelope = 0
+    },
+    altura: () => altura,
+    zerarAltura() {
+      altura = 0
     },
     adicionar(p) {
       if (!f) {
@@ -673,8 +680,13 @@ function criarProcessador() {
       // velocidade vertical com "vazamento" (passa-alta de 0,3 Hz): integrar aceleração deriva, isto a traz de volta a 0
       velocidade += az * 9.81 * (1 / HZ)
       velocidade -= velocidade * 2 * Math.PI * 0.3 * (1 / HZ)
-      // parado de verdade (sem giro e com 1 g certinho): a velocidade é zero
-      if (Math.hypot(...g) < 8 && Math.abs(norma - normaG) < 0.03) velocidade *= 0.8
+      // parado de verdade (sem giro e com o 1 g do sensor): a velocidade é zero
+      const paradoAgora = Math.hypot(...g) < 8 && Math.abs(norma - normaG) < 0.03
+      if (paradoAgora) velocidade *= 0.8
+      // altura: integra a velocidade; parado, segura onde está; um vazamento lento (0,08 Hz) evita que fuja
+      altura += velocidade * (1 / HZ)
+      if (!paradoAgora) altura -= altura * 2 * Math.PI * 0.08 * (1 / HZ)
+      altura = Math.max(-0.2, Math.min(0.6, altura))
 
       // giro em torno da vertical do mundo (F)
       const wz = f.wz(girar(qAtual, g)[2])
@@ -713,6 +725,8 @@ function criarProcessador() {
 }
 const processador = criarProcessador()
 export const fecharJanela = () => processador.fecharJanela()
+// Altura do ZENI (m) desde o último Começar, pela aceleração vertical. Para o fantasma em B e D.
+export const alturaDoZeni = () => processador.altura()
 export const ultimo = () => ultimoPacote
 
 // Para testes (tools/testar-zeni.mjs): injeta um pacote cru como se tivesse chegado pelo Bluetooth.

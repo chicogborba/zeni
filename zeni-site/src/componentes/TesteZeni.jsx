@@ -29,7 +29,7 @@ export default function TesteZeni() {
   const vivo = useMovimentoAoVivo({ janelas: true })
   const sentindo = zeni.conectado && vivo.recebendo && (zeni.flags & FLAG.sensorOk) !== 0
   const bateria = zeni.bateria
-  // Dois desenhos com a inclinação ABSOLUTA do ZENI: de frente (para a direita = direita da pessoa) e de lado (a pessoa
+  // Dois desenhos com a inclinação ABSOLUTA do ZENI: como a pessoa vê (para a direita = direita dela) e de lado (a pessoa
   // à esquerda; para a direita = para longe dela). Limitada para não virar de ponta-cabeça.
   const lim = (v, m) => Math.max(-m, Math.min(m, v))
   const [ajuste, setAjuste] = useState(null) // null | número de 0 a 1 (segurando) | 'ok'
@@ -51,7 +51,7 @@ export default function TesteZeni() {
             <div className="teste-brilho" style={{ '--movimento': vivo.tamanho / 100 }} />
             <img className="teste-zeni" src={silhueta} alt="" style={{ transform: `rotate(${lim(vivo.lado, 170)}deg)` }} />
           </div>
-          <span className="teste-vista-rotulo">De frente</span>
+          <span className="teste-vista-rotulo">Como você vê</span>
         </div>
         <div className="teste-vista">
           <div className="teste-mostrador">

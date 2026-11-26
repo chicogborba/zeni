@@ -4,7 +4,7 @@
 // Com Bluetooth no navegador, é o ZENI de verdade (src/zeni-dispositivo.js): a lista de aparelhos só abre depois de um
 // toque, por isso há a tela "Ligue o ZENI" antes da busca. A posição inicial é medida pelo próprio ZENI: se ele se
 // mexer durante os 3 segundos, a tela pede para tentar de novo. Depois, deitado com a ponta para longe: o app aprende o
-// que é "para frente" (zeni-dispositivo.js, calibrarDeitado). No fim, o teste ao vivo mostra que tudo funciona.
+// que é "para frente" (zeni-dispositivo.js, calibrarFrente). No fim, o teste ao vivo mostra que tudo funciona.
 // Sem Bluetooth (iPhone no Safari, navegador antigo), a tela explica e oferece "Experimentar sem o ZENI", que segue a
 // simulação da v1.
 // TODO (fluxo-do-app.md, ponto em aberto 3): o pedido de permissão do Bluetooth é a própria lista do navegador.
@@ -46,11 +46,14 @@ export default function Conectar() {
   const [tentativa, setTentativa] = useState(0)
   const [restam, setRestam] = useState(SEGUNDOS_NA_MESA)
   const [progresso, setProgresso] = useState(0)
-  // No passo de deitar: o desenho para na posição deitada assim que o ZENI de verdade está deitado
-  const [deitado, setDeitado] = useState(false)
+  // Na mesa só na primeira vez (o ZENI aprende o repouso do giroscópio e guarda); depois, de pé na mão já basta.
+  // "Posição inicial" no menu refaz tudo, com a mesa.
+  const [naMesa, setNaMesa] = useState(true)
+  // No passo de inclinar: o desenho para inclinado assim que o ZENI de verdade está inclinado
+  const [inclinado, setInclinado] = useState(false)
   useEffect(() => {
-    if (estado !== 'deitar') return undefined
-    const id = setInterval(() => setDeitado(dispositivo.estaDeitado()), 150)
+    if (estado !== 'inclinar') return undefined
+    const id = setInterval(() => setInclinado(dispositivo.estaInclinado()), 150)
     return () => clearInterval(id)
   }, [estado])
 
@@ -89,7 +92,7 @@ export default function Conectar() {
     setEstado('procurando')
     try {
       await dispositivo.conectar()
-      // Já tem posição inicial guardada no ZENI? Mesmo assim, 1.4 pede para apoiar na mesa (é rápido e evita desvio).
+      setNaMesa((dispositivo.estadoAtual().flags & dispositivo.FLAG.calibrado) === 0)
       setEstado('conectado')
     } catch (e) {
       if (e.message === 'cancelado') setEstado('inicio')
@@ -100,14 +103,27 @@ export default function Conectar() {
     }
   }
 
-  const aprender = async () => {
+  const aprender = async (mesa = naMesa) => {
+    setNaMesa(mesa)
     setRestam(SEGUNDOS_NA_MESA)
+    setProgresso(0)
     setEstado('aprendendo')
     if (simulado) {
       setTimeout(() => {
         guardarConexao()
         setEstado('pronto')
       }, SEGUNDOS_NA_MESA * 1000)
+      return
+    }
+    if (!mesa) {
+      // Só o "de pé", na mão: 1,5 s parado
+      try {
+        await dispositivo.calibrarDePe(1500, setProgresso)
+      } catch {
+        setEstado('mexeu')
+        return
+      }
+      inclinar()
       return
     }
     try {
@@ -131,23 +147,23 @@ export default function Conectar() {
       return
     }
     // Passo 1 feito: estava de pé e parado. Essa é a posição de pé de verdade (guardada no aparelho).
-    deitar()
+    inclinar()
   }
 
-  // Passo 2: deitado com a ponta para longe da pessoa. Ensina ao app o que é "para frente" (fica guardado).
-  const deitar = async () => {
+  // Passo 2: inclinar para longe da pessoa, na mão. Ensina ao app o que é "para frente" (fica guardado).
+  const inclinar = async () => {
     setProgresso(0)
-    setEstado('deitar')
+    setEstado('inclinar')
     try {
-      await dispositivo.calibrarDeitado(1500, setProgresso)
+      await dispositivo.calibrarFrente(600, setProgresso)
       guardarConexao()
       setEstado('pronto')
     } catch {
-      setEstado((e) => (e === 'deitar' ? 'deitar-demorou' : e))
+      setEstado((e) => (e === 'inclinar' ? 'inclinar-demorou' : e))
     }
   }
 
-  const pularDeitar = () => {
+  const pularInclinar = () => {
     guardarConexao()
     setEstado('pronto')
   }
@@ -159,7 +175,7 @@ export default function Conectar() {
   }
 
   // Caiu a conexão no meio do caminho: mostra o aviso calmo de "se desconectou" (Tentar de novo volta ao começo)
-  const caiu = !simulado && !zeni.conectado && ['conectado', 'aprendendo', 'deitar', 'deitar-demorou', 'pronto', 'ligado'].includes(estado)
+  const caiu = !simulado && !zeni.conectado && ['conectado', 'aprendendo', 'inclinar', 'inclinar-demorou', 'pronto', 'ligado'].includes(estado)
   const tela = caiu ? 'erro' : estado
   const motivo = caiu ? 'caiu' : erro
 
@@ -222,7 +238,7 @@ export default function Conectar() {
     return (
       <PainelInferior
         titulo="ZENI conectado"
-        rodape={<AcoesDuplas voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }} acao={{ rotulo: 'Pronto', onClick: aprender }} />}
+        rodape={<AcoesDuplas voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }} acao={{ rotulo: 'Pronto', onClick: () => aprender() }} />}
       >
         <span className="selo" aria-hidden="true">
           <CheckIcon className="icone" />
@@ -233,8 +249,10 @@ export default function Conectar() {
         ) : (
           zeni.bateria !== null && <p className="conectar-texto">{`Bateria do ZENI: ${zeni.bateria}%`}</p>
         )}
-        <p className="conectar-destaque">Deixe o ZENI de pé na mesa, parado, e toque em Pronto.</p>
-        {!simulado && <GuiaPosicao passo="de-pe" />}
+        <p className="conectar-destaque">
+          {naMesa || simulado ? 'Deixe o ZENI de pé na mesa, parado, e toque em Pronto.' : 'Segure o ZENI de pé, parado, e toque em Pronto.'}
+        </p>
+        {!simulado && <GuiaPosicao passo="de-pe" mesa={naMesa} />}
       </PainelInferior>
     )
   }
@@ -244,37 +262,46 @@ export default function Conectar() {
       <PainelInferior titulo="Posição inicial">
         <h2 className="conectar-titulo">Fique parado</h2>
         <p className="conectar-texto">O ZENI está aprendendo como fica de pé.</p>
-        {!simulado && <GuiaPosicao passo="de-pe" pronto />}
-        <p className="conectar-numero" aria-live="polite">
-          {restam}
-        </p>
+        {!simulado && <GuiaPosicao passo="de-pe" mesa={naMesa} pronto />}
+        {naMesa || simulado ? (
+          <p className="conectar-numero" aria-live="polite">
+            {restam}
+          </p>
+        ) : (
+          <div className="teste-barra" role="progressbar" aria-label="Parado" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progresso * 100)}>
+            <span className="teste-barra-rotulo">Parado</span>
+            <span className="teste-barra-trilho">
+              <span className="teste-barra-cheio" style={{ transform: `scaleX(${progresso})` }} />
+            </span>
+          </div>
+        )}
       </PainelInferior>
     )
   }
 
-  if (tela === 'deitar' || tela === 'deitar-demorou') {
+  if (tela === 'inclinar' || tela === 'inclinar-demorou') {
     return (
       <PainelInferior
-        titulo="Agora deite o ZENI"
+        titulo="Agora incline o ZENI"
         rodape={
           <AcoesDuplas
             voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }}
-            acao={tela === 'deitar' ? { rotulo: 'Pular', onClick: pularDeitar } : { rotulo: 'Tentar de novo', onClick: deitar }}
+            acao={tela === 'inclinar' ? { rotulo: 'Pular', onClick: pularInclinar } : { rotulo: 'Tentar de novo', onClick: inclinar }}
           />
         }
       >
-        <h2 className="conectar-titulo">Agora deite o ZENI</h2>
-        <p className="conectar-texto">Deite o ZENI na mesa com a ponta de cima apontando para longe de você, e solte.</p>
-        <GuiaPosicao passo="deitar" pronto={deitado} />
-        {tela === 'deitar' ? (
+        <h2 className="conectar-titulo">Agora incline o ZENI</h2>
+        <p className="conectar-texto">Incline a ponta de cima para longe de você, como no desenho, e segure um instante.</p>
+        <GuiaPosicao passo="inclinar" pronto={inclinado} />
+        {tela === 'inclinar' ? (
           <div className="teste-barra" role="progressbar" aria-label="Aprendendo" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progresso * 100)}>
-            <span className="teste-barra-rotulo">{deitado ? 'Parado' : 'Deite'}</span>
+            <span className="teste-barra-rotulo">{inclinado ? 'Segure' : 'Incline'}</span>
             <span className="teste-barra-trilho">
               <span className="teste-barra-cheio" style={{ transform: `scaleX(${progresso})` }} />
             </span>
           </div>
         ) : (
-          <p className="conectar-destaque">Não percebi o ZENI deitado. Tente de novo ou toque em Voltar.</p>
+          <p className="conectar-destaque">Não percebi o ZENI inclinado. Tente de novo ou toque em Voltar.</p>
         )}
       </PainelInferior>
     )
@@ -285,12 +312,14 @@ export default function Conectar() {
     return (
       <PainelInferior
         titulo={mexeu ? 'O ZENI se mexeu' : 'O ZENI não sente o movimento'}
-        rodape={<AcoesDuplas voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }} acao={{ rotulo: 'Tentar de novo', onClick: aprender }} />}
+        rodape={<AcoesDuplas voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }} acao={{ rotulo: 'Tentar de novo', onClick: () => aprender() }} />}
       >
         <h2 className="conectar-titulo">{mexeu ? 'O ZENI se mexeu' : 'O ZENI não sente o movimento'}</h2>
         <p className="conectar-texto">
           {mexeu
-            ? 'Deixe o ZENI de pé na mesa, sem encostar, e tente de novo.'
+            ? naMesa
+              ? 'Deixe o ZENI de pé na mesa, sem encostar, e tente de novo.'
+              : 'Segure o ZENI de pé, o mais parado que conseguir, e tente de novo.'
             : 'Desligue e ligue o ZENI. Se continuar assim, ele precisa de conserto.'}
         </p>
       </PainelInferior>
@@ -304,7 +333,7 @@ export default function Conectar() {
         titulo="Conexão com o ZENI"
         rodape={
           <>
-            <AcoesDuplas voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }} acao={{ rotulo: 'Posição inicial', onClick: aprender }} />
+            <AcoesDuplas voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }} acao={{ rotulo: 'Posição inicial', onClick: () => aprender(true) }} />
             <Botao
               variante="vazado"
               onClick={() => {

@@ -1543,14 +1543,14 @@
 }
 .guia--pronto .guia-zeni {
   animation: none;
-  transform: rotate(90deg);
+  transform: rotate(40deg);
 }
 @keyframes guia-tombar {
   0%, 20% {
     transform: rotate(0deg);
   }
   50%, 85% {
-    transform: rotate(90deg);
+    transform: rotate(40deg);
   }
   100% {
     transform: rotate(0deg);
@@ -1559,7 +1559,7 @@
 @media (prefers-reduced-motion: reduce) {
   .guia--deitar .guia-zeni {
     animation: none;
-    transform: rotate(90deg);
+    transform: rotate(40deg);
   }
 }
 
