@@ -76,7 +76,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | Gráfico: linha e pontos | `text-primary` (cinza-900) |
 | Gráfico: área | `amarelo-200` |
 | Gráfico: eixos | `cinza-300` |
-| Gráfico: números e datas (0, 50, 100, hoje, há N dias) | `text-brand` |
+| Gráfico: números e datas (0, 50, 100 e os dias: hoje, dias da semana ou datas) | `text-brand` |
 | "NOTA DE CADA EXERCÍCIO", "N EXERCÍCIOS", "NOTA MÉDIA" | `text-brand`, caixa alta, peso 600 |
 | Valor da nota média | `text-primary`, negrito |
 | Botão Exportar | `bg-accent` (amarelo-300), texto `text-on-accent` |
