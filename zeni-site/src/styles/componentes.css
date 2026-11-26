@@ -169,6 +169,13 @@
   height: 100dvh;
   max-height: none;
   border-radius: 0;
+  max-width: none; /* tela cheia de verdade no iPad (26/11): o branco vai de ponta a ponta; o conteúdo e o rodapé seguem na coluna */
+}
+.painel--total .painel-conteudo,
+.painel--total .painel-rodape {
+  width: 100%;
+  max-width: var(--content-max);
+  align-self: center;
 }
 
 .painel:focus {
@@ -872,8 +879,9 @@
 
 /* ---------- Gráfico de evolução (6.5) ---------- */
 .grafico {
+  display: block;
   width: 100%;
-  height: auto;
+  height: 200px; /* o viewBox usa a largura real e esta altura (A em Evolucao.jsx), então 1 unidade = 1 px */
 }
 
 .grafico-linha {

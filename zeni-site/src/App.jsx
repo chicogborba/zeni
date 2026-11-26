@@ -63,14 +63,15 @@ function Telas() {
 }
 
 // Computador = tela larga com mouse (ponteiro preciso). Celular e tablet em pé seguem para o app.
+// iPad (com ou sem mouse) tem toque (maxTouchPoints > 0) e fica no app; só o computador sem toque vê o aviso.
 const CONSULTA_COMPUTADOR = '(min-width: 900px) and (pointer: fine)'
-const ehComputador = () => window.matchMedia(CONSULTA_COMPUTADOR).matches
+const ehComputador = () => window.matchMedia(CONSULTA_COMPUTADOR).matches && navigator.maxTouchPoints === 0
 
 export default function App() {
   const [computador, setComputador] = useState(ehComputador)
   useEffect(() => {
     const consulta = window.matchMedia(CONSULTA_COMPUTADOR)
-    const mudou = () => setComputador(consulta.matches)
+    const mudou = () => setComputador(ehComputador())
     consulta.addEventListener('change', mudou)
     return () => consulta.removeEventListener('change', mudou)
   }, [])

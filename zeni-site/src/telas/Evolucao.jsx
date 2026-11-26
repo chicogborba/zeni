@@ -17,7 +17,7 @@ import { CHAVES, ler } from '../storage.js'
 const DIA_MS = 24 * 60 * 60 * 1000
 
 // Medidas do desenho (coordenadas do SVG, que escala com a largura do painel)
-const L = 342
+const L_CELULAR = 342 // largura de referência (celular); em telas maiores o desenho usa a largura real e o texto não cresce
 const A = 200
 const ESQ = 52 // espaço para o rótulo do eixo ("100" cabe até no maior tamanho de texto)
 const TOPO = 12
@@ -36,6 +36,16 @@ const doisDigitos = (n) => String(n).padStart(2, '0')
 // Eixo X em dias: "hoje" na origem (esquerda) e o passado para a direita. Cada dia tem uma faixa; os exercícios do mesmo dia
 // se distribuem dentro da faixa, do mais recente (esquerda) ao mais antigo, e não ficam empilhados no mesmo ponto.
 function Grafico({ pontos, dias, hojeInicio }) {
+  // Mede a largura real do painel: o viewBox acompanha, então o texto do gráfico fica sempre com 16 px (celular e iPad)
+  const ref = useRef(null)
+  const [L, setL] = useState(L_CELULAR)
+  useEffect(() => {
+    const el = ref.current
+    if (!el || typeof ResizeObserver === 'undefined') return undefined
+    const ro = new ResizeObserver(([e]) => setL(Math.max(240, Math.round(e.contentRect.width))))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
   const largura = L - ESQ - 8
   const faixa = largura / dias
   const y = (nota) => BASE - (nota / 100) * (BASE - TOPO)
@@ -62,6 +72,7 @@ function Grafico({ pontos, dias, hojeInicio }) {
 
   return (
     <svg
+      ref={ref}
       className="grafico"
       viewBox={`0 0 ${L} ${A}`}
       role="img"

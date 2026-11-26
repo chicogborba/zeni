@@ -138,6 +138,8 @@ h1, h2, h3, button { font-family: var(--font-heading); }
   /* Layout e forma (seções 4, 5 e 6) */
   --margin-x: var(--space-6);
   --content-max: 560px;
+  /* Viewport do iPad (26/11): a partir de 768 px (iPad mini em pé, 744 px, também entra com 700) a coluna cresce para
+     720 px e a margem para 32 px. Celular (até 699 px) fica como era. */
   --stroke: 2px;
   --stroke-icone: 1.75px; /* traço de todos os ícones: o do cartão Minha evolução (1,5 em 24 × 28 px). Não muda com o tamanho do ícone */
   --radius-2xl: 64px; /* NOVO: maior que radius-xl (32). Cartões grandes da Home. Não está no design system */
@@ -160,5 +162,13 @@ h1, h2, h3, button { font-family: var(--font-heading); }
     --dur-panel: 0ms;
     --dur-count: 0ms;
     --dur-wait-gradient: 0s;
+  }
+}
+
+/* ---------- Viewport do iPad (26/11) ---------- */
+@media (min-width: 700px) {
+  :root {
+    --content-max: 720px; /* iPad em pé (744 a 834 px) e em pé ou deitado em telas maiores */
+    --margin-x: var(--space-8);
   }
 }

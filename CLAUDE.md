@@ -26,7 +26,8 @@ Seguir `docs/fluxo-do-app.md`. Ordem de prioridade: a seção "Decisões do grup
 ## Escopo da v1 (entrega para a banca)
 
 - Site mobile, feito para tela de celular. Sem PWA nesta versão.
-- Sem versão web (26/11): no computador (tela de 900 px ou mais com mouse) aparece só um aviso de que o site não está disponível e de que é para abrir no celular (`telas/AvisoWeb.jsx`).
+- Viewport do iPad (26/11): celular até 699 px (coluna de 560 px, margem de 24 px); a partir de 700 px (iPad em pé e deitado) a coluna passa a 720 px e a margem a 32 px, em `tokens.css`. O gráfico de Minha evolução mede a largura real, então o texto dele continua com 16 px. O exercício em tela cheia vai de ponta a ponta, com o conteúdo na coluna de 720 px. Alvos de toque e tamanhos de fonte não mudam.
+- Sem versão web (26/11): no computador (tela de 900 px ou mais com mouse e sem toque; o iPad fica no app) aparece só um aviso de que o site não está disponível e de que é para abrir no celular (`telas/AvisoWeb.jsx`).
 - Sem backend. Os dados (respostas do PAR-Q, histórico, ajustes) ficam guardados no aparelho, simulando o servidor.
 - O ZENI (dispositivo) é simulado: a conexão e os dados de movimento são gerados pelo app. Bluetooth real fica para depois.
 - A IA é simulada por regras simples (sugestão do exercício, nota, resumo, ritmo habitual).
