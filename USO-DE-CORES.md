@@ -164,3 +164,4 @@ Texto corrido e valores (`text-primary`), texto dos botões, texto de avisos (in
 | 26/11/2026 | Frase de tendência de Minha evolução vira cartão: fundo `cinza-200` com `--brilho-interno`; texto em `text-primary`. |
 | 26/11/2026 | Cartão da frase de tendência: gradiente radial de `cinza-200` (centro) a `cinza-50` (bordas), além do brilho interno; padding de 20 px. |
 | 26/11/2026 | Alternador 7 / 30 dias vira toggle: trilho `blue-600` a 50% (token novo `--blue-600-50`), opção escolhida `blue-600` com texto `white`, a outra com `text-primary`. Antes: bordas `border-strong` e escolhida `bg-inverse`. |
+| 26/11/2026 | Exportar vira menu suspenso aberto para cima: fundo `cinza-100` com `--brilho-interno`, texto `text-primary`, ícones `text-brand`. |

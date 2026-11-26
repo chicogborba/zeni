@@ -10,10 +10,11 @@ Seguir `docs/fluxo-do-app.md`. Ordem de prioridade: a seção "Decisões do grup
 
 - Uma decisão por tela, com uma ação principal grande. Sem menus, abas nem barras de navegação, salvo as exceções abaixo.
 - Todo painel é bottom sheet, salvo as exceções abaixo. O bottom sheet se ajusta à altura do conteúdo. O botão Voltar tem um passo a menos de altura que o botão primário.
-- **Exceções (decisão de 25/11), só estas três:**
+- **Exceções (decisão de 25/11), só estas três, mais o menu do Exportar (26/11):**
     - Menu suspenso ao tocar no avatar, com Personalizar e Conexão com o ZENI. O avatar mostra a inicial da pessoa, tem no mínimo 64 px e `aria-label` "Abrir menu" (exceção à regra de ícone sozinho).
     - O exercício do dia em tela cheia.
     - A nota em modal centralizado.
+- Menu suspenso do Exportar (26/11): em Minha evolução, Exportar abre um menu suspenso que abre só para cima, a partir do botão, com "Salvar em PDF" e "Enviar link" (cada um com ícone). Não há mais bottom sheet de Exportar.
 - Pequenas exceções de layout (25/11): em Minha evolução, Exportar (amarelo) à esquerda e Voltar (preto) à direita, lado a lado, 64 px (exceção ao padrão de ação dupla de 26/11, que põe Voltar à esquerda; decisão de 26/11 para essa tela).
 - Alvos de toque grandes, feitos para mão com tremor. Os tamanhos exatos estão na seção 7 do design system., e vale também para os botões duplos (Voltar + outra ação) em bottom sheets: lado a lado, 64 px de altura (design system, 6.1).
 - Linguagem leiga, sem termos técnicos. O glossário está na seção 10 do design system.
@@ -31,7 +32,7 @@ Seguir `docs/fluxo-do-app.md`. Ordem de prioridade: a seção "Decisões do grup
 - O exercício diário é uma série de 3 exercícios, um de cada grupo do catálogo (decisão 9 de 25/11 em `docs/fluxo-do-app.md`), sempre na ordem amplitude, ritmo, manter a energia. Autoplay (decisão 29): o 2º e o 3º começam sozinhos 3 s depois da instrução; o 1º espera o toque em Começar. Entre os dois de cada grupo, a paridade do dia do ano decide (par: o primeiro, ímpar: o segundo). A nota só aparece ao fim da série, em modal centralizado, com botão direto para Minha evolução.
 - Exercício: tela de carregamento com bulb, depois tela cheia com a instrução em animação (personagem 3D da cintura para cima segurando o ZENI, `zeni-site/src/assets/zeni-personagem.glb`, com three + @react-three/fiber + drei; sem ler texto). Catálogo A–F em `zeni-site/src/simulacao.js` (decisão 23). Durante o exercício, sem barra nem círculo: bulb amarelo que pulsa ao fundo. Sem LED, vibração, áudio ou música. Nada de termos clínicos na interface.
 - "Terminar" no meio da série (e "Voltar ao início" após falha de reconexão) volta à Home sem nota. Os exercícios concluídos ficam registrados sem nota e o em andamento é descartado. Provisório.
-- Minha evolução abre direto no dashboard, com alternador 7/30 dias no topo. Embaixo: Exportar à esquerda e Voltar à direita (exceção ao padrão de ação dupla, 26/11). Exportar abre um bottom sheet com "Salvar em PDF" (abre a impressão do navegador) e "Enviar link" (Web Share API com texto-resumo; sem suporte, copia e mostra "Copiado"). O link real fica para a v2.
+- Minha evolução abre direto no dashboard, com alternador 7/30 dias no topo. Embaixo: Exportar à esquerda e Voltar à direita (exceção ao padrão de ação dupla, 26/11). Exportar abre um menu suspenso (para cima) com "Salvar em PDF" (abre a impressão do navegador) e "Enviar link" (Web Share API com texto-resumo; sem suporte, copia e mostra "Copiado"). O link real fica para a v2.
 - Microfone: pedido só ao começar o primeiro exercício, depois de uma tela de explicação. Se negado, a voz fica desligada e os botões continuam. Bluetooth real é v2.
 - Medidas do ZENI: vale o modelo 3D. 160 mm de comprimento, 60 mm de diâmetro nas pontas e cerca de 45 mm na cintura.
 - Voz, só durante o exercício: pausar, continuar, terminar, repetir. Os botões ficam sempre na tela. "Repetir" mostra de novo a animação do exercício atual e pausa o exercício até "Continuar".

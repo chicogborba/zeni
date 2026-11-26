@@ -6,11 +6,9 @@
 // Eixo Y: 0, 50 e 100. Embaixo do gráfico, uma frase calma de tendência (4 exercícios ou mais).
 // Salvar em PDF: impressão do navegador. Enviar link: Web Share API com texto-resumo; sem suporte, copia o texto.
 // O link real depende do backend (v2). TODO (design system, pendência 10): layout do PDF em aberto.
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ArrowDownTrayIcon, ShareIcon } from '@heroicons/react/24/outline'
 import AcoesDuplas from '../componentes/AcoesDuplas.jsx'
-import Botao from '../componentes/Botao.jsx'
-import LinhaNavegacao from '../componentes/LinhaNavegacao.jsx'
 import PainelInferior from '../componentes/PainelInferior.jsx'
 import SeletorPeriodo from '../componentes/SeletorPeriodo.jsx'
 import { useNavegacao } from '../navegacao.jsx'
@@ -114,7 +112,8 @@ const PERIODOS = [
 export default function Evolucao() {
   const { voltarAoInicio } = useNavegacao()
   const [dias, setDias] = useState(7)
-  const [exportando, setExportando] = useState(false)
+  const [exportando, setExportando] = useState(false) // menu suspenso do Exportar, aberto para cima (26/11)
+  const raizExportar = useRef(null)
   const [aviso, setAviso] = useState('') // "Copiado" quando o envio cai para a cópia do texto
   const [agora] = useState(() => Date.now())
 
@@ -130,6 +129,16 @@ export default function Evolucao() {
     pontos.length === 0
       ? `Minha evolução no ZENI, últimos ${dias} dias: ainda sem exercícios nesse período.`
       : `Minha evolução no ZENI, últimos ${dias} dias: ${pontos.length} ${pontos.length === 1 ? 'exercício' : 'exercícios'}, nota média ${media}.`
+
+  // Fecha o menu ao tocar fora dele
+  useEffect(() => {
+    if (!exportando) return undefined
+    const fora = (e) => {
+      if (!raizExportar.current?.contains(e.target)) setExportando(false)
+    }
+    document.addEventListener('pointerdown', fora)
+    return () => document.removeEventListener('pointerdown', fora)
+  }, [exportando])
 
   // Salvar em PDF: fecha as opções e abre a impressão do navegador (só o dashboard sai na página)
   const salvarPdf = () => {
@@ -156,55 +165,38 @@ export default function Evolucao() {
     }
   }
 
-  // Exportar: bottom sheet com duas linhas
-  if (exportando) {
-    return (
-      <PainelInferior
-        titulo="Exportar"
-        onFechar={() => {
-          setExportando(false)
-          setAviso('')
-        }}
-        rodape={
-          <Botao
-            variante="voltar"
-            onClick={() => {
-              setExportando(false)
-              setAviso('')
-            }}
-          >
-            Voltar
-          </Botao>
-        }
-      >
-        <h2 className="conectar-titulo">Exportar</h2>
-        <div className="linhas linhas--sem-divisoria">
-          <LinhaNavegacao Icone={ArrowDownTrayIcon} onClick={salvarPdf}>
-            Salvar em PDF
-          </LinhaNavegacao>
-          <LinhaNavegacao Icone={ShareIcon} onClick={enviarLink}>
-            Enviar link
-          </LinhaNavegacao>
-        </div>
-        {aviso && (
-          <p className="conectar-destaque" role="status">
-            {aviso}
-          </p>
-        )}
-      </PainelInferior>
-    )
-  }
-
   // Dashboard da evolução
   return (
     <PainelInferior
       titulo="Minha evolução"
       rodape={
-        <AcoesDuplas
-          voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }}
-          acao={{ rotulo: 'Exportar', onClick: () => setExportando(true) }}
-          primaria="voltar" /* exceção de 26/11 nesta tela: Exportar à esquerda e Voltar à direita */
-        />
+        <div className="exportar-raiz" ref={raizExportar}>
+          {exportando && (
+            <div className="menu menu--acima" role="menu">
+              <button type="button" role="menuitem" className="menu-item menu-item--icone" onClick={salvarPdf}>
+                <span className="menu-item-texto entrada" style={{ '--i': 1 }}>Salvar em PDF</span>
+                <ArrowDownTrayIcon className="icone menu-item-icone" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                className="menu-item menu-item--icone"
+                onClick={() => {
+                  setExportando(false)
+                  enviarLink()
+                }}
+              >
+                <span className="menu-item-texto entrada" style={{ '--i': 2 }}>Enviar link</span>
+                <ShareIcon className="icone menu-item-icone" aria-hidden="true" />
+              </button>
+            </div>
+          )}
+          <AcoesDuplas
+            voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }}
+            acao={{ rotulo: 'Exportar', onClick: () => setExportando((e) => !e) }}
+            primaria="voltar" /* exceção de 26/11 nesta tela: Exportar à esquerda e Voltar à direita */
+          />
+        </div>
       }
     >
       <h2 className="conectar-titulo so-impressao">Minha evolução</h2>
@@ -226,6 +218,11 @@ export default function Evolucao() {
           </div>
           {tendencia(pontos) && <p className="tendencia">{tendencia(pontos)}</p>}
         </>
+      )}
+      {aviso && (
+        <p className="conectar-destaque" role="status">
+          {aviso}
+        </p>
       )}
     </PainelInferior>
   )
