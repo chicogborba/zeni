@@ -52,6 +52,7 @@
   --bg-inverse: var(--cinza-900);
   --text-primary: var(--cinza-900);
   --text-secondary: var(--cinza-700);
+  --text-brand: var(--brand-blue-800); /* títulos, rótulos e ícones (26/11) */
   --text-link: var(--brand-blue-700);
   --text-on-accent: var(--cinza-900);
   --text-on-inverse: var(--white);

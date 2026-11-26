@@ -16,6 +16,13 @@ p {
   margin: 0;
 }
 
+/* Títulos em blue-800 (26/11) */
+h1,
+h2,
+h3 {
+  color: var(--text-brand);
+}
+
 button {
   margin: 0;
   padding: 0;

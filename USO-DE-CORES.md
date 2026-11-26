@@ -42,7 +42,8 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | `bg-accent-pressed` | amarelo-400 | botão principal pressionado |
 | `bg-inverse` | cinza-900 | botão Voltar, opção ativa do alternador de período, dia ligado, bolinha do alternador, aviso urgente |
 | `text-primary` | cinza-900 | texto padrão, linha e pontos do gráfico |
-| `text-secondary` | cinza-700 | texto de apoio, rótulos "NOTA DE CADA EXERCÍCIO", "NOTA MÉDIA" e "N EXERCÍCIOS" |
+| `text-secondary` | cinza-700 | texto de apoio (`.botao-motivo`, estado do alternador, texto do modal) |
+| `text-brand` | blue-800 | títulos (h1 a h3), rótulos e ícones (ver seção 8) |
 | `text-link` | blue-700 | links |
 | `text-on-accent` | cinza-900 | texto sobre amarelo |
 | `text-on-inverse` | white | texto sobre `bg-inverse` |
@@ -56,14 +57,14 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 |---|---|
 | Fundo da página (`.app`, vale para todas as telas) | `cinza-50` |
 | Bulb de fundo (`.home-bulb`) | `--grad-bulb`: porcelana (centro) até transparente |
-| Avatar e pílula do ZENI | fundo `bg-page`; texto `text-primary`; "ZENI desconectado" em `cinza-700` |
+| Avatar e pílula do ZENI | fundo `bg-page`; ícones (pessoa e bateria) `text-brand`; texto da pílula `text-primary`; "ZENI desconectado" em `cinza-700` |
 | **Painel do dashboard** (`.home-dados`) | **gradiente 160°, `cinza-200` (0%) a `cinza-100` (100%)**; glow interno `--brilho-interno` |
 | **Cartões de suavidade e ritmo** (`.dado`) | gradiente 160°, `cinza-50` a `cinza-200`; glow interno `--brilho-interno` |
 | Número do dashboard (com valor e estado vazio "–") | `blue-800` |
-| Rótulos "suavidade" e "ritmo" | `cinza-800` |
-| **Cartão "minha evolução"** (`.cartao--azul`) | 4 camadas: radial `blue-100` (85% 10%), radial `blue-200` (10% 35%), radial `blue-600` a 40% de opacidade (80% 100%, token `--blue-600-40`), base `blue-100`; glow interno; texto `cinza-900`; ícone `cinza-800` |
-| **Cartão "começar o exercício"** (`.cartao--amarelo`) | 4 camadas: radial `amarelo-50` (15% 10%), `amarelo-500` (90% 25%), `amarelo-200` (30% 100%), base `amarelo-300`; glow interno; texto `cinza-900`; ícone `cinza-800` |
-| Aviso de conexão | `aviso--informacao`: fundo `bg-highlight`, ícone `blue-700` |
+| Rótulos "suavidade" e "ritmo" | `text-brand` (blue-800) |
+| **Cartão "minha evolução"** (`.cartao--azul`) | 4 camadas: radial `blue-100` (85% 10%), radial `blue-200` (10% 35%), radial `blue-600` a 40% de opacidade (80% 100%, token `--blue-600-40`), base `blue-100`; glow interno; texto e ícone `text-brand` (blue-800) |
+| **Cartão "começar o exercício"** (`.cartao--amarelo`) | 4 camadas: radial `amarelo-50` (15% 10%), `amarelo-500` (90% 25%), `amarelo-200` (30% 100%), base `amarelo-300`; glow interno; texto e ícone `text-brand` (blue-800) |
+| Aviso de conexão | `aviso--informacao`: fundo `bg-highlight`, ícone `text-brand` |
 
 ## 3. Minha evolução (painel inferior)
 
@@ -75,8 +76,8 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | Gráfico: linha e pontos | `text-primary` (cinza-900) |
 | Gráfico: área | `amarelo-200` |
 | Gráfico: eixos | `cinza-300` |
-| Gráfico: números e datas (0, 50, 100, hoje, há N dias) | `text-primary` |
-| "NOTA DE CADA EXERCÍCIO", "N EXERCÍCIOS", "NOTA MÉDIA" | `text-secondary` (cinza-700), caixa alta, peso 600 |
+| Gráfico: números e datas (0, 50, 100, hoje, há N dias) | `text-brand` |
+| "NOTA DE CADA EXERCÍCIO", "N EXERCÍCIOS", "NOTA MÉDIA" | `text-brand`, caixa alta, peso 600 |
 | Valor da nota média | `text-primary`, negrito |
 | Botão Exportar | `bg-accent` (amarelo-300), texto `text-on-accent` |
 | Botão Voltar | `bg-inverse`, texto `text-on-inverse` |
@@ -89,13 +90,13 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | Botão Voltar | `bg-inverse`; pressionado `cinza-800`; texto `text-on-inverse` |
 | Botão vazado | borda `border-strong`; texto `text-primary`; pressionado `bg-subtle` |
 | Botão desativado | borda `border-strong`; texto `text-secondary` |
-| Avisos | informação: fundo `bg-highlight`, ícone `blue-700`; atenção: fundo `amarelo-200`; urgente: fundo `bg-inverse`, texto `text-on-inverse`, ícone `icon-on-inverse` |
+| Avisos | informação: fundo `bg-highlight`, ícone `text-brand`; atenção: fundo `amarelo-200`, ícone `text-brand`; urgente: fundo `bg-inverse`, texto `text-on-inverse`, ícone `icon-on-inverse` |
 | Etiqueta de IA | fundo `bg-highlight`, texto `blue-800` |
-| Linha de navegação | texto `text-primary`; divisor `border-subtle`; chevron `cinza-700`; pressionada `bg-subtle` |
+| Linha de navegação | texto `text-primary`; divisor `border-subtle`; chevron `text-brand`; pressionada `bg-subtle` |
 | Menu do avatar | fundo `bg-page`; item pressionado `bg-subtle` |
 | Alternador (liga/desliga) | borda `border-strong`; bolinha `bg-inverse`; ligado: trilho `bg-accent`; estado em `text-secondary` |
 | Seletor de dias (lembretes) | borda `border-strong`; ligado: fundo `bg-inverse`, texto `text-on-inverse` |
-| Campos | borda `border-strong`; fundo `bg-page`; rótulo `text-secondary` |
+| Campos | borda `border-strong`; fundo `bg-page`; rótulo `text-brand` |
 | Selo (nota) | fundo `bg-accent`, texto `text-on-accent` |
 | Modal central | fundo `bg-page`; película `--scrim`; texto de apoio `text-secondary` |
 
@@ -104,8 +105,8 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | Elemento | Cor |
 |---|---|
 | Bulb que pulsa | `--grad-bulb-pulso`: `amarelo-300` até transparente |
-| Contador de tempo | `cinza-700` |
-| Contador da instrução ("Exercício 1 de 3") | `text-secondary` |
+| Contador de tempo | `text-brand` |
+| Contador da instrução ("Exercício 1 de 3") e da pergunta da triagem | `text-brand` |
 | Indicador de voz | fundo `amarelo-200`, texto `text-primary` |
 | Tela de espera | fundo `--grad-amarelo` (amarelo-50, 300, 500); texto `text-primary` |
 | Tela de carregamento | fundo `bg-page`; bulb `cinza-100`; preenchimento em gradiente `amarelo-400`, `amarelo-300`, `amarelo-100` |
@@ -114,9 +115,17 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | Personagem 3D: céu / chão | `white` / `cinza-100` |
 | Personagem 3D: linha de mesa (exercícios D e F) | `cinza-300` |
 
+## 5.1 Títulos
+
+Todos os `h1`, `h2` e `h3` usam `text-brand` (regra em `base.css`), assim como `.cartao-titulo`. Isso cobre os títulos dos painéis, a pergunta da triagem, o nome do exercício e os títulos dos cartões da home.
+
 ## 6. Tokens definidos, sem uso
 
 `cinza-400`, `cinza-600`, `blue-50` (fora dos gradientes), `grad-cinza-card` (o painel do dashboard agora é `cinza-100` chapado), `grad-amarelo-card`, `grad-azul-card`, `grad-bruma-card`.
+
+## 6.1 Fora da regra de `text-brand` (continuam como estavam)
+
+Texto corrido e valores (`text-primary`), texto dos botões, texto de avisos (inclusive do aviso urgente, em branco sobre `bg-inverse`), a letra da pílula, o valor da nota média, o ícone de verificado e as marcas dos dias (ficam dentro de áreas amarelas ou escuras), e os ícones sobre fundo escuro.
 
 ## 7. Histórico de mudanças de cor
 
@@ -134,3 +143,4 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | 26/11/2026 | Painel do dashboard: de `cinza-200` chapado para gradiente 160° de `cinza-200` a `cinza-100`. |
 | 26/11/2026 | Números grandes do dashboard: de `cinza-900` (com valor) e `cinza-700` (vazio) para `blue-700`. |
 | 26/11/2026 | Números grandes do dashboard: de `blue-700` para `blue-800`. |
+| 26/11/2026 | Títulos (h1 a h3 e títulos dos cartões), rótulos (dashboard, gráfico, campos, contadores) e ícones (cartões da home, avatar, bateria, chevron, avisos de informação e atenção): de `cinza-900`, `cinza-800`, `cinza-700` e `blue-700` para `text-brand` (novo token, `blue-800`). |

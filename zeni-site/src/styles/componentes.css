@@ -103,11 +103,14 @@
   background: var(--bg-highlight);
 }
 .aviso--informacao .aviso-icone {
-  color: var(--brand-blue-700);
+  color: var(--text-brand);
 }
 
 .aviso--atencao {
   background: var(--brand-amarelo-200);
+}
+.aviso--atencao .aviso-icone {
+  color: var(--text-brand);
 }
 
 .aviso--urgente {
@@ -234,7 +237,7 @@
   flex: none;
   width: 28px; /* área do ícone, seção 6.7 */
   height: 28px;
-  color: var(--cinza-700);
+  color: var(--text-brand);
 }
 
 /* ---------- Minha evolução: alternador de período e rodapé com dois botões lado a lado (25/11) ---------- */
@@ -342,7 +345,7 @@
   margin-top: var(--space-1);
   font: var(--type-apoio); /* 16 px: o mínimo da interface (seção 3.3) */
   text-transform: lowercase;
-  color: var(--cinza-800); /* 5,9:1 no ponto mais escuro do cartão (cinza-300). cinza-700 dá só 3,9:1 */
+  color: var(--text-brand); /* 5,9:1 no ponto mais escuro do cartão (cinza-300). cinza-700 dá só 3,9:1 */
 }
 
 /* Dois botões lado a lado, mais baixos que um quadrado */
@@ -395,11 +398,12 @@
 .cartao-icone {
   width: 28px; /* área do ícone, design system 6.7 */
   height: 28px;
-  color: var(--cinza-800); /* o mesmo cinza dos rótulos do dashboard */
+  color: var(--text-brand);
 }
 
 .cartao-titulo {
   font: var(--type-titulo-3);
+  color: var(--text-brand);
   /* altura de duas linhas nos dois cartões: o título de uma linha não puxa o ícone para outra altura */
   min-height: calc(56px * var(--escala-texto, 1));
   display: flex;
@@ -473,6 +477,7 @@
 .avatar-icone {
   width: 22px; /* 28 px (design system 6.7) menos 6 px, a pedido */
   height: 22px;
+  color: var(--text-brand);
 }
 
 /* Menu suspenso do avatar (exceção de 25/11): sem sombra e sem borda, itens de 64 px */
@@ -521,6 +526,7 @@
 .pilula-icone {
   width: 28px;
   height: 28px;
+  color: var(--text-brand);
 }
 
 .sr-only {
@@ -688,7 +694,7 @@
 
 .parq-contador {
   font: var(--type-apoio);
-  color: var(--text-secondary);
+  color: var(--text-brand);
 }
 
 .parq-pergunta {
@@ -770,7 +776,7 @@
   font: var(--type-apoio); /* 16 px, o mesmo tamanho nos dois rótulos */
   font-weight: 600;
   text-transform: uppercase;
-  color: var(--text-secondary); /* cinza-700, o cinza escuro padrão para texto de apoio */
+  color: var(--text-brand); /* era text-secondary (cinza-700) */
 }
 
 .grafico-pe {
@@ -793,7 +799,7 @@
 
 .grafico-rotulo {
   font: var(--type-apoio); /* rótulos de 16 px */
-  fill: var(--text-primary);
+  fill: var(--text-brand);
 }
 
 /* "Salvar em PDF" usa a impressão do navegador. Layout provisório (design system, pendência 10):
@@ -870,7 +876,7 @@
   display: block;
   margin-bottom: var(--space-2);
   font: var(--type-apoio);
-  color: var(--text-secondary);
+  color: var(--text-brand);
 }
 
 .campo {
@@ -899,7 +905,7 @@
 }
 .instrucao-contador {
   font: var(--type-apoio);
-  color: var(--text-secondary);
+  color: var(--text-brand);
 }
 .instrucao-nome {
   font: var(--type-titulo-2);
@@ -974,7 +980,7 @@
   margin-left: auto;
   font: var(--type-apoio);
   font-size: calc(var(--escala-texto, 1) * 16px - 2pt); /* 2 pt menor e mais discreto */
-  color: var(--cinza-700);
+  color: var(--text-brand);
 }
 
 /* Tela de carregamento: bulb arredondado ao centro, que se preenche com o gradiente */
