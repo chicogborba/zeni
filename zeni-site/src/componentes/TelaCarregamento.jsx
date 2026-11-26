@@ -16,7 +16,11 @@ export default function TelaCarregamento({ texto, duracaoMs, onTentarDeNovo, onV
 
   return (
     <div className="carga" role="status">
-      <div className="carga-bulb" style={{ '--carga-duracao': `${duracaoMs}ms` }} aria-hidden="true" />
+      {/* o halo desfocado fica atrás do oval e acende no ritmo do preenchimento */}
+      <div className="carga-forma" style={{ '--carga-duracao': `${duracaoMs}ms` }} aria-hidden="true">
+        <div className="carga-halo" />
+        <div className="carga-bulb" />
+      </div>
       <p className="carga-texto">{demorou ? 'Está demorando mais que o normal' : texto}</p>
       {demorou && (
         <div className="carga-botoes">
