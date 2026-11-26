@@ -296,7 +296,7 @@ Padrão único para todo bottom sheet com **"Voltar" mais outra ação** (compon
 |---|---|
 | Posição | "Voltar" sempre à esquerda; a outra ação sempre à direita. Exceção: se "Voltar" for a ação primária, ele segue a regra de ação primária e vai para a direita |
 | Altura | 64 px (`--target-min`) nos dois botões, lado a lado. Era 36 px com área de toque de 64 (decisão de 26/11, revista no mesmo dia). Texto muito grande pode aumentar |
-| Largura | Por padrão, os dois dividem a largura do sheet igualmente. Quando um é a ação primária, ele fica com largura automática (abraça o texto) e o outro ocupa o resto |
+| Largura | Os dois têm a mesma largura (colunas iguais). O botão da direita (ação primária) é sempre igual ou maior que o da esquerda, e só fica maior quando o rótulo dele exige (por exemplo "Adicionar lembrete"); aí a esquerda encolhe. Sem ação primária, os dois ficam sempre iguais (decisão de 26/11, revista no mesmo dia) |
 | Área de toque | A própria altura do botão (64 px) |
 | Cores | Voltar sempre preto (`bg-inverse`); ação primária sempre amarela (`bg-accent`); ação desativada vazada com contorno, e o motivo escrito no corpo do painel, perto do que a pessoa precisa mudar |
 

@@ -257,20 +257,20 @@
 }
 
 /* ---------- Ação dupla em bottom sheets (26/11): voltar à esquerda, a outra ação à direita, 64 px ---------- */
+/* Colunas iguais. Com ação primária, a coluna da direita só passa de metade se o rótulo exigir (max-content). */
 .acoes-duplas {
-  display: flex;
-  align-items: stretch;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--space-4);
 }
+.acoes-duplas--direita-cresce {
+  grid-template-columns: minmax(0, 1fr) minmax(max-content, 1fr);
+}
 .botao--36 {
-  flex: 1 1 0;
   width: auto;
   min-width: 0;
   min-height: var(--target-min); /* 64 px, a altura padrão (era 36 px com área de toque de 64); o texto muito grande ainda pode crescer */
   padding: 0 var(--space-4);
-}
-.botao--hug {
-  flex: 0 0 auto; /* ação primária: abraça o texto */
 }
 .linhas--sem-divisoria .linha-nav {
   border-bottom: 0;
