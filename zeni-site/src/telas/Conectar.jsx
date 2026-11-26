@@ -1,86 +1,204 @@
 // Segue: fluxo-do-app.md, bloco 1 "Conectar com o ZENI" (1.1 a 1.6) e design-system.md 6.9 (tela de espera).
-// O ZENI é simulado: a busca e a conexão são geradas pelo app (CLAUDE.md, escopo da v1).
-// 1.2 procurando -> 1.3 conectado -> 1.4 apoiar na mesa -> 1.5 aprendendo a posição -> 1.6 volta à Home.
-// TODO (fluxo-do-app.md, ponto em aberto 3): sem passo de permissão de Bluetooth no fluxograma.
+// 1.1 ligar o ZENI -> 1.2 procurando -> 1.3 conectado -> 1.4 apoiar na mesa -> 1.5 aprendendo a posição -> 1.6 pronto.
+//
+// Com Bluetooth no navegador, é o ZENI de verdade (src/zeni-dispositivo.js): a lista de aparelhos só abre depois de um
+// toque, por isso há a tela "Ligue o ZENI" antes da busca. A posição inicial é medida pelo próprio ZENI: se ele se
+// mexer durante os 3 segundos, a tela pede para tentar de novo. No fim, o teste ao vivo mostra que tudo funciona.
+// Sem Bluetooth (iPhone no Safari, navegador antigo), a tela explica e oferece "Experimentar sem o ZENI", que segue a
+// simulação da v1.
+// TODO (fluxo-do-app.md, ponto em aberto 3): o pedido de permissão do Bluetooth é a própria lista do navegador.
 import { CheckIcon } from '@heroicons/react/24/outline'
 import { useEffect, useState } from 'react'
 import AcoesDuplas from '../componentes/AcoesDuplas.jsx'
+import Aviso from '../componentes/Aviso.jsx'
 import Botao from '../componentes/Botao.jsx'
 import PainelInferior from '../componentes/PainelInferior.jsx'
 import TelaEspera from '../componentes/TelaEspera.jsx'
+import TesteZeni from '../componentes/TesteZeni.jsx'
 import { useNavegacao } from '../navegacao.jsx'
 import { BATERIA_SIMULADA } from '../fluxo.js'
 import { CHAVES, guardar } from '../storage.js'
+import { useZeni } from '../usarZeni.js'
+import * as dispositivo from '../zeni-dispositivo.js'
 
-const BUSCA_MS = 3000 // tempo simulado da busca
+const BUSCA_MS = 3000 // tempo simulado da busca (só no modo sem Bluetooth)
 const SEGUNDOS_NA_MESA = 3 // "Apoiar o ZENI na mesa por 3 segundos"
+
+const SEM_SUPORTE = {
+  iphone: 'No iPhone, o Safari não conversa com o ZENI. Abra este mesmo endereço no app Bluefy, que é gratuito.',
+  navegador: 'Este navegador não conversa com o ZENI. Abra este mesmo endereço no Chrome.',
+  inseguro: 'Abra o endereço que começa com https para conversar com o ZENI.',
+}
 
 export default function Conectar() {
   const { voltarAoInicio } = useNavegacao()
-  const [estado, setEstado] = useState('procurando') // procurando | conectado | aprendendo | pronto
+  const zeni = useZeni()
+  const suporte = dispositivo.suporte()
+  const [simulado, setSimulado] = useState(!suporte.ok && suporte.motivo === 'demonstracao')
+  // inicio | sem-suporte | procurando | erro | conectado | aprendendo | mexeu | sem-sensor | pronto | ligado
+  const [estado, setEstado] = useState(() => {
+    if (suporte.ok) return dispositivo.conectado() ? 'ligado' : 'inicio'
+    return suporte.motivo === 'demonstracao' ? 'procurando' : 'sem-suporte'
+  })
+  const [erro, setErro] = useState(null)
   const [tentativa, setTentativa] = useState(0)
   const [restam, setRestam] = useState(SEGUNDOS_NA_MESA)
 
-  // 1.2: a busca simulada termina em "conectado"
+  // Simulação: a busca termina sozinha em "conectado"
   useEffect(() => {
-    if (estado !== 'procurando') return undefined
+    if (!simulado || estado !== 'procurando') return undefined
     const id = setTimeout(() => setEstado('conectado'), BUSCA_MS)
     return () => clearTimeout(id)
-  }, [estado, tentativa])
+  }, [simulado, estado, tentativa])
 
-  // 1.5: contagem dos 3 segundos, depois o ZENI "aprendeu" a posição inicial
+
+  // Contagem dos 3 segundos. Real: o ZENI mede e responde; a contagem só acompanha.
   useEffect(() => {
     if (estado !== 'aprendendo') return undefined
-    const id = setTimeout(() => {
-      if (restam > 1) {
-        setRestam(restam - 1)
-        return
-      }
-      guardar(CHAVES.zeni, { conectado: true, bateria: BATERIA_SIMULADA, posicaoInicial: new Date().toISOString() })
-      setEstado('pronto')
-    }, 1000)
+    const id = setTimeout(() => setRestam((r) => Math.max(1, r - 1)), 1000)
     return () => clearTimeout(id)
   }, [estado, restam])
 
-  if (estado === 'procurando') {
+  const guardarConexao = () =>
+    guardar(CHAVES.zeni, {
+      conectado: true,
+      real: !simulado,
+      nome: simulado ? null : dispositivo.nomeDoAparelho(),
+      bateria: simulado ? BATERIA_SIMULADA : null,
+      posicaoInicial: new Date().toISOString(),
+    })
+
+  // Precisa vir direto do toque: o navegador só abre a lista de aparelhos assim
+  const procurar = async () => {
+    setErro(null)
+    if (!(await dispositivo.bluetoothLigado())) {
+      setErro('bluetooth-desligado')
+      setEstado('erro')
+      return
+    }
+    setEstado('procurando')
+    try {
+      await dispositivo.conectar()
+      // Já tem posição inicial guardada no ZENI? Mesmo assim, 1.4 pede para apoiar na mesa (é rápido e evita desvio).
+      setEstado('conectado')
+    } catch (e) {
+      if (e.message === 'cancelado') setEstado('inicio')
+      else {
+        setErro(e.message)
+        setEstado('erro')
+      }
+    }
+  }
+
+  const aprender = async () => {
+    setRestam(SEGUNDOS_NA_MESA)
+    setEstado('aprendendo')
+    if (simulado) {
+      setTimeout(() => {
+        guardarConexao()
+        setEstado('pronto')
+      }, SEGUNDOS_NA_MESA * 1000)
+      return
+    }
+    try {
+      const r = await dispositivo.calibrar()
+      if (r === 'ok') {
+        guardarConexao()
+        setEstado('pronto')
+      } else setEstado(r === 'sem-sensor' ? 'sem-sensor' : 'mexeu')
+    } catch {
+      setErro('falhou')
+      setEstado('erro')
+    }
+  }
+
+  const experimentarSem = () => {
+    setSimulado(true)
+    setTentativa((t) => t + 1)
+    setEstado('procurando')
+  }
+
+  // Caiu a conexão no meio do caminho: mostra o aviso calmo de "se desconectou" (Tentar de novo volta ao começo)
+  const caiu = !simulado && !zeni.conectado && ['conectado', 'aprendendo', 'pronto', 'ligado'].includes(estado)
+  const tela = caiu ? 'erro' : estado
+  const motivo = caiu ? 'caiu' : erro
+
+  if (tela === 'sem-suporte') {
+    return (
+      <PainelInferior
+        titulo="Conectar o ZENI"
+        rodape={<AcoesDuplas voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }} acao={{ rotulo: 'Experimentar sem o ZENI', onClick: experimentarSem }} />}
+      >
+        <h2 className="conectar-titulo">Conectar o ZENI</h2>
+        <Aviso nivel="informacao" titulo="Falta um passo">
+          {SEM_SUPORTE[suporte.motivo] ?? SEM_SUPORTE.navegador}
+        </Aviso>
+      </PainelInferior>
+    )
+  }
+
+  if (tela === 'inicio') {
+    return (
+      <PainelInferior
+        titulo="Conectar o ZENI"
+        rodape={<AcoesDuplas voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }} acao={{ rotulo: 'Procurar', onClick: procurar }} />}
+      >
+        <h2 className="conectar-titulo">Ligue o ZENI</h2>
+        <p className="conectar-texto">Deixe o ZENI ligado e perto do celular. Depois, toque em Procurar.</p>
+        <p className="conectar-destaque">Na lista que abrir, escolha o ZENI.</p>
+      </PainelInferior>
+    )
+  }
+
+  if (tela === 'procurando') {
     return (
       <TelaEspera
         key={tentativa}
-        texto="Procurando o ZENI"
-        onTentarDeNovo={() => setTentativa((t) => t + 1)}
+        texto={simulado ? 'Procurando o ZENI' : 'Conectando ao ZENI'}
+        onTentarDeNovo={() => (simulado ? setTentativa((t) => t + 1) : setEstado('inicio'))}
         onVoltar={voltarAoInicio}
       />
     )
   }
 
-  if (estado === 'conectado') {
+  if (tela === 'erro') {
+    const textos = {
+      'bluetooth-desligado': ['O Bluetooth está desligado', 'Ligue o Bluetooth do celular e tente de novo.'],
+      caiu: ['O ZENI se desconectou', 'Confira se ele está ligado e perto do celular.'],
+    }
+    const [titulo, texto] = textos[motivo] ?? ['Não consegui falar com o ZENI', 'Confira se ele está ligado e perto do celular, e tente de novo.']
+    return (
+      <PainelInferior
+        titulo={titulo}
+        rodape={<AcoesDuplas voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }} acao={{ rotulo: 'Tentar de novo', onClick: () => setEstado('inicio') }} />}
+      >
+        <h2 className="conectar-titulo">{titulo}</h2>
+        <p className="conectar-texto">{texto}</p>
+      </PainelInferior>
+    )
+  }
+
+  if (tela === 'conectado') {
     return (
       <PainelInferior
         titulo="ZENI conectado"
-        rodape={
-          <AcoesDuplas
-            voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }}
-            acao={{
-              rotulo: 'Pronto',
-              onClick: () => {
-                setRestam(SEGUNDOS_NA_MESA)
-                setEstado('aprendendo')
-              },
-            }}
-          />
-        }
+        rodape={<AcoesDuplas voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }} acao={{ rotulo: 'Pronto', onClick: aprender }} />}
       >
         <span className="selo" aria-hidden="true">
           <CheckIcon className="icone" />
         </span>
         <h2 className="conectar-titulo">Conectado</h2>
-        <p className="conectar-texto">O ZENI vibrou suavemente.</p>
-        <p className="conectar-destaque">Apoie o ZENI na mesa por 3 segundos.</p>
+        {simulado ? (
+          <p className="conectar-texto">O ZENI vibrou suavemente.</p>
+        ) : (
+          zeni.bateria !== null && <p className="conectar-texto">{`Bateria do ZENI: ${zeni.bateria}%`}</p>
+        )}
+        <p className="conectar-destaque">Apoie o ZENI na mesa por 3 segundos e toque em Pronto.</p>
       </PainelInferior>
     )
   }
 
-  if (estado === 'aprendendo') {
+  if (tela === 'aprendendo') {
     return (
       <PainelInferior titulo="Posição inicial">
         <h2 className="conectar-titulo">Fique parado</h2>
@@ -92,6 +210,51 @@ export default function Conectar() {
     )
   }
 
+  if (tela === 'mexeu' || tela === 'sem-sensor') {
+    const mexeu = tela === 'mexeu'
+    return (
+      <PainelInferior
+        titulo={mexeu ? 'O ZENI se mexeu' : 'O ZENI não sente o movimento'}
+        rodape={<AcoesDuplas voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }} acao={{ rotulo: 'Tentar de novo', onClick: aprender }} />}
+      >
+        <h2 className="conectar-titulo">{mexeu ? 'O ZENI se mexeu' : 'O ZENI não sente o movimento'}</h2>
+        <p className="conectar-texto">
+          {mexeu
+            ? 'Deixe o ZENI deitado na mesa, sem encostar, e tente de novo.'
+            : 'Desligue e ligue o ZENI. Se continuar assim, ele precisa de conserto.'}
+        </p>
+      </PainelInferior>
+    )
+  }
+
+  // Já conectado (aberto pelo menu "Conexão com o ZENI"): o teste ao vivo, com a opção de refazer a posição inicial
+  if (tela === 'ligado') {
+    return (
+      <PainelInferior
+        titulo="Conexão com o ZENI"
+        rodape={
+          <>
+            <AcoesDuplas voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }} acao={{ rotulo: 'Posição inicial', onClick: aprender }} />
+            <Botao
+              variante="vazado"
+              onClick={() => {
+                dispositivo.desconectar()
+                guardar(CHAVES.zeni, { conectado: false })
+                voltarAoInicio()
+              }}
+            >
+              Desconectar
+            </Botao>
+          </>
+        }
+      >
+        <h2 className="conectar-titulo">ZENI conectado</h2>
+        <TesteZeni />
+      </PainelInferior>
+    )
+  }
+
+  // 1.6: pronto. Real: mostra o teste ao vivo antes de voltar.
   return (
     <PainelInferior
       titulo="Tudo pronto"
@@ -106,6 +269,7 @@ export default function Conectar() {
       </span>
       <h2 className="conectar-titulo">Tudo pronto</h2>
       <p className="conectar-texto">O ZENI guardou a sua posição inicial.</p>
+      {!simulado && <TesteZeni />}
     </PainelInferior>
   )
 }

@@ -7,22 +7,26 @@ const media = (v) => v.reduce((a, b) => a + b, 0) / (v.length || 1)
 const limitar = (n) => Math.max(0, Math.min(100, Math.round(n)))
 
 export function avaliar(resumo, metaAtual) {
-  const { amostras, pausas, ritmoSeg } = resumo
+  const { amostras, pausas, ritmoSeg, oscilacao, tremores } = resumo
+  const real = Array.isArray(oscilacao) && oscilacao.length >= AMOSTRAS_MINIMAS
 
   // 3.1: tamanho, suavidade e ritmo
   const tamanho = limitar(media(amostras))
 
   // suavidade: quanto menos a medida "pula" de uma amostra para a outra, mais suave
+  // ZENI real: o tremido rápido medido pelo sensor (3 a 12 Hz) diz direto o quanto o movimento foi suave
   const saltos = amostras.slice(1).map((v, i) => Math.abs(v - amostras[i]))
-  const suavidade = limitar(100 - media(saltos) * 4)
+  const suavidade = real && tremores?.length ? limitar(100 - media(tremores)) : limitar(100 - media(saltos) * 4)
 
   // ritmo: período estimado pelos cruzamentos da média, comparado com o ritmo guiado
-  const m = media(amostras)
+  // ZENI real: usa o movimento com sinal (vai e volta = um ciclo); o tamanho sozinho sobe duas vezes por ciclo.
+  const serie = real ? oscilacao : amostras
+  const m = media(serie)
   let cruzamentos = 0
-  for (let i = 1; i < amostras.length; i++) {
-    if ((amostras[i - 1] - m) * (amostras[i] - m) < 0) cruzamentos += 1
+  for (let i = 1; i < serie.length; i++) {
+    if ((serie[i - 1] - m) * (serie[i] - m) < 0) cruzamentos += 1
   }
-  const periodo = cruzamentos > 0 ? (amostras.length * 0.25 * 2) / cruzamentos : ritmoSeg * 2
+  const periodo = cruzamentos > 0 ? (serie.length * 0.25 * 2) / cruzamentos : ritmoSeg * 2
   const ritmo = limitar(100 - (Math.abs(periodo - ritmoSeg) / ritmoSeg) * 100)
 
   // 3.2: nota de 0 a 100
