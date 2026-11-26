@@ -6,6 +6,7 @@
 import { useEffect, useState } from 'react'
 import { Battery0Icon, Battery50Icon, Battery100Icon, ChartBarIcon, PlayCircleIcon } from '@heroicons/react/24/outline'
 import AvisoConexao from '../componentes/AvisoConexao.jsx'
+import logo from '../assets/zeni-logo.svg'
 import MenuAvatar from '../componentes/MenuAvatar.jsx'
 import { bateriaDoZeni, telaDoExercicio, zeniConectado } from '../fluxo.js'
 import { useNavegacao } from '../navegacao.jsx'
@@ -95,13 +96,16 @@ export default function Home() {
     <main className="tela tela--home">
       <AvisoConexao />
       <header className="home-topo">
-        <MenuAvatar
-          itens={[
-            { id: 'personalizar', rotulo: 'Personalizar', onEscolher: () => ir('personalizar') },
-            { id: 'conexao', rotulo: 'Conexão com o ZENI', onEscolher: () => ir('conectar') },
-          ]}
-        />
-        <PilulaZeni />
+        <img className="home-logo" src={logo} alt="ZENI" />
+        <div className="home-topo-direita">
+          <PilulaZeni />
+          <MenuAvatar
+            itens={[
+              { id: 'personalizar', rotulo: 'Personalizar', onEscolher: () => ir('personalizar') },
+              { id: 'conexao', rotulo: 'Conexão com o ZENI', onEscolher: () => ir('conectar') },
+            ]}
+          />
+        </div>
       </header>
       {/* Gradiente em bulb: preenche o espaço livre entre o topo e o dashboard (decisão 16 de 25/11) */}
       <div className="home-bulb" aria-hidden="true" />

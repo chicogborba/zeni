@@ -489,7 +489,20 @@
   position: absolute;
   top: var(--space-6);
   left: var(--margin-x);
+  right: var(--margin-x);
   z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+/* Topo da Home (26/11): logo da marca à esquerda; bateria e avatar à direita, o avatar no canto */
+.home-logo {
+  height: 24px;
+  width: auto;
+  flex: none;
+}
+.home-topo-direita {
   display: flex;
   align-items: center;
   gap: var(--space-4);
@@ -547,6 +560,11 @@
   position: relative;
 }
 /* Menu suspenso do Exportar (26/11): abre só para cima, a partir do botão */
+/* O avatar fica no canto direito: o menu dele abre alinhado à direita */
+.home-topo .menu {
+  left: auto;
+  right: 0;
+}
 .menu--acima {
   top: auto;
   bottom: calc(100% + var(--space-2));

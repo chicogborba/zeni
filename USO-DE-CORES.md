@@ -165,3 +165,4 @@ Texto corrido e valores (`text-primary`), texto dos botões, texto de avisos (in
 | 26/11/2026 | Cartão da frase de tendência: gradiente radial de `cinza-200` (centro) a `cinza-50` (bordas), além do brilho interno; padding de 20 px. |
 | 26/11/2026 | Alternador 7 / 30 dias vira toggle: trilho `blue-600` a 50% (token novo `--blue-600-50`), opção escolhida `blue-600` com texto `white`, a outra com `text-primary`. Antes: bordas `border-strong` e escolhida `bg-inverse`. |
 | 26/11/2026 | Exportar vira menu suspenso aberto para cima: fundo `cinza-100` com `--brilho-interno`, texto `text-primary`, ícones `text-brand`. |
+| 26/11/2026 | Logo da marca na Home (`src/assets/zeni-logo.svg`, arquivo da marca, preenchimento `#161616`, fora dos tokens por ser o logo oficial). |
