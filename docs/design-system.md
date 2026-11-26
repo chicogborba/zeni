@@ -402,11 +402,11 @@ Aparece logo abaixo do avatar, ao tocar nele. Fundo `white`, `radius-lg`, sem so
 
 #### Dashboard da Home (25/11)
 
-Só a escala de cinzas (cinza-50 a cinza-900). Sem bruma, blue nem qualquer tom azulado. O amarelo fica só no botão "Começar o exercício" e no gradiente em bulb de fundo. O público tem baixa visão, então o contraste mínimo vale mais que um cinza mais claro.
+Só a escala de cinzas (cinza-50 a cinza-900). Sem bruma, blue nem qualquer tom azulado. (O cartão "minha evolução" da home, que fica fora do dashboard, usa os azuis mais claros: blue-50, blue-100 e blue-200.) O amarelo fica só no botão "Começar o exercício" e no gradiente em bulb de fundo. O público tem baixa visão, então o contraste mínimo vale mais que um cinza mais claro.
 
 | Elemento | Regra |
 |---|---|
-| Div que contém os cards | `grad-cinza-card` (cinza-50 a cinza-200), `radius-2xl`, padding 16 |
+| Div que contém os cards | `cinza-100` chapado (era `grad-cinza-card`, alterado em 26/11), `radius-2xl`, padding 16, glow interno `--brilho-interno` |
 | Cards de suavidade e ritmo | Mesmo gradiente do painel (160°, cinza-50 a cinza-200), separados dele pelo glow interno branco (`--brilho-interno`, 30 px). Era cinza-100 a cinza-300 (alterado em 26/11). `radius-2xl`, o mesmo da div |
 | Número | "Número do dashboard" (64 / 68, bold), `cinza-900`, centralizado no centro do card |
 | Rótulo | Apoio (16 px, o mínimo), minúsculas, `cinza-800`, logo abaixo do número. `cinza-700` dá só 3,89:1 em cinza-300 e reprova; `cinza-800` dá 5,94:1 |

@@ -19,6 +19,7 @@ Seguir `docs/fluxo-do-app.md`. Ordem de prioridade: a seção "Decisões do grup
 - Linguagem leiga, sem termos técnicos. O glossário está na seção 10 do design system.
 - Avisos calmos, sem vermelho nem alarme.
 - Usar os tokens de `zeni-site/src/styles/tokens.css` (origem: seção 9 do design system). Não inventar cores nem tamanhos fora deles.
+- **Uso de cores:** `USO-DE-CORES.md` (na raiz) registra onde cada cor é usada. Sempre que um uso de cor mudar (novo token, troca de cor, gradiente, glow), atualizar esse arquivo na mesma alteração, incluindo a tabela de histórico.
 
 ## Escopo da v1 (entrega para a banca)
 
