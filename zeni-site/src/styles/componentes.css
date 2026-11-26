@@ -251,7 +251,6 @@
 .selo,
 .ia-etiqueta,
 .voz-indicador,
-.seletor-opcao--ativa,
 .alternador-trilho {
   box-shadow: var(--brilho-interno);
 }

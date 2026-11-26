@@ -117,7 +117,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 
 ## 4.1 Brilho interno
 
-`--brilho-interno` (branco 70%, 30 px, interno) está em: painel do dashboard, cartões de dados, cartões da home, e agora em componentes de fundo colorido ou escuro: avisos, selo, etiqueta de IA, indicador de voz, opção ativa do seletor de período e trilho do alternador (os dias do lembrete não têm brilho desde 26/11). **Os botões (`.botao`, incluindo os das ações duplas dos bottom sheets) não têm brilho nem gradiente.** Componentes de fundo branco (painel, modal, menu, avatar, pílula, campos) também não mostram o brilho (seria branco sobre branco).
+`--brilho-interno` (branco 70%, 30 px, interno) está em: painel do dashboard, cartões de dados, cartões da home, e agora em componentes de fundo colorido ou escuro: avisos, selo, etiqueta de IA, indicador de voz e trilho do alternador (o seletor de período e os dias do lembrete não têm brilho) (os dias do lembrete não têm brilho desde 26/11). **Os botões (`.botao`, incluindo os das ações duplas dos bottom sheets) não têm brilho nem gradiente.** Componentes de fundo branco (painel, modal, menu, avatar, pílula, campos) também não mostram o brilho (seria branco sobre branco).
 
 ## 5.1 Títulos
 
@@ -156,3 +156,4 @@ Texto corrido e valores (`text-primary`), texto dos botões, texto de avisos (in
 | 26/11/2026 | Dias do lembrete: sem visto; não escolhidos de `cinza-600` para `blue-200` (texto `text-primary`). |
 | 26/11/2026 | Tela de carregamento do exercício: halo desfocado em `amarelo-300` ao redor do oval. |
 | 26/11/2026 | Corpo do personagem 3D: de `brand-porcelana` chapado para gradiente `cinza-100` (cima) a `cinza-200` (cintura). |
+| 26/11/2026 | Opção ativa do seletor 7 / 30 dias: sem brilho interno, chapada em `bg-inverse`. |
