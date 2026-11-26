@@ -27,7 +27,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 `brand-amarelo-50` #FEFDF1 · `-100` #FDFADD · `-200` #FAF4AD · `-300` #F7ED7E · `-400` #F4E64D · `-500` #F1E01D
 
 ### Azul da marca
-`brand-blue-50` #F0FBFF · `-100` #E3F7FF · `-200` #B3E9FF · `-600` #0080B2 (sem uso) · `-700` #005B80 · `-800` #00374D
+`brand-blue-50` #F0FBFF (sem uso direto) · `-100` #E3F7FF · `-200` #B3E9FF · `-600` #0080B2 (só a 40%, no cartão "minha evolução") · `-700` #005B80 · `-800` #00374D
 
 ### Tons únicos
 `brand-bruma` #98B5BE · `brand-seixo` #C4C4C4 · `brand-porcelana` #F5FAFE
@@ -61,7 +61,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | **Cartões de suavidade e ritmo** (`.dado`) | gradiente 160°, `cinza-50` a `cinza-200`; glow interno `--brilho-interno` |
 | Número do dashboard | `cinza-900` com valor; `cinza-700` no estado vazio ("–") |
 | Rótulos "suavidade" e "ritmo" | `cinza-800` |
-| **Cartão "minha evolução"** (`.cartao--azul`) | 4 camadas: radial `blue-50` (85% 10%), radial `blue-200` (10% 35%), radial `blue-100` (80% 100%), base `blue-100`; glow interno; texto `cinza-900`; ícone `cinza-800` |
+| **Cartão "minha evolução"** (`.cartao--azul`) | 4 camadas: radial `blue-100` (85% 10%), radial `blue-200` (10% 35%), radial `blue-600` a 40% de opacidade (80% 100%, token `--blue-600-40`), base `blue-100`; glow interno; texto `cinza-900`; ícone `cinza-800` |
 | **Cartão "começar o exercício"** (`.cartao--amarelo`) | 4 camadas: radial `amarelo-50` (15% 10%), `amarelo-500` (90% 25%), `amarelo-200` (30% 100%), base `amarelo-300`; glow interno; texto `cinza-900`; ícone `cinza-800` |
 | Aviso de conexão | `aviso--informacao`: fundo `bg-highlight`, ícone `blue-700` |
 
@@ -116,7 +116,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 
 ## 6. Tokens definidos, sem uso
 
-`cinza-400`, `cinza-600`, `blue-600`, `grad-cinza-card` (o painel do dashboard agora é `cinza-100` chapado), `grad-amarelo-card`, `grad-azul-card`, `grad-bruma-card`.
+`cinza-400`, `cinza-600`, `blue-50` (fora dos gradientes), `grad-cinza-card` (o painel do dashboard agora é `cinza-100` chapado), `grad-amarelo-card`, `grad-azul-card`, `grad-bruma-card`.
 
 ## 7. Histórico de mudanças de cor
 
@@ -128,3 +128,4 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | 26/11/2026 | Painel do dashboard: de `grad-cinza-card` (`cinza-50`→`cinza-200`) para `cinza-100` chapado. |
 | 26/11/2026 | Cartão "minha evolução": de cinzas (50, 200, 300, 100) para azuis claros (`blue-50`, `blue-200`, `blue-100`). A classe passou de `.cartao--cinza` para `.cartao--azul`. |
 | 26/11/2026 | Rótulos do gráfico de evolução em `text-secondary` (antes `text-primary`). |
+| 26/11/2026 | Cartão "minha evolução": de `blue-50`/`blue-200`/`blue-100` para `blue-100`, `blue-200` e `blue-600` a 40% de opacidade (novo token `--blue-600-40`). |
