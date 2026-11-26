@@ -705,8 +705,8 @@
   font: var(--type-corpo);
   font-size: calc(17px * var(--escala-texto, 1));
   line-height: calc(26px * var(--escala-texto, 1));
-  padding: var(--space-4);
-  background: var(--cinza-200);
+  padding: 20px; /* decisão de 26/11 */
+  background: radial-gradient(ellipse at center, var(--cinza-200) 0%, var(--cinza-200) 35%, var(--cinza-50) 100%); /* centro cinza-200, bordas mais claras */
   border-radius: var(--radius-xl);
   box-shadow: var(--brilho-interno);
 }
