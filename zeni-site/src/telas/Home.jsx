@@ -17,7 +17,7 @@ import { CHAVES, ler } from '../storage.js'
 // `tela` pode ser uma função: o exercício passa antes pela triagem e pela conexão (src/fluxo.js).
 // A ordem do array é a ordem na tela, da esquerda para a direita. Só o exercício usa o amarelo.
 const DESTINOS = [
-  { id: 'evolucao', titulo: 'Minha evolução', tela: 'evolucao', gradiente: 'cinza', Icone: ChartBarIcon },
+  { id: 'evolucao', titulo: 'Minha\nevolução', tela: 'evolucao', gradiente: 'cinza', Icone: ChartBarIcon },
   { id: 'exercicio', titulo: 'Começar o exercício', tela: telaDoExercicio, gradiente: 'amarelo', Icone: PlayCircleIcon },
 ]
 

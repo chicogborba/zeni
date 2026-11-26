@@ -407,6 +407,7 @@
   justify-content: center;
   text-transform: lowercase;
   text-wrap: balance;
+  white-space: pre-line; /* respeita a quebra fixa do título (minha / evolução) */
 }
 
 /* Entrada suave dos textos: aparece e sobe um pouco. --i escalona a entrada.
