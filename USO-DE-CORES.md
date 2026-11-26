@@ -57,7 +57,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | Fundo da página (`.app`, vale para todas as telas) | `cinza-50` |
 | Bulb de fundo (`.home-bulb`) | `--grad-bulb`: porcelana (centro) até transparente |
 | Avatar e pílula do ZENI | fundo `bg-page`; texto `text-primary`; "ZENI desconectado" em `cinza-700` |
-| **Painel do dashboard** (`.home-dados`) | **`cinza-200` chapado**; glow interno `--brilho-interno` |
+| **Painel do dashboard** (`.home-dados`) | **gradiente 160°, `cinza-200` (0%) a `cinza-100` (100%)**; glow interno `--brilho-interno` |
 | **Cartões de suavidade e ritmo** (`.dado`) | gradiente 160°, `cinza-50` a `cinza-200`; glow interno `--brilho-interno` |
 | Número do dashboard | `cinza-900` com valor; `cinza-700` no estado vazio ("–") |
 | Rótulos "suavidade" e "ritmo" | `cinza-800` |
@@ -131,3 +131,4 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | 26/11/2026 | Cartão "minha evolução": de `blue-50`/`blue-200`/`blue-100` para `blue-100`, `blue-200` e `blue-600` a 40% de opacidade (novo token `--blue-600-40`). |
 | 26/11/2026 | Fundo da página (`.app`): de `bg-subtle` (porcelana) para `cinza-50`. |
 | 26/11/2026 | Painel do dashboard: de `cinza-100` para `cinza-200` chapado (destacar do fundo `cinza-50`). |
+| 26/11/2026 | Painel do dashboard: de `cinza-200` chapado para gradiente 160° de `cinza-200` a `cinza-100`. |
