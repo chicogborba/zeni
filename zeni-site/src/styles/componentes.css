@@ -595,9 +595,9 @@
   transform: translateX(calc(var(--trilho-largura) - var(--bolinha) - var(--folga) * 2 - var(--stroke) * 2));
 }
 
-/* ---------- Fundo da Home: a cor mais clara do design system (Porcelana) ---------- */
+/* ---------- Fundo da página: cinza-50 (era porcelana, até 26/11) ---------- */
 .app {
-  background: var(--bg-subtle); /* = brand-porcelana */
+  background: var(--cinza-50);
 }
 
 /* ---------- Tela de espera (6.9) ---------- */

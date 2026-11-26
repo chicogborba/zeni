@@ -36,7 +36,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | Token | Aponta para | Uso |
 |---|---|---|
 | `bg-page` | white | fundo de painéis, avatar, pílula, menu, modal, campos |
-| `bg-subtle` | porcelana | fundo geral do app (`.app`); toque pressionado em linhas e menu |
+| `bg-subtle` | porcelana | toque pressionado em linhas e menu (o fundo geral do app deixou de usá-lo) |
 | `bg-highlight` | blue-100 | avisos informativos, etiqueta de IA |
 | `bg-accent` | amarelo-300 | botão principal, selo, alternador ligado |
 | `bg-accent-pressed` | amarelo-400 | botão principal pressionado |
@@ -54,7 +54,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 
 | Elemento | Cor |
 |---|---|
-| Fundo da tela | `bg-subtle` (porcelana) |
+| Fundo da página (`.app`, vale para todas as telas) | `cinza-50` |
 | Bulb de fundo (`.home-bulb`) | `--grad-bulb`: porcelana (centro) até transparente |
 | Avatar e pílula do ZENI | fundo `bg-page`; texto `text-primary`; "ZENI desconectado" em `cinza-700` |
 | **Painel do dashboard** (`.home-dados`) | **`cinza-100` chapado**; glow interno `--brilho-interno` |
@@ -129,3 +129,4 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | 26/11/2026 | Cartão "minha evolução": de cinzas (50, 200, 300, 100) para azuis claros (`blue-50`, `blue-200`, `blue-100`). A classe passou de `.cartao--cinza` para `.cartao--azul`. |
 | 26/11/2026 | Rótulos do gráfico de evolução em `text-secondary` (antes `text-primary`). |
 | 26/11/2026 | Cartão "minha evolução": de `blue-50`/`blue-200`/`blue-100` para `blue-100`, `blue-200` e `blue-600` a 40% de opacidade (novo token `--blue-600-40`). |
+| 26/11/2026 | Fundo da página (`.app`): de `bg-subtle` (porcelana) para `cinza-50`. |
