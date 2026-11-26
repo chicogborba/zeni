@@ -400,6 +400,11 @@
 
 .cartao-titulo {
   font: var(--type-titulo-3);
+  /* altura de duas linhas nos dois cartões: o título de uma linha não puxa o ícone para outra altura */
+  min-height: calc(56px * var(--escala-texto, 1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Entrada suave dos textos: aparece e sobe um pouco. --i escalona a entrada.
