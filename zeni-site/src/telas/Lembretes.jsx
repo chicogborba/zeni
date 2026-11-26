@@ -3,6 +3,7 @@
 // Na v1 só avisa com o app aberto. TODO (fluxo-do-app.md, ponto em aberto 4): confirmar que é isso que a v1 entrega.
 import { CheckIcon } from '@heroicons/react/24/outline'
 import { useEffect, useState } from 'react'
+import AcoesDuplas from '../componentes/AcoesDuplas.jsx'
 import Botao from '../componentes/Botao.jsx'
 import LinhaNavegacao from '../componentes/LinhaNavegacao.jsx'
 import PainelInferior from '../componentes/PainelInferior.jsx'
@@ -116,16 +117,14 @@ export default function Lembretes({ onVoltar }) {
       titulo="Lembretes"
       onFechar={onVoltar}
       rodape={
-        <Botao variante="voltar" onClick={onVoltar}>
-          Voltar
-        </Botao>
+        <AcoesDuplas
+          voltar={{ rotulo: 'Voltar', onClick: onVoltar }}
+          acao={{ rotulo: 'Adicionar lembrete', onClick: () => setEditando({ id: Date.now(), dias: [1, 2, 3, 4, 5], hora: '08:00' }) }}
+        />
       }
     >
       <h2 className="conectar-titulo">Lembretes</h2>
-      {lista.length === 0 && <p className="conectar-texto">Você ainda não tem lembretes.</p>}
-      <Botao variante="principal" onClick={() => setEditando({ id: Date.now(), dias: [1, 2, 3, 4, 5], hora: '08:00' })}>
-        Adicionar lembrete
-      </Botao>
+      {lista.length === 0 && <p className="conectar-texto estado-vazio">Você ainda não tem lembretes.</p>}
       {lista.length > 0 && (
         <div className="linhas">
           {lista.map((l) => (

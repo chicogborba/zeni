@@ -288,6 +288,20 @@ Estrutura do app: uma **home** com cartões grandes, e as outras telas abrem com
 - Estado desativado: não usar cinza claro. Manter o contorno e escrever o motivo abaixo ("Conecte o ZENI para começar").
 - **Pausar** aparece em todas as telas de exercício, na mesma posição, 64 px de altura mínima.
 
+#### Ação dupla em bottom sheets (26/11)
+
+Padrão para todo bottom sheet com **"Voltar" mais outra ação** (componente `AcoesDuplas`). Vale mais que as alturas de 72 e 64 px da tabela acima, só nesse caso.
+
+| Regra | Valor |
+|---|---|
+| Posição | "Voltar" sempre à esquerda; a outra ação sempre à direita. Exceção: se "Voltar" for a ação primária, ele segue a regra de ação primária e vai para a direita |
+| Altura | 36 px nos dois botões (mínima; texto muito grande ou quebra de linha pode aumentar) |
+| Largura | Por padrão, os dois dividem a largura do sheet igualmente. Quando um é a ação primária, ele fica com largura automática (abraça o texto) e o outro ocupa o resto |
+| Área de toque | 64 px de altura nos dois, por uma área invisível (36 px visuais + 14 px acima e abaixo) |
+| Cores | Voltar em `bg-inverse`; ação primária em `bg-accent`; ação desativada vazada com contorno, e o motivo escrito no corpo do painel, perto do que a pessoa precisa mudar |
+
+Usado em Personalizar > Lembretes ("Voltar" e "Adicionar lembrete") e Personalizar > Aparência ("Voltar ao jeito anterior" e "Confirmar").
+
 ### 6.2 Home
 
 Decisão de 25/11: a grade de um cartão largo e quatro quadrados deixa de valer. Referência de tela: 390 × 844. De cima para baixo:

@@ -55,7 +55,7 @@ export default function MenuAvatar({ itens }) {
       </button>
       {aberto && (
         <div className="menu" id={idMenu} role="menu">
-          {itens.map((item) => (
+          {itens.map((item, i) => (
             <button
               key={item.id}
               type="button"
@@ -66,7 +66,10 @@ export default function MenuAvatar({ itens }) {
                 item.onEscolher()
               }}
             >
-              {item.rotulo}
+              {/* mesmo efeito de surgimento de texto da Home (classe .entrada, escalonada por --i) */}
+              <span className="menu-item-texto entrada" style={{ '--i': i + 1 }}>
+                {item.rotulo}
+              </span>
             </button>
           ))}
         </div>

@@ -15,7 +15,7 @@ Seguir `docs/fluxo-do-app.md`. Ordem de prioridade: a seção "Decisões do grup
     - O exercício do dia em tela cheia.
     - A nota em modal centralizado.
 - Pequenas exceções de layout (25/11): em Minha evolução, Exportar e Voltar ficam lado a lado, os dois com 72 px de altura (ajuste de 26/11; antes 72 e 64).
-- Alvos de toque grandes, feitos para mão com tremor. Os tamanhos exatos estão na seção 7 do design system.
+- Alvos de toque grandes, feitos para mão com tremor. Os tamanhos exatos estão na seção 7 do design system. Exceção de 26/11: botões duplos (Voltar + outra ação) em bottom sheets têm 36 px de altura visual com 64 px de área de toque (design system, 6.1).
 - Linguagem leiga, sem termos técnicos. O glossário está na seção 10 do design system.
 - Avisos calmos, sem vermelho nem alarme.
 - Usar os tokens de `zeni-site/src/styles/tokens.css` (origem: seção 9 do design system). Não inventar cores nem tamanhos fora deles.

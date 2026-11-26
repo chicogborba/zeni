@@ -28,7 +28,7 @@ export default function Personalizar() {
       }
     >
       <h2 className="conectar-titulo">Personalizar</h2>
-      <div className="linhas">
+      <div className="linhas linhas--sem-divisoria">
         <LinhaNavegacao onClick={() => setItem('lembretes')}>Lembretes</LinhaNavegacao>
         <LinhaNavegacao onClick={() => setItem('aparencia')}>Aparência</LinhaNavegacao>
       </div>

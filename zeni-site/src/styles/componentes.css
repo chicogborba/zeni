@@ -240,6 +240,39 @@
   color: var(--text-brand);
 }
 
+/* ---------- Ação dupla em bottom sheets (26/11): voltar à esquerda, a outra ação à direita, 36 px ---------- */
+.acoes-duplas {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-4);
+}
+.botao--36 {
+  position: relative;
+  flex: 1 1 0;
+  width: auto;
+  min-width: 0;
+  min-height: 36px; /* altura padrão da ação dupla; o texto muito grande ainda pode crescer */
+  padding: 0 var(--space-4);
+}
+.botao--36::before {
+  content: '';
+  position: absolute;
+  inset: -14px 0; /* 36 + 28 = 64 px de área de toque, sem mudar o visual */
+}
+.botao--hug {
+  flex: 0 0 auto; /* ação primária: abraça o texto */
+}
+.linhas--sem-divisoria .linha-nav {
+  border-bottom: 0;
+}
+/* Estado vazio dos lembretes: 30 px entre o texto e a área dos botões (16 px de respiro do rodapé + 14 px aqui) */
+.painel-conteudo:has(.estado-vazio) {
+  padding-bottom: calc(30px - var(--space-4));
+}
+.menu-item-texto {
+  display: inline-block; /* para a animação de entrada (transform) valer em texto em linha */
+}
+
 /* ---------- Minha evolução: alternador de período e rodapé com dois botões lado a lado (25/11) ---------- */
 .seletor {
   display: flex;

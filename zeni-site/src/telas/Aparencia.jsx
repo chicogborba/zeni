@@ -3,6 +3,7 @@
 // TODO (design system, pendência 9): falta "as cores da tela". Modo escuro e alto contraste estão fora desta versão.
 import { useState } from 'react'
 import { TAMANHOS, aplicarTamanho, tamanhoSalvo } from '../aparencia.js'
+import AcoesDuplas from '../componentes/AcoesDuplas.jsx'
 import Botao from '../componentes/Botao.jsx'
 import PainelInferior from '../componentes/PainelInferior.jsx'
 import { CHAVES, guardar, ler } from '../storage.js'
@@ -33,19 +34,10 @@ export default function Aparencia({ onVoltar }) {
       titulo="Aparência"
       onFechar={desfazer}
       rodape={
-        <>
-          <Botao
-            variante="principal"
-            desativado={!mudou}
-            motivo="Escolha outro tamanho para confirmar."
-            onClick={confirmar}
-          >
-            Confirmar
-          </Botao>
-          <Botao variante="voltar" onClick={desfazer}>
-            Voltar ao jeito anterior
-          </Botao>
-        </>
+        <AcoesDuplas
+          voltar={{ rotulo: 'Voltar ao jeito anterior', onClick: desfazer }}
+          acao={{ rotulo: 'Confirmar', onClick: confirmar, desativado: !mudou }}
+        />
       }
     >
       <h2 className="conectar-titulo">Tamanho do texto</h2>
@@ -59,6 +51,7 @@ export default function Aparencia({ onVoltar }) {
           {escolhido === t.id ? `${t.nome} (escolhido)` : t.nome}
         </Botao>
       ))}
+      {!mudou && <p className="botao-motivo">Escolha outro tamanho para confirmar.</p>}
     </PainelInferior>
   )
 }
