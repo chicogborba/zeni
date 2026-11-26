@@ -56,7 +56,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | Elemento | Cor |
 |---|---|
 | Fundo da página (`.app`, vale para todas as telas) | `cinza-50` |
-| Fundo da Home | `--grad-home`: linear de `cinza-50` (topo), `cinza-300` (40%) até `blue-800` a 30% de opacidade (base), de ponta a ponta da tela |
+| Fundo da Home | `--grad-home`: linear de `cinza-50` (topo), `cinza-300` (40%) até `blue-800` a 60% de opacidade (base), de ponta a ponta da tela |
 | Avatar e pílula do ZENI | fundo `bg-page`; ícones (pessoa e bateria) `text-brand`; texto da pílula `text-primary`; "ZENI desconectado" em `cinza-700` |
 | **Painel do dashboard** (`.home-dados`) | **gradiente radial (elipse) centrado em 30% / 25%: `cinza-200` perto do canto superior esquerdo a `cinza-100` nas bordas**; glow interno `--brilho-interno` |
 | **Cartões de suavidade e ritmo** (`.dado`) | gradiente 160°, `cinza-50` a `cinza-200`; glow interno `--brilho-interno` |
@@ -171,3 +171,4 @@ Texto corrido e valores (`text-primary`), texto dos botões, texto de avisos (in
 | 26/11/2026 | Fundo da Home: o gradiente da tela de entrada (`--grad-home`, token novo), com o azul a 80%. Substitui o bulb `--grad-bulb` (porcelana). |
 | 26/11/2026 | Fundo da Home: azul do gradiente (`--grad-home`) de 80% para 30% de opacidade. |
 | 26/11/2026 | Topo do gradiente da Home: de `cinza-100` para `cinza-50` (mais claro). |
+| 26/11/2026 | Fundo da Home: azul do gradiente de 30% para 60% de opacidade. |
