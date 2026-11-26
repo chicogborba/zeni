@@ -333,12 +333,18 @@
   padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom));
 }
 
-/* Gradiente em bulb (--grad-bulb): ocupa o que sobra no topo, de ponta a ponta, sem contorno */
+/* Fundo da Home (26/11): o gradiente da tela de entrada (--grad-home), de ponta a ponta da tela, atrás de tudo.
+   Substitui o gradiente em bulb; o espaço livre no topo continua, só que sem elemento próprio. */
+.tela--home::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--grad-home);
+}
 .home-bulb {
   flex: 1;
   min-height: 0;
-  margin: calc(-1 * var(--space-6)) calc(-1 * var(--margin-x)) 0;
-  background: var(--grad-bulb);
 }
 
 /* Faixa de dados: só cinzas. Fundo = gradiente radial cinza-200 (perto do canto superior esquerdo) a cinza-100 (bordas); cartões em gradiente cinza-50 a cinza-200, separados pelo glow interno */

@@ -109,7 +109,7 @@ export default function Home() {
           />
         </div>
       </header>
-      {/* Gradiente em bulb: preenche o espaço livre entre o topo e o dashboard (decisão 16 de 25/11) */}
+      {/* Espaço livre entre o topo e o dashboard; o fundo é o gradiente da Home (26/11) */}
       <div className="home-bulb" aria-hidden="true" />
       <section className="home-dados" aria-label="Seus dados de saúde">
         {DADOS.map((d, i) => (
