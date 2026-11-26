@@ -93,7 +93,11 @@ const OSSOS_DO_BRACO = /^(Clavicle|UpperArm|Forearm|Hand|Fingers|Thumb)/
 const FADE_DE = 0.14 // altura (em metros, na pose de repouso; Hips = 0) onde o tronco fica opaco
 const FADE_ATE = -0.03 // e onde some
 
-function materialDoCorpo(cor, geo, esqueleto) {
+// Cor do corpo (26/11): cinza-100 em cima (cabeça e ombros) até cinza-200 perto da cintura, por vértice (atributo `color`).
+const COR_ALTA_ATE = 0.6 // altura (m, Hips = 0) a partir da qual o corpo é todo cinza-100
+const COR_BAIXA_DE = 0.05 // e abaixo da qual é todo cinza-200
+
+function materialDoCorpo(corClara, corEscura, geo, esqueleto) {
   const pos = geo.attributes.position
   const idx = geo.attributes.skinIndex
   const pes = geo.attributes.skinWeight
@@ -107,7 +111,14 @@ function materialDoCorpo(cor, geo, esqueleto) {
     fade[i] = Math.min(1, t + Math.min(1, braco)) // braço pesa 1: nunca esmaece
   }
   geo.setAttribute('fade', new THREE.BufferAttribute(fade, 1))
-  const material = new THREE.MeshStandardMaterial({ color: cor, roughness: 1, metalness: 0, side: THREE.DoubleSide, transparent: true })
+  const cores = new Float32Array(pos.count * 3)
+  const c = new THREE.Color()
+  for (let i = 0; i < pos.count; i++) {
+    c.copy(corEscura).lerp(corClara, THREE.MathUtils.smoothstep(pos.getY(i), COR_BAIXA_DE, COR_ALTA_ATE))
+    c.toArray(cores, i * 3)
+  }
+  geo.setAttribute('color', new THREE.BufferAttribute(cores, 3))
+  const material = new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: 1, metalness: 0, side: THREE.DoubleSide, transparent: true })
   material.onBeforeCompile = (sh) => {
     sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nattribute float fade;\nvarying float vFade;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvFade = fade;')
     sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying float vFade;').replace('#include <opaque_fragment>', '#include <opaque_fragment>\ngl_FragColor.a *= vFade;')
@@ -167,13 +178,14 @@ function Personagem({ exercicio, parado, vista }) {
 
   const { raiz, zeni, socket, corpos } = useMemo(() => {
     const raiz = clonarComEsqueleto(gltf.scene)
-    const porcelana = token('--brand-porcelana')
+    const cinzaClaro = new THREE.Color(token('--cinza-100'))
+    const cinzaEscuro = new THREE.Color(token('--cinza-200'))
     const corpos = []
     raiz.traverse((o) => {
       if (!o.isMesh) return
       const g = o.geometry.clone() // cópia própria: leva o atributo `fade` e pode ser descartada (as normais suaves já vêm no arquivo)
       o.geometry = g
-      o.material = materialDoCorpo(porcelana, g, o.skeleton)
+      o.material = materialDoCorpo(cinzaClaro, cinzaEscuro, g, o.skeleton)
       corpos.push(o)
     })
     const socket = raiz.getObjectByName('SocketR') ?? raiz.getObjectByName('Socket.R') // o GLTFLoader tira o ponto do nome

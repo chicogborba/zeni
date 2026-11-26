@@ -110,7 +110,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | Indicador de voz | fundo `amarelo-200`, texto `text-primary` |
 | Tela de espera | fundo `--grad-amarelo` (amarelo-50, 300, 500); texto `text-primary` |
 | Tela de carregamento | fundo `bg-page`; bulb `cinza-100`; preenchimento em gradiente `amarelo-400`, `amarelo-300`, `amarelo-100`; halo desfocado (blur de 32 px) em `amarelo-300` atrás do oval, que acende até 80% no ritmo do preenchimento |
-| Personagem 3D: corpo | `brand-porcelana` |
+| Personagem 3D: corpo | gradiente por vértice na altura: `cinza-100` da cabeça e ombros (a partir de 0,6 m) até `cinza-200` perto da cintura (abaixo de 0,05 m); material fosco, sem textura |
 | Personagem 3D: o ZENI | `brand-bruma` |
 | Personagem 3D: céu / chão | `white` / `cinza-100` |
 | Personagem 3D: linha de mesa (exercícios D e F) | `cinza-300` |
@@ -155,3 +155,4 @@ Texto corrido e valores (`text-primary`), texto dos botões, texto de avisos (in
 | 26/11/2026 | Dias do lembrete: escolhidos em `blue-600`, não escolhidos em `cinza-600` (antes `bg-inverse` e branco com contorno); sem brilho interno. |
 | 26/11/2026 | Dias do lembrete: sem visto; não escolhidos de `cinza-600` para `blue-200` (texto `text-primary`). |
 | 26/11/2026 | Tela de carregamento do exercício: halo desfocado em `amarelo-300` ao redor do oval. |
+| 26/11/2026 | Corpo do personagem 3D: de `brand-porcelana` chapado para gradiente `cinza-100` (cima) a `cinza-200` (cintura). |
