@@ -560,7 +560,10 @@ export const temFrente = () => costasNoSensor !== null
 export function rotacaoDoZeni() {
   if (!qRef) marcarReferencia()
   const d = qMul(qConj(qRef), qAtual) // no corpo do sensor
-  return qMul(qMul(qMontagem, d), qConj(qMontagem))
+  const [x, y, z, w] = qMul(qMul(qMontagem, d), qConj(qMontagem))
+  // Espelho: o personagem está de frente para a pessoa, então a tela mostra como um espelho. A direita da pessoa fica à
+  // direita na tela (esquerda e direita trocam; frente e trás não). Refletir o eixo x de uma rotação é (x, −y, −z, w).
+  return [x, -y, -z, w]
 }
 
 // Inclinação do ZENI em relação à posição de pé, em graus: para o lado e para frente/trás (para o desenho 2D)
