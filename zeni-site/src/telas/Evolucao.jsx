@@ -2,6 +2,7 @@
 // Minha evolução abre direto no dashboard: alternador 7 dias / 30 dias no topo, gráfico no meio e, na base,
 // Exportar (esquerda, abre as opções) e Voltar (direita, perto do polegar). Volta à Tela inicial.
 // Uma série por vez: a nota de cada exercício (linha de 3 px em cinza-900, área em amarelo-200, rótulos de 16 px).
+// Eixo X: hoje na origem (à esquerda) e o passado para a direita. Eixo Y: 0, 50 e 100.
 // Salvar em PDF: impressão do navegador. Enviar link: Web Share API com texto-resumo; sem suporte, copia o texto.
 // O link real depende do backend (v2). TODO (design system, pendência 10): layout do PDF em aberto.
 import { useState } from 'react'
@@ -22,7 +23,7 @@ const TOPO = 12
 const BASE = A - 28 // espaço embaixo para os rótulos de data
 
 function Grafico({ pontos, dias, agora }) {
-  const x = (quando) => ESQ + ((quando - (agora - dias * DIA_MS)) / (dias * DIA_MS)) * (L - ESQ - 8)
+  const x = (quando) => ESQ + ((agora - quando) / (dias * DIA_MS)) * (L - ESQ - 8) // hoje = origem
   const y = (nota) => BASE - (nota / 100) * (BASE - TOPO)
   const xy = pontos.map((p) => [x(p.quando), y(p.nota)])
   const linha = xy.map(([px, py], i) => `${i === 0 ? 'M' : 'L'}${px.toFixed(1)} ${py.toFixed(1)}`).join(' ')
@@ -38,9 +39,10 @@ function Grafico({ pontos, dias, agora }) {
       <line className="grafico-eixo" x1={ESQ} y1={BASE} x2={L - 8} y2={BASE} />
       <line className="grafico-eixo" x1={ESQ} y1={TOPO} x2={ESQ} y2={BASE} />
       <text className="grafico-rotulo" x={ESQ - 6} y={TOPO + 5} textAnchor="end">100</text>
+      <text className="grafico-rotulo" x={ESQ - 6} y={(TOPO + BASE) / 2 + 5} textAnchor="end">50</text>
       <text className="grafico-rotulo" x={ESQ - 6} y={BASE} textAnchor="end">0</text>
-      <text className="grafico-rotulo" x={ESQ} y={A - 4} textAnchor="start">{`há ${dias} dias`}</text>
-      <text className="grafico-rotulo" x={L - 8} y={A - 4} textAnchor="end">hoje</text>
+      <text className="grafico-rotulo" x={ESQ} y={A - 4} textAnchor="start">hoje</text>
+      <text className="grafico-rotulo" x={L - 8} y={A - 4} textAnchor="end">{`há ${dias} dias`}</text>
       {area && <path className="grafico-area" d={area} />}
       <path className="grafico-linha" d={linha} />
       {xy.map(([px, py], i) => (
@@ -159,11 +161,17 @@ export default function Evolucao() {
         <p className="conectar-texto">Ainda não há exercícios nesse período. Faça um exercício para ver a sua evolução.</p>
       ) : (
         <>
+          <p className="rotulo-caps">Nota de cada exercício</p>
           <Grafico pontos={pontos} dias={dias} agora={agora} />
-          <p className="conectar-destaque">Nota de cada exercício</p>
-          <p className="conectar-texto">
-            {pontos.length} {pontos.length === 1 ? 'exercício' : 'exercícios'}. Nota média: {media}.
-          </p>
+          <div className="grafico-pe">
+            <p className="rotulo-caps">
+              {pontos.length} {pontos.length === 1 ? 'exercício' : 'exercícios'}
+            </p>
+            <p className="nota-media">
+              <span className="rotulo-caps">Nota média</span>
+              <span className="nota-media-valor">{media}</span>
+            </p>
+          </div>
         </>
       )}
     </PainelInferior>

@@ -14,7 +14,7 @@ Seguir `docs/fluxo-do-app.md`. Ordem de prioridade: a seção "Decisões do grup
     - Menu suspenso ao tocar no avatar, com Personalizar e Conexão com o ZENI. O avatar mostra a inicial da pessoa, tem no mínimo 64 px e `aria-label` "Abrir menu" (exceção à regra de ícone sozinho).
     - O exercício do dia em tela cheia.
     - A nota em modal centralizado.
-- Pequenas exceções de layout (25/11): em Minha evolução, Exportar (72) e Voltar (64) ficam lado a lado, alinhados pela base.
+- Pequenas exceções de layout (25/11): em Minha evolução, Exportar e Voltar ficam lado a lado, os dois com 72 px de altura (ajuste de 26/11; antes 72 e 64).
 - Alvos de toque grandes, feitos para mão com tremor. Os tamanhos exatos estão na seção 7 do design system.
 - Linguagem leiga, sem termos técnicos. O glossário está na seção 10 do design system.
 - Avisos calmos, sem vermelho nem alarme.

@@ -167,7 +167,7 @@ Todo fundo de cor do app é um gradiente, para dar leveza e sensação de movime
 | `grad-bruma-card` | 160°: porcelana (0%), bruma (100%) | Cartões da home |
 | `grad-cinza-card` | 160°: cinza-50 (0%), cinza-200 (100%) | Cartões da home |
 | `grad-bulb-pulso` | Radial, `ellipse closest-side`: amarelo-300 (centro) até transparente | Bulb que pulsa durante o exercício (25/11) |
-| `grad-bulb` | Radial, `ellipse closest-side`: amarelo-200 (centro) até transparente (bordas). Era amarelo-100, mas ficava fraco na tela | Fundo da home (25/11) |
+| `grad-bulb` | Radial, `ellipse closest-side`: porcelana (centro) até transparente (bordas). Era amarelo-200 (antes amarelo-100); o amarelo saiu em 26/11 | Fundo da home (25/11) |
 
 Regras:
 
@@ -298,7 +298,7 @@ Decisão de 25/11: a grade de um cartão largo e quatro quadrados deixa de valer
 | Pílula do ZENI | Topo, ao lado do avatar. Raio `radius-full`, texto em Apoio (16 px). Não é tocável. Com conexão, mostra o nível de bateria. Sem conexão, mostra só "ZENI desconectado", sem nível de bateria, em `cinza-700` (o cinza mais claro com 4,5:1 em texto de 16 px) |
 | Dashboard | Dois indicadores, **suavidade** e **ritmo**. Só leitura. Só cinzas, sem azul (ver a seção "Dashboard" abaixo). Sem histórico: o número fica como "–", com o rótulo ("suavidade", "ritmo") abaixo. Sem texto explicativo |
 | Botões | Dois, lado a lado: **Minha evolução** (esquerda, secundário, cinza) e **Começar o exercício** (direita, principal, amarelo, com mais destaque). Largura de cada um: (390 − 2 × 24 − 16) ÷ 2 = 163. Altura mínima 72. Texto em até duas linhas, sem cortar e sem hifenizar |
-| Fundo | `grad-bulb` (seção 2.5): elipse radial grande, centralizada na horizontal, ocupando a área livre entre o topo e o dashboard. Vai de `brand-amarelo-200` no centro até transparente nas bordas (`ellipse closest-side`), clara o bastante para aparecer sem competir com o dashboard, sem contorno, sobre o fundo da tela. Sem animação na home |
+| Fundo | `grad-bulb` (seção 2.5): elipse radial grande, centralizada na horizontal, ocupando a área livre entre o topo e o dashboard. Vai de `brand-porcelana` (quase-branco) no centro até transparente nas bordas (`ellipse closest-side`), clara o bastante para aparecer sem competir com o dashboard, sem contorno, sobre o fundo da tela. Sem animação na home |
 
 Distância entre os dois botões: 16 px (`space-4`). Margem lateral de 24 px e 24 px de margem inferior mais a área segura. O estado de toque dos botões segue a seção 6.1.
 
@@ -568,7 +568,7 @@ Estas regras valem mais do que o gosto visual.
   --grad-bruma-card: linear-gradient(160deg, var(--brand-porcelana) 0%, var(--brand-bruma) 100%);
   --grad-cinza-card: linear-gradient(160deg, var(--cinza-50) 0%, var(--cinza-200) 100%);
   --grad-bulb-pulso: radial-gradient(ellipse closest-side at center, var(--brand-amarelo-300) 0%, transparent 100%);
-  --grad-bulb: radial-gradient(ellipse closest-side at center, var(--brand-amarelo-200) 0%, transparent 100%);
+  --grad-bulb: radial-gradient(ellipse closest-side at center, var(--brand-porcelana) 0%, transparent 100%);
 }
 
 body {

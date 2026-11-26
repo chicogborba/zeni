@@ -93,7 +93,7 @@
   --grad-bruma-card: linear-gradient(160deg, var(--brand-porcelana) 0%, var(--brand-bruma) 100%);
   --grad-cinza-card: linear-gradient(160deg, var(--cinza-50) 0%, var(--cinza-200) 100%);
   --grad-bulb-pulso: radial-gradient(ellipse closest-side at center, var(--brand-amarelo-300) 0%, transparent 100%); /* bulb que pulsa durante o exercício (25/11) */
-  --grad-bulb: radial-gradient(ellipse closest-side at center, var(--brand-amarelo-200) 0%, transparent 100%); /* fundo da Home (25/11) */
+  --grad-bulb: radial-gradient(ellipse closest-side at center, var(--brand-porcelana) 0%, transparent 100%); /* fundo da Home (25/11). Era amarelo-200; trocado por um quase-branco sutil */
 }
 
 body {
@@ -127,7 +127,7 @@ h1, h2, h3, button { font-family: var(--font-heading); }
   --type-corpo-destaque: 500 calc(18px * var(--escala-texto, 1)) / calc(28px * var(--escala-texto, 1)) var(--font-body);
   --type-apoio: 400 calc(16px * var(--escala-texto, 1)) / calc(24px * var(--escala-texto, 1)) var(--font-body);
   --type-numero: 500 calc(56px * var(--escala-texto, 1)) / calc(60px * var(--escala-texto, 1)) var(--font-body);
-  --type-numero-grande: 700 calc(64px * var(--escala-texto, 1)) / calc(68px * var(--escala-texto, 1)) var(--font-body); /* NOVO (25/11): dashboard da Home */
+  --type-numero-grande: 700 calc(61px * var(--escala-texto, 1)) / calc(68px * var(--escala-texto, 1)) var(--font-body); /* NOVO (25/11): dashboard da Home. 64 px menos 2 pt */
 
   /* Layout e forma (seções 4, 5 e 6) */
   --margin-x: var(--space-6);
