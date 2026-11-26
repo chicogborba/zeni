@@ -302,14 +302,14 @@
   background: var(--grad-bulb);
 }
 
-/* Faixa de dados: só cinzas. Fundo = gradiente radial cinza-200 (centro) a cinza-100 (bordas); cartões em gradiente cinza-50 a cinza-200, separados pelo glow interno */
+/* Faixa de dados: só cinzas. Fundo = gradiente radial cinza-200 (perto do canto superior esquerdo) a cinza-100 (bordas); cartões em gradiente cinza-50 a cinza-200, separados pelo glow interno */
 .home-dados {
   flex: none;
   height: var(--home-dados-altura);
   display: flex;
   gap: var(--space-4);
   padding: var(--space-4);
-  background: radial-gradient(ellipse at center, var(--cinza-200) 0%, var(--cinza-100) 100%); /* radial: centro cinza-200, bordas cinza-100. Era linear 160° */
+  background: radial-gradient(ellipse at 30% 25%, var(--cinza-200) 0%, var(--cinza-100) 100%); /* radial descentralizado: cinza-200 perto do canto superior esquerdo, cinza-100 nas bordas */
   border-radius: var(--radius-2xl);
   box-shadow: var(--brilho-interno);
 }

@@ -406,7 +406,7 @@ Fundos só na escala de cinzas (cinza-50 a cinza-900), sem bruma. Exceção de 2
 
 | Elemento | Regra |
 |---|---|
-| Div que contém os cards | gradiente radial, `cinza-200` no centro a `cinza-100` nas bordas (era `grad-cinza-card`, alterado em 26/11), `radius-2xl`, padding 16, glow interno `--brilho-interno` |
+| Div que contém os cards | gradiente radial centrado em 30% / 25%, `cinza-200` perto do canto superior esquerdo a `cinza-100` nas bordas (era `grad-cinza-card`, alterado em 26/11), `radius-2xl`, padding 16, glow interno `--brilho-interno` |
 | Cards de suavidade e ritmo | Mesmo gradiente do painel (160°, cinza-50 a cinza-200), separados dele pelo glow interno branco (`--brilho-interno`, 30 px). Era cinza-100 a cinza-300 (alterado em 26/11). `radius-2xl`, o mesmo da div |
 | Número | "Número do dashboard" (61 / 68, bold), `blue-800` (alterado em 26/11; era `cinza-900`), centralizado no centro do card |
 | Rótulo | Apoio (16 px, o mínimo), minúsculas, `cinza-800`, logo abaixo do número. `cinza-700` dá só 3,89:1 em cinza-300 e reprova; `cinza-800` dá 5,94:1 |
