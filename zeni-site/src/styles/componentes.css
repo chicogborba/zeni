@@ -497,6 +497,16 @@
   gap: var(--space-4);
 }
 /* Topo da Home (26/11): logo da marca à esquerda; bateria e avatar à direita, o avatar no canto */
+.home-logo-botao {
+  position: relative;
+  flex: none;
+  display: flex;
+}
+.home-logo-botao::before {
+  content: '';
+  position: absolute;
+  inset: -26px -10px; /* área de toque de 64 px de altura em volta do logo pequeno */
+}
 .home-logo {
   /* O logo é uma máscara: a cor vem do token text-brand (blue-800), não do arquivo */
   flex: none;

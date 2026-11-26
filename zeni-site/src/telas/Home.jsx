@@ -96,7 +96,9 @@ export default function Home() {
     <main className="tela tela--home">
       <AvisoConexao />
       <header className="home-topo">
-        <span className="home-logo" role="img" aria-label="ZENI" style={{ '--logo': `url(${logo})` }} />
+        <button type="button" className="home-logo-botao" aria-label="ZENI: ver o carregamento" onClick={() => ir('carregamento')}>
+          <span className="home-logo" aria-hidden="true" style={{ '--logo': `url(${logo})` }} />
+        </button>
         <div className="home-topo-direita">
           <PilulaZeni />
           <MenuAvatar
