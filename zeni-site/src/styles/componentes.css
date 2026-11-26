@@ -836,10 +836,11 @@
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-full);
   background: var(--brand-blue-600);
-  color: var(--bg-page);
+  color: var(--white); /* o tom mais claro que temos */
 }
 .nota-media .rotulo-caps {
   color: inherit;
+  font-weight: 500; /* rótulo em medium, número em bold */
 }
 .nota-media-valor {
   font: var(--type-apoio);

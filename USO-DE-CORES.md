@@ -159,3 +159,4 @@ Texto corrido e valores (`text-primary`), texto dos botões, texto de avisos (in
 | 26/11/2026 | Opção ativa do seletor 7 / 30 dias: sem brilho interno, chapada em `bg-inverse`. |
 | 26/11/2026 | Rótulos sobre fundo branco (gráfico, caixa-alta do gráfico, "nota média", campos) passam a `text-rotulo` (= `cinza-600`), token novo. "suavidade" e "ritmo" ficam em `text-brand` por contraste. |
 | 26/11/2026 | "Nota média" do gráfico vira bullet: fundo `blue-600` e texto (rótulo e valor) em `bg-page` (branco), vazado. |
+| 26/11/2026 | "Nota média" no bullet: rótulo em medium (500) e número em bold (700), os dois em `white` (o tom mais claro, igual ao fundo do bottom sheet). |
