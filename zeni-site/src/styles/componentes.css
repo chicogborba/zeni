@@ -330,10 +330,10 @@
   grid-row: 2;
   font: var(--type-numero-grande);
   font-size: min(calc(61px * var(--escala-texto, 1)), 50cqw); /* 64 px menos 2 pt; 3 dígitos cabem em 50% da largura */
-  color: var(--cinza-700); /* estado vazio ("–"): texto grande, 3:1. cinza-600 dá 2,6:1 no ponto mais escuro do cartão */
+  color: var(--brand-blue-700); /* números grandes em blue-700 (26/11); antes cinza-700 no estado vazio */
 }
 .dado--com-valor .dado-numero {
-  color: var(--cinza-900); /* com valor: bold (no token) e mais contraste */
+  color: var(--brand-blue-700); /* com valor: bold (no token); era cinza-900 */
 }
 
 .dado-rotulo {

@@ -27,7 +27,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 `brand-amarelo-50` #FEFDF1 · `-100` #FDFADD · `-200` #FAF4AD · `-300` #F7ED7E · `-400` #F4E64D · `-500` #F1E01D
 
 ### Azul da marca
-`brand-blue-50` #F0FBFF (sem uso direto) · `-100` #E3F7FF · `-200` #B3E9FF · `-600` #0080B2 (só a 40%, no cartão "minha evolução") · `-700` #005B80 · `-800` #00374D
+`brand-blue-50` #F0FBFF (sem uso direto) · `-100` #E3F7FF · `-200` #B3E9FF · `-600` #0080B2 (só a 40%, no cartão "minha evolução") · `-700` #005B80 (links e números do dashboard) · `-800` #00374D
 
 ### Tons únicos
 `brand-bruma` #98B5BE · `brand-seixo` #C4C4C4 · `brand-porcelana` #F5FAFE
@@ -59,7 +59,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | Avatar e pílula do ZENI | fundo `bg-page`; texto `text-primary`; "ZENI desconectado" em `cinza-700` |
 | **Painel do dashboard** (`.home-dados`) | **gradiente 160°, `cinza-200` (0%) a `cinza-100` (100%)**; glow interno `--brilho-interno` |
 | **Cartões de suavidade e ritmo** (`.dado`) | gradiente 160°, `cinza-50` a `cinza-200`; glow interno `--brilho-interno` |
-| Número do dashboard | `cinza-900` com valor; `cinza-700` no estado vazio ("–") |
+| Número do dashboard (com valor e estado vazio "–") | `blue-700` |
 | Rótulos "suavidade" e "ritmo" | `cinza-800` |
 | **Cartão "minha evolução"** (`.cartao--azul`) | 4 camadas: radial `blue-100` (85% 10%), radial `blue-200` (10% 35%), radial `blue-600` a 40% de opacidade (80% 100%, token `--blue-600-40`), base `blue-100`; glow interno; texto `cinza-900`; ícone `cinza-800` |
 | **Cartão "começar o exercício"** (`.cartao--amarelo`) | 4 camadas: radial `amarelo-50` (15% 10%), `amarelo-500` (90% 25%), `amarelo-200` (30% 100%), base `amarelo-300`; glow interno; texto `cinza-900`; ícone `cinza-800` |
@@ -132,3 +132,4 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | 26/11/2026 | Fundo da página (`.app`): de `bg-subtle` (porcelana) para `cinza-50`. |
 | 26/11/2026 | Painel do dashboard: de `cinza-100` para `cinza-200` chapado (destacar do fundo `cinza-50`). |
 | 26/11/2026 | Painel do dashboard: de `cinza-200` chapado para gradiente 160° de `cinza-200` a `cinza-100`. |
+| 26/11/2026 | Números grandes do dashboard: de `cinza-900` (com valor) e `cinza-700` (vazio) para `blue-700`. |
