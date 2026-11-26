@@ -299,14 +299,14 @@
   background: var(--grad-bulb);
 }
 
-/* Faixa de dados: só cinzas. Fundo = cinza-100; cartões em gradiente cinza-50 a cinza-200, separados pelo glow interno */
+/* Faixa de dados: só cinzas. Fundo = cinza-200; cartões em gradiente cinza-50 a cinza-200, separados pelo glow interno */
 .home-dados {
   flex: none;
   height: var(--home-dados-altura);
   display: flex;
   gap: var(--space-4);
   padding: var(--space-4);
-  background: var(--cinza-100); /* era grad-cinza-card (cinza-50 a cinza-200) */
+  background: var(--cinza-200); /* era cinza-100, e antes grad-cinza-card (cinza-50 a cinza-200) */
   border-radius: var(--radius-2xl);
   box-shadow: var(--brilho-interno);
 }
