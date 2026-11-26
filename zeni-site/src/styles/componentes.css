@@ -736,7 +736,7 @@
 
 .parq-contador {
   font: var(--type-apoio);
-  color: var(--text-brand);
+  color: var(--text-rotulo);
 }
 
 .parq-pergunta {
@@ -818,7 +818,7 @@
   font: var(--type-apoio); /* 16 px, o mesmo tamanho nos dois rótulos */
   font-weight: 600;
   text-transform: uppercase;
-  color: var(--text-brand); /* era text-secondary (cinza-700) */
+  color: var(--text-rotulo); /* 26/11: cinza-600 */
 }
 
 .grafico-pe {
@@ -841,7 +841,7 @@
 
 .grafico-rotulo {
   font: var(--type-apoio); /* rótulos de 16 px */
-  fill: var(--text-brand);
+  fill: var(--text-rotulo);
 }
 
 /* "Salvar em PDF" usa a impressão do navegador. Layout provisório (design system, pendência 10):
