@@ -700,6 +700,17 @@
   font: var(--type-corpo);
 }
 
+/* Frase de tendência em Minha evolução (26/11): cartão cinza-200 com o brilho interno, fonte 1 pt menor que o corpo */
+.tendencia {
+  font: var(--type-corpo);
+  font-size: calc(17px * var(--escala-texto, 1));
+  line-height: calc(26px * var(--escala-texto, 1));
+  padding: var(--space-4);
+  background: var(--cinza-200);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--brilho-interno);
+}
+
 .conectar-destaque {
   font: var(--type-corpo-destaque);
   color: var(--text-brand); /* elemento de destaque (26/11) */

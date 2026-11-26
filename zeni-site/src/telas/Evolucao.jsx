@@ -219,7 +219,7 @@ export default function Evolucao() {
               <span className="nota-media-valor">{media}</span>
             </p>
           </div>
-          {tendencia(pontos) && <p className="conectar-texto">{tendencia(pontos)}</p>}
+          {tendencia(pontos) && <p className="tendencia">{tendencia(pontos)}</p>}
         </>
       )}
     </PainelInferior>
