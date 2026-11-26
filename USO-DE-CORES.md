@@ -43,7 +43,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | `bg-inverse` | cinza-900 | botão Voltar, opção ativa do alternador de período, dia ligado, bolinha do alternador, aviso urgente |
 | `text-primary` | cinza-900 | texto padrão, linha e pontos do gráfico |
 | `text-secondary` | cinza-700 | texto de apoio (`.botao-motivo`, estado do alternador, texto do modal) |
-| `text-brand` | blue-800 | títulos (h1 a h3), rótulos e ícones (ver seção 8) |
+| `text-brand` | blue-800 | títulos (h1 a h3), rótulos, ícones e elementos de destaque (ver seção 5.1) |
 | `text-link` | blue-700 | links |
 | `text-on-accent` | cinza-900 | texto sobre amarelo |
 | `text-on-inverse` | white | texto sobre `bg-inverse` |
@@ -86,8 +86,8 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 
 | Componente | Cor |
 |---|---|
-| Botão principal | `bg-accent`; pressionado `bg-accent-pressed`; texto `text-on-accent` |
-| Botão Voltar | `bg-inverse`; pressionado `cinza-800`; texto `text-on-inverse` |
+| Botão principal | `bg-accent` (sempre à direita nas ações duplas); pressionado `bg-accent-pressed`; texto `text-on-accent` |
+| Botão Voltar | `bg-inverse` (preto, sempre à esquerda nas ações duplas); pressionado `cinza-800`; texto `text-on-inverse` |
 | Botão vazado | borda `border-strong`; texto `text-primary`; pressionado `bg-subtle` |
 | Botão desativado | borda `border-strong`; texto `text-secondary` |
 | Avisos | informação: fundo `bg-highlight`, ícone `text-brand`; atenção: fundo `amarelo-200`, ícone `text-brand`; urgente: fundo `bg-inverse`, texto `text-on-inverse`, ícone `icon-on-inverse` |
@@ -115,9 +115,13 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | Personagem 3D: céu / chão | `white` / `cinza-100` |
 | Personagem 3D: linha de mesa (exercícios D e F) | `cinza-300` |
 
+## 4.1 Brilho interno
+
+`--brilho-interno` (branco 70%, 30 px, interno) está em: painel do dashboard, cartões de dados, cartões da home, e agora em todo componente de fundo colorido ou escuro: botões (principal e Voltar), avisos, selo, etiqueta de IA, indicador de voz, opção ativa do seletor de período, dias ligados e trilho do alternador. Componentes de fundo branco ou transparente (painel, modal, menu, avatar, pílula, campos, botão vazado e desativado) não mostram o brilho (seria branco sobre branco).
+
 ## 5.1 Títulos
 
-Todos os `h1`, `h2` e `h3` usam `text-brand` (regra em `base.css`), assim como `.cartao-titulo`. Isso cobre os títulos dos painéis, a pergunta da triagem, o nome do exercício e os títulos dos cartões da home.
+Todos os `h1`, `h2` e `h3` usam `text-brand` (regra em `base.css`), assim como `.cartao-titulo`. Também usam `text-brand` os elementos de destaque: `.conectar-destaque` (texto em destaque), `.conectar-numero` (contagem de segundos) e `.hora-valor` (horário do lembrete). Todo `.icone` do site é `text-brand`, com o mesmo traço (`--stroke-icone`, 1,75 px); só ficam claros os ícones sobre fundo escuro (aviso urgente e marca dos dias ligados). Isso cobre os títulos dos painéis, a pergunta da triagem, o nome do exercício e os títulos dos cartões da home.
 
 ## 6. Tokens definidos, sem uso
 
@@ -146,3 +150,4 @@ Texto corrido e valores (`text-primary`), texto dos botões, texto de avisos (in
 | 26/11/2026 | Títulos (h1 a h3 e títulos dos cartões), rótulos (dashboard, gráfico, campos, contadores) e ícones (cartões da home, avatar, bateria, chevron, avisos de informação e atenção): de `cinza-900`, `cinza-800`, `cinza-700` e `blue-700` para `text-brand` (novo token, `blue-800`). |
 | 26/11/2026 | Painel do dashboard: de gradiente linear 160° para radial, `cinza-200` no centro e `cinza-100` nas bordas (mais claro nas bordas). |
 | 26/11/2026 | Painel do dashboard: centro do radial movido de 50% / 50% para 30% / 25%, deixando o canto superior esquerdo mais escuro. |
+| 26/11/2026 | Padronização: `.icone` todo em `text-brand`; `.conectar-destaque`, `.conectar-numero` e `.hora-valor` em `text-brand`; brilho interno em botões, avisos, selo, etiqueta de IA, indicador de voz, seletor ativo, dias ligados e trilho do alternador; botões duplos: Voltar preto à esquerda, principal amarelo à direita, em todos os bottom sheets. |

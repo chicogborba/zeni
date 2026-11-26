@@ -121,6 +121,11 @@
   color: var(--icon-on-inverse);
 }
 
+/* Todo ícone do site: blue-800 (text-brand) e o mesmo traço (--stroke-icone). Sobre fundo escuro, as regras específicas abaixo clareiam. */
+.icone {
+  color: var(--text-brand);
+}
+
 /* Traço padrão dos ícones do site: mesma grossura em qualquer tamanho */
 .icone path,
 .icone circle,
@@ -240,6 +245,23 @@
   color: var(--text-brand);
 }
 
+/* ---------- Brilho interno (26/11): todo componente com fundo colorido ou escuro ---------- */
+/* Os componentes de fundo branco (painel, modal, menu, avatar, pílula, campos, vazados) não mostram o brilho branco: o efeito é invisível neles. */
+.botao,
+.aviso,
+.selo,
+.ia-etiqueta,
+.voz-indicador,
+.seletor-opcao--ativa,
+.dia--ligado,
+.alternador-trilho {
+  box-shadow: var(--brilho-interno);
+}
+.botao--vazado,
+.botao--desativado {
+  box-shadow: none; /* transparentes sobre fundo branco */
+}
+
 /* ---------- Ação dupla em bottom sheets (26/11): voltar à esquerda, a outra ação à direita, 64 px ---------- */
 .acoes-duplas {
   display: flex;
@@ -291,17 +313,6 @@
   background: var(--bg-inverse);
   border-color: var(--bg-inverse);
   color: var(--text-on-inverse);
-}
-
-/* Exportar (72) à esquerda, Voltar (64) à direita, alinhados pela base */
-.rodape-lado {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); /* minmax: o texto grande não empurra o Voltar para fora */
-  gap: var(--space-4);
-  align-items: stretch; /* Exportar e Voltar com a mesma altura (decisão de 26/11; antes 72 e 64) */
-}
-.rodape-lado .botao {
-  min-height: var(--target-primary);
 }
 
 .so-impressao {
@@ -455,12 +466,19 @@
     transform: none;
   }
 }
-.entrada {
+/* Texto de abertura de cada tela (títulos) usa o mesmo efeito de entrada dos textos da Home (26/11) */
+.entrada,
+.conectar-titulo,
+.instrucao-nome,
+.parq-pergunta {
   animation: entrada var(--dur-panel) ease-out both;
   animation-delay: calc(var(--i, 0) * var(--dur-press));
 }
 @media (prefers-reduced-motion: reduce) {
-  .entrada {
+  .entrada,
+  .conectar-titulo,
+  .instrucao-nome,
+  .parq-pergunta {
     animation: none;
   }
 }
@@ -691,10 +709,12 @@
 
 .conectar-destaque {
   font: var(--type-corpo-destaque);
+  color: var(--text-brand); /* elemento de destaque (26/11) */
 }
 
 .conectar-numero {
   font: var(--type-numero);
+  color: var(--text-brand); /* número em destaque (26/11) */
 }
 
 /* Selo de conexão feita: cinza-900 sobre amarelo-300, 200 ms (seção 8) */
@@ -887,6 +907,9 @@
   width: 20px;
   height: 20px;
 }
+.dia--ligado .dia-marca {
+  color: var(--text-on-inverse); /* sobre fundo escuro o ícone continua claro */
+}
 
 .hora {
   display: grid;
@@ -897,6 +920,7 @@
 
 .hora-valor {
   font: var(--type-numero);
+  color: var(--text-brand); /* número em destaque (26/11) */
   text-align: center;
 }
 

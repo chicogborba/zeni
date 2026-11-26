@@ -12,6 +12,7 @@
 // Voz (decisões 5 e 11): "pausar", "continuar", "terminar" e "repetir" (src/voz.js). "Repetir" vai ao estado `repetindo`.
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import Aviso from '../componentes/Aviso.jsx'
+import AcoesDuplas from '../componentes/AcoesDuplas.jsx'
 import Botao from '../componentes/Botao.jsx'
 import IndicadorVoz from '../componentes/IndicadorVoz.jsx'
 import PainelInferior from '../componentes/PainelInferior.jsx'
@@ -243,14 +244,7 @@ export default function Exercicio() {
         alturaTotal
         onFechar={() => {}}
         rodape={
-          <>
-            <Botao variante="principal" onClick={comecar}>
-              Começar
-            </Botao>
-            <Botao variante="voltar" onClick={encerrarSessao}>
-              Voltar
-            </Botao>
-          </>
+          <AcoesDuplas voltar={{ rotulo: 'Voltar', onClick: encerrarSessao }} acao={{ rotulo: 'Começar', onClick: comecar }} />
         }
       >
         <div className="instrucao">
@@ -286,20 +280,16 @@ export default function Exercicio() {
         alturaTotal
         onFechar={() => {}}
         rodape={
-          <>
-            <Botao
-              variante="principal"
-              onClick={() => {
+          <AcoesDuplas
+            voltar={{ rotulo: 'Voltar ao início', onClick: encerrarSessao }}
+            acao={{
+              rotulo: 'Tentar de novo',
+              onClick: () => {
                 setTentativa(1)
                 setEstado('reconectando')
-              }}
-            >
-              Tentar de novo
-            </Botao>
-            <Botao variante="voltar" onClick={encerrarSessao}>
-              Voltar ao início
-            </Botao>
-          </>
+              },
+            }}
+          />
         }
       >
         <h2 className="conectar-titulo">Perdi o sinal do ZENI. Quer tentar de novo?</h2>
@@ -316,15 +306,10 @@ export default function Exercicio() {
         onFechar={() => {}}
         rodape={
           <>
-            <Botao variante="principal" onClick={continuar}>
-              Continuar
-            </Botao>
             <Botao variante="vazado" onClick={repetir}>
               Repetir
             </Botao>
-            <Botao variante="secundario" onClick={terminar}>
-              Terminar
-            </Botao>
+            <AcoesDuplas voltar={{ rotulo: 'Terminar', onClick: terminar }} acao={{ rotulo: 'Continuar', onClick: continuar }} />
           </>
         }
       >
@@ -349,14 +334,7 @@ export default function Exercicio() {
         alturaTotal
         onFechar={() => {}}
         rodape={
-          <>
-            <Botao variante="principal" onClick={continuar}>
-              Continuar
-            </Botao>
-            <Botao variante="secundario" onClick={terminar}>
-              Terminar
-            </Botao>
-          </>
+          <AcoesDuplas voltar={{ rotulo: 'Terminar', onClick: terminar }} acao={{ rotulo: 'Continuar', onClick: continuar }} />
         }
       >
         <IndicadorVoz ouvindo={ouvindo} />

@@ -290,7 +290,7 @@ Estrutura do app: uma **home** com cartões grandes, e as outras telas abrem com
 
 #### Ação dupla em bottom sheets (26/11)
 
-Padrão para todo bottom sheet com **"Voltar" mais outra ação** (componente `AcoesDuplas`). Vale mais que as alturas de 72 e 64 px da tabela acima, só nesse caso.
+Padrão único para todo bottom sheet com **"Voltar" mais outra ação** (componente `AcoesDuplas`). Vale mais que as alturas de 72 e 64 px da tabela acima. Aplicado em Conectar, triagem (Antes de começar), Minha evolução, Lembretes (lista e edição), Aparência e nos painéis do exercício (Como fazer, Pausado, Repetindo, Perdi o sinal).
 
 | Regra | Valor |
 |---|---|
@@ -298,9 +298,9 @@ Padrão para todo bottom sheet com **"Voltar" mais outra ação** (componente `A
 | Altura | 64 px (`--target-min`) nos dois botões, lado a lado. Era 36 px com área de toque de 64 (decisão de 26/11, revista no mesmo dia). Texto muito grande pode aumentar |
 | Largura | Por padrão, os dois dividem a largura do sheet igualmente. Quando um é a ação primária, ele fica com largura automática (abraça o texto) e o outro ocupa o resto |
 | Área de toque | A própria altura do botão (64 px) |
-| Cores | Voltar em `bg-inverse`; ação primária em `bg-accent`; ação desativada vazada com contorno, e o motivo escrito no corpo do painel, perto do que a pessoa precisa mudar |
+| Cores | Voltar sempre preto (`bg-inverse`); ação primária sempre amarela (`bg-accent`); ação desativada vazada com contorno, e o motivo escrito no corpo do painel, perto do que a pessoa precisa mudar |
 
-Usado em Personalizar > Lembretes ("Voltar" e "Adicionar lembrete") e Personalizar > Aparência ("Voltar ao jeito anterior" e "Confirmar").
+Fora do padrão por não serem um par "Voltar + ação": painéis com um botão só (Personalizar, Exportar, Tudo pronto), a triagem com Sim e Não, o painel "Exercício encerrado" e as telas cheias de carregamento e espera. Em painéis com uma terceira ação (Apagar nos lembretes, Repetir no pausado), a terceira fica numa linha inteira acima do par.
 
 ### 6.2 Home
 

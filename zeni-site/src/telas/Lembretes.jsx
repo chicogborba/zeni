@@ -48,17 +48,6 @@ export default function Lembretes({ onVoltar }) {
         onFechar={() => setEditando(null)}
         rodape={
           <>
-            <Botao
-              variante="principal"
-              desativado={semDia}
-              motivo="Escolha pelo menos um dia."
-              onClick={() => {
-                salvarLista(existe ? lista.map((l) => (l.id === editando.id ? editando : l)) : [...lista, editando])
-                setEditando(null)
-              }}
-            >
-              Salvar
-            </Botao>
             {existe && (
               <Botao
                 variante="vazado"
@@ -71,9 +60,17 @@ export default function Lembretes({ onVoltar }) {
                 Apagar
               </Botao>
             )}
-            <Botao variante="voltar" onClick={() => setEditando(null)}>
-              Voltar
-            </Botao>
+            <AcoesDuplas
+              voltar={{ rotulo: 'Voltar', onClick: () => setEditando(null) }}
+              acao={{
+                rotulo: 'Salvar',
+                desativado: semDia,
+                onClick: () => {
+                  salvarLista(existe ? lista.map((l) => (l.id === editando.id ? editando : l)) : [...lista, editando])
+                  setEditando(null)
+                },
+              }}
+            />
           </>
         }
       >
@@ -95,6 +92,7 @@ export default function Lembretes({ onVoltar }) {
             )
           })}
         </div>
+        {semDia && <p className="botao-motivo">Escolha pelo menos um dia.</p>}
         <h2 className="conectar-titulo">Que horas?</h2>
         <div className="hora">
           <Botao variante="vazado" onClick={() => mudarHora(-PASSO_MIN)}>

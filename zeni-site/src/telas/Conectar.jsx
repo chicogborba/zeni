@@ -4,6 +4,7 @@
 // TODO (fluxo-do-app.md, ponto em aberto 3): sem passo de permissão de Bluetooth no fluxograma.
 import { CheckIcon } from '@heroicons/react/24/outline'
 import { useEffect, useState } from 'react'
+import AcoesDuplas from '../componentes/AcoesDuplas.jsx'
 import Botao from '../componentes/Botao.jsx'
 import PainelInferior from '../componentes/PainelInferior.jsx'
 import TelaEspera from '../componentes/TelaEspera.jsx'
@@ -57,20 +58,16 @@ export default function Conectar() {
       <PainelInferior
         titulo="ZENI conectado"
         rodape={
-          <>
-            <Botao
-              variante="principal"
-              onClick={() => {
+          <AcoesDuplas
+            voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }}
+            acao={{
+              rotulo: 'Pronto',
+              onClick: () => {
                 setRestam(SEGUNDOS_NA_MESA)
                 setEstado('aprendendo')
-              }}
-            >
-              Pronto
-            </Botao>
-            <Botao variante="voltar" onClick={voltarAoInicio}>
-              Voltar
-            </Botao>
-          </>
+              },
+            }}
+          />
         }
       >
         <span className="selo" aria-hidden="true">

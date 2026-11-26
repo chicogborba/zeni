@@ -6,6 +6,7 @@
 // Salvar em PDF: impressão do navegador. Enviar link: Web Share API com texto-resumo; sem suporte, copia o texto.
 // O link real depende do backend (v2). TODO (design system, pendência 10): layout do PDF em aberto.
 import { useState } from 'react'
+import AcoesDuplas from '../componentes/AcoesDuplas.jsx'
 import Botao from '../componentes/Botao.jsx'
 import LinhaNavegacao from '../componentes/LinhaNavegacao.jsx'
 import PainelInferior from '../componentes/PainelInferior.jsx'
@@ -145,14 +146,7 @@ export default function Evolucao() {
     <PainelInferior
       titulo="Minha evolução"
       rodape={
-        <div className="rodape-lado">
-          <Botao variante="principal" onClick={() => setExportando(true)}>
-            Exportar
-          </Botao>
-          <Botao variante="voltar" onClick={voltarAoInicio}>
-            Voltar
-          </Botao>
-        </div>
+        <AcoesDuplas voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }} acao={{ rotulo: 'Exportar', onClick: () => setExportando(true) }} />
       }
     >
       <h2 className="conectar-titulo so-impressao">Minha evolução</h2>

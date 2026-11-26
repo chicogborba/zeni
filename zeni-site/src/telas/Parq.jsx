@@ -6,6 +6,7 @@
 //   2. o texto de consentimento abaixo é PROVISÓRIO, falta o texto aprovado (LGPD);
 //   3. falta decidir a frase fixa para todos ao final (ex.: o ZENI não substitui orientação profissional).
 import { useState } from 'react'
+import AcoesDuplas from '../componentes/AcoesDuplas.jsx'
 import Botao from '../componentes/Botao.jsx'
 import PainelInferior from '../componentes/PainelInferior.jsx'
 import { telaDoExercicio } from '../fluxo.js'
@@ -32,20 +33,16 @@ export default function Parq() {
       <PainelInferior
         titulo="Antes de começar"
         rodape={
-          <>
-            <Botao
-              variante="principal"
-              onClick={() => {
+          <AcoesDuplas
+            voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }}
+            acao={{
+              rotulo: 'Concordo',
+              onClick: () => {
                 guardar(CHAVES.consentimento, { aceito: true, quando: new Date().toISOString() })
                 setPasso(1)
-              }}
-            >
-              Concordo
-            </Botao>
-            <Botao variante="voltar" onClick={voltarAoInicio}>
-              Voltar
-            </Botao>
-          </>
+              },
+            }}
+          />
         }
       >
         <h2 className="conectar-titulo">Antes de começar</h2>
