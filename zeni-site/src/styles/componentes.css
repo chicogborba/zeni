@@ -286,7 +286,7 @@
 .seletor {
   display: flex;
   gap: 0;
-  height: 36px; /* toggle de 36 px (26/11); a área de toque de 64 px vem do ::before */
+  height: 42px; /* toggle de 42 px (26/11); a área de toque de 64 px vem do ::before */
   padding: 0;
   border-radius: var(--radius-full);
   background: var(--blue-600-50);
@@ -306,7 +306,7 @@
 .seletor-opcao::before {
   content: '';
   position: absolute;
-  inset: -14px 0; /* 36 + 28 = 64 px de altura de toque */
+  inset: -11px 0; /* 42 + 22 = 64 px de altura de toque */
 }
 .seletor-opcao:active {
   transform: scale(var(--press-scale));

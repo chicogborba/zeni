@@ -341,7 +341,7 @@ Avisos de atenção ficam no topo, discretos, e somem sozinhos só quando não e
 - A nota usa o estilo "Número grande" e vem sempre com uma frase de incentivo. A escala 0 a 100 é uma decisão pendente (ver Pendências).
 - Gráficos: uma série por vez, linha de 3 px em `cinza-900`, área em `brand-amarelo-200`, rótulos em 16 px. Uma segunda série, quando houver, usa `brand-blue-600` tracejada. Sem grades densas nem legenda com mais de duas entradas.
 
-**Tela "Minha evolução" (25/11).** Abre direto no dashboard, sem pergunta de período. De cima para baixo: alternador **7 dias / 30 dias** em formato de toggle (26/11): 36 px de altura, trilho `blue-600` a 50%, opção escolhida em `blue-600` com texto branco; área de toque de 64 px, o gráfico e o resumo. Na base, lado a lado, 64 px (ação dupla de 26/11): **Exportar** (amarelo) à esquerda e **Voltar** (preto) à direita, exceção ao padrão de Voltar à esquerda. Exportar abre o painel da seção 6.13. A coluna do eixo do gráfico tem folga para o "100" no maior tamanho de texto.
+**Tela "Minha evolução" (25/11).** Abre direto no dashboard, sem pergunta de período. De cima para baixo: alternador **7 dias / 30 dias** em formato de toggle (26/11): 42 px de altura, trilho `blue-600` a 50%, opção escolhida em `blue-600` com texto branco; área de toque de 64 px, o gráfico e o resumo. Na base, lado a lado, 64 px (ação dupla de 26/11): **Exportar** (amarelo) à esquerda e **Voltar** (preto) à direita, exceção ao padrão de Voltar à esquerda. Exportar abre o painel da seção 6.13. A coluna do eixo do gráfico tem folga para o "100" no maior tamanho de texto.
 
 ### 6.6 Marca de IA
 
