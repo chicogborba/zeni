@@ -20,11 +20,16 @@ export function avaliar(resumo, metaAtual) {
 
   // ritmo: período estimado pelos cruzamentos da média, comparado com o ritmo guiado
   // ZENI real: usa o movimento com sinal (vai e volta = um ciclo); o tamanho sozinho sobe duas vezes por ciclo.
+  // Com histerese: só conta a virada quando o movimento passa de um lado ao outro de verdade (ruído parado não conta).
   const serie = real ? oscilacao : amostras
   const m = media(serie)
+  const histerese = real ? 0.06 : 0
   let cruzamentos = 0
-  for (let i = 1; i < serie.length; i++) {
-    if ((serie[i - 1] - m) * (serie[i] - m) < 0) cruzamentos += 1
+  let lado = 0
+  for (const v of serie) {
+    const novo = v - m > histerese ? 1 : v - m < -histerese ? -1 : lado
+    if (lado !== 0 && novo !== lado) cruzamentos += 1
+    lado = novo
   }
   const periodo = cruzamentos > 0 ? (serie.length * 0.25 * 2) / cruzamentos : ritmoSeg * 2
   const ritmo = limitar(100 - (Math.abs(periodo - ritmoSeg) / ritmoSeg) * 100)

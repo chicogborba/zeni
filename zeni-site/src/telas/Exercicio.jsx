@@ -73,6 +73,7 @@ export default function Exercicio() {
   const dados = useRef({ amostras: [], oscilacao: [], tremores: [], pausas: 0 }) // do exercício em andamento
   const jaComecou = useRef(false) // para a reconexão saber se volta à instrução ou ao exercício
   const [real] = useState(zeniReal) // ZENI de verdade (Bluetooth) ou simulação
+  useEffect(() => () => dispositivo.definirExercicio(null), []) // ao sair, o teste ao vivo volta ao modo geral
   const feitos = useRef([]) // exercícios concluídos nesta série
 
   const pausar = () => {
@@ -97,6 +98,7 @@ export default function Exercicio() {
     desdeAmostra.current = 0
     jaComecou.current = true
     if (real) {
+      dispositivo.definirExercicio(serie[indiceRef.current].id) // giro, vertical ou batida, conforme o exercício
       dispositivo.fecharJanela() // descarta o movimento de antes do Começar
       dispositivo.marcarReferencia() // o fantasma do ZENI parte da posição em que a pessoa está segurando agora
     }

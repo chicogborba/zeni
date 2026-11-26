@@ -131,8 +131,8 @@ function aoNotificarDados(evento) {
   const mudouBateria = aplicarBateria(p.bateria)
   const mudouCal = p.calibracao !== estado.calibracao
   estado.calibracao = p.calibracao
+  atualizarOrientacao(p) // antes: o processamento usa a orientação para tirar a gravidade
   processador.adicionar(p)
-  atualizarOrientacao(p)
   ouvintesPacote.forEach((f) => f(p))
   if (mudouBateria || mudouCal) avisar()
 }
@@ -293,19 +293,40 @@ export const piscar = () => enviar('I').catch(() => {})
 export const dormir = () => enviar('S').catch(() => {})
 
 // ---------- Do sensor ao "tamanho do movimento" ----------
-// O exercício (src/telas/Exercicio.jsx) lê uma amostra a cada 250 ms. Cada janela de 250 ms vira três números:
-//   tamanho   0–100  quanto a pessoa está se mexendo (velocidade de giro e aceleração, sem o tremor)
-//   oscilacao -1–1   o movimento com sinal, no eixo em que a pessoa mais se mexe (para o ritmo: 1 vai-e-volta = 1 ciclo)
-//   tremor    0–100  tremido rápido por cima do movimento (vibração de 3 a 12 Hz)
+// O exercício (src/telas/Exercicio.jsx) lê uma janela a cada 250 ms. Cada janela vira três números:
+//   tamanho   0–100  quanto a pessoa está se mexendo DO JEITO QUE O EXERCÍCIO PEDE
+//   oscilacao -1–1   o movimento com sinal (vai = +, volta = −): um vai-e-volta = um ciclo, para medir o ritmo
+//   tremor    0–100  tremido rápido por cima do movimento (3,5 a 12 Hz), que vira a suavidade
+//
+// Cada exercício usa o sensor que enxerga o movimento dele (MODO_DO_EXERCICIO):
+//   A, C, E  punho girando: só GIRO. O ZENI quase não sai do lugar, e girar faz a gravidade "passear" no
+//            acelerômetro, o que dava saltos falsos.
+//   B        levar ao ombro: ACELERAÇÃO VERTICAL (no mundo, sem a gravidade), integrada em velocidade. É um
+//            deslocamento; o giro aqui é pequeno e depende de como cada um segura.
+//   D        tocar na mesa: ACELERAÇÃO VERTICAL com as batidas cortadas (a batida na mesa dá um pico de 2–4 g que
+//            pulava a barra) e ignoradas no tremor; o ritmo é o sobe-desce.
+//   F        lado a lado na mesa: GIRO EM TORNO DA VERTICAL (no mundo). O antebraço apoiado gira pelo cotovelo.
+//   geral    fora do exercício (teste ao vivo): o maior entre giro e velocidade vertical.
+// A aceleração só é usada já no mundo (pela orientação 3D), com a gravidade tirada. Por isso a orientação é atualizada
+// antes do processamento de cada pacote.
+export const MODO_DO_EXERCICIO = { A: 'giro', C: 'giro', E: 'giro', B: 'vertical', D: 'batida', F: 'giroVertical' }
+
 // As escalas abaixo são o primeiro ajuste com o protótipo. Mude aqui depois de testar com pessoas.
 export const AJUSTE = {
-  giroCheio: 120, // °/s de giro que já valem tamanho 100 (girar o punho de lado a lado em ~1 s)
-  aceleracaoCheia: 0.45, // g de aceleração (sem a gravidade) que já valem tamanho 100 (levantar, tocar na mesa)
-  tremorCheio: 25, // °/s de tremido que já valem tremor 100
+  // Os "cheios" são o PICO de velocidade de um movimento bom, que vale tamanho 100:
+  giroCheio: 220, // °/s (A, C, E: virar a palma de um lado ao outro, ~140°, em ~1,6 s)
+  giroVerticalCheio: 120, // °/s em torno da vertical (F: antebraço indo ±35° em ~1,6 s)
+  velocidadeCheia: 0.65, // m/s na vertical (B: da cintura ao ombro, ~35 cm, em ~1,6 s)
+  velocidadeBatida: 0.25, // m/s na vertical (D: levantar uns 10 cm e voltar à mesa no tempo do pulso)
+  // O tamanho segue o maior pico recente (envelope) e não a velocidade do instante: a velocidade zera em cada virada do
+  // movimento, e era isso que fazia a barra e o pulso amarelo "pularem" duas vezes por ciclo.
+  esquecimento: 0.9, // por janela de 250 ms: o pico antigo perde 10% (meia-vida ~1,6 s, um ciclo de movimento)
+  tremorCheio: 25, // °/s de tremido que valem tremor 100
+  corteLento: 3.5, // Hz: abaixo disto é movimento de propósito; acima é tremido (tremor de Parkinson: 4 a 6 Hz)
+  batida: 1.8, // g: acima disto é batida na mesa (D), não movimento
   // Como o MPU está montado dentro do ZENI: rotação (graus, x-y-z) que leva os eixos do sensor aos do ZENI 3D, cujo
   // eixo longo é o y. Padrão: o z do sensor ao longo do ZENI. Se o fantasma girar no eixo errado, ajuste aqui.
   montagem: [-90, 0, 0],
-  corteLento: 3.5, // Hz: abaixo disto é movimento de propósito; acima é tremido (tremor de Parkinson: 4 a 6 Hz)
 }
 
 // Passa-alta Butterworth de 4ª ordem (duas biquads, fórmulas do "Audio EQ Cookbook"). Separa o tremido (3 a 12 Hz)
@@ -337,67 +358,17 @@ const passaAlta4 = (fc) => {
   const f2 = biquadPassaAlta(fc, 1.3066)
   return (x) => f2(f1(x))
 }
-
-function criarProcessador() {
-  const kGravidade = 1 - Math.exp((-2 * Math.PI * 0.3) / HZ)
-  let filtros = null
-  let gravidade = null
-  let janela = []
-  let variancia = [0, 0, 0] // para descobrir o eixo principal do movimento
-  let aquecendo = 0 // os filtros levam ~1 s para assentar: nesse tempo o tremor não conta
-  return {
-    zerar() {
-      filtros = null
-      gravidade = null
-      janela = []
-      variancia = [0, 0, 0]
-    },
-    adicionar(p) {
-      const g = [p.gx, p.gy, p.gz]
-      const a = [p.ax, p.ay, p.az]
-      if (!filtros) {
-        filtros = [0, 1, 2].map(() => passaAlta4(AJUSTE.corteLento))
-        gravidade = [...a]
-        aquecendo = HZ
-      }
-      const rapido = [0, 0, 0]
-      const lento = [0, 0, 0]
-      for (let i = 0; i < 3; i++) {
-        rapido[i] = filtros[i](g[i])
-        lento[i] = g[i] - rapido[i] // o resto é o movimento de propósito
-        gravidade[i] += kGravidade * (a[i] - gravidade[i])
-        variancia[i] = variancia[i] * 0.99 + 0.01 * lento[i] * lento[i]
-      }
-      if (aquecendo > 0) aquecendo -= 1
-      const dinamica = Math.hypot(a[0] - gravidade[0], a[1] - gravidade[1], a[2] - gravidade[2])
-      janela.push({ lento, rapido: aquecendo > 0 ? 0 : Math.hypot(...rapido), dinamica })
-    },
-    // Fecha a janela atual (chamado a cada 250 ms). null se não chegou nada (sinal caído).
-    fecharJanela() {
-      if (!janela.length) return null
-      const eixo = variancia.indexOf(Math.max(...variancia))
-      const n = janela.length
-      const giro = janela.reduce((s, j) => s + Math.hypot(...j.lento), 0) / n
-      const dinamica = janela.reduce((s, j) => s + j.dinamica, 0) / n
-      const tremido = janela.reduce((s, j) => s + j.rapido, 0) / n
-      const comSinal = janela.reduce((s, j) => s + j.lento[eixo], 0) / n
-      janela = []
-      const lim = (v) => Math.max(0, Math.min(100, v))
-      return {
-        tamanho: lim(Math.max(giro / AJUSTE.giroCheio, dinamica / AJUSTE.aceleracaoCheia) * 100),
-        oscilacao: Math.max(-1, Math.min(1, comSinal / AJUSTE.giroCheio)),
-        tremor: lim((tremido / AJUSTE.tremorCheio) * 100),
-      }
-    },
-  }
+const passaBaixa = (fc) => {
+  const k = 1 - Math.exp((-2 * Math.PI * fc) / HZ)
+  let y = null
+  return (x) => (y = y === null ? x : y + k * (x - y))
 }
-const processador = criarProcessador()
 
-// ---------- Orientação 3D (para o "fantasma" do ZENI na animação) ----------
-// O roll/pitch do firmware não vê o giro em torno da vertical (girar o punho com o ZENI de pé). Aqui o giro dos três
-// eixos é integrado num quatérnio, com a gravidade corrigindo a inclinação (filtro de Mahony, só a parte proporcional).
-// A rotação em torno da vertical deriva devagar; por isso o fantasma usa a orientação RELATIVA a uma referência marcada
-// no começo de cada exercício (`marcarReferencia`), quando a pessoa segura o ZENI como o personagem.
+// ---------- Orientação 3D ----------
+// O giro dos três eixos é integrado num quatérnio, com a gravidade corrigindo a inclinação (filtro de Mahony, só a
+// parte proporcional). A correção só vale quando o ZENI está quase sem aceleração própria: levantar, descer e bater na
+// mesa enganam o acelerômetro, e era isso que fazia o fantasma dar pulos. A rotação em torno da vertical deriva
+// devagar; por isso o fantasma usa a orientação RELATIVA a uma referência marcada no começo de cada exercício.
 const qMul = (a, b) => [
   a[3] * b[0] + a[0] * b[3] + a[1] * b[2] - a[2] * b[1],
   a[3] * b[1] - a[0] * b[2] + a[1] * b[3] + a[2] * b[0],
@@ -409,10 +380,12 @@ const qNorm = (q) => {
   const n = Math.hypot(...q) || 1
   return q.map((v) => v / n)
 }
+const girar = (q, v) => qMul(qMul(q, [v[0], v[1], v[2], 0]), qConj(q)).slice(0, 3) // vetor do corpo para o mundo
 let qAtual = [0, 0, 0, 1] // do corpo do sensor para o mundo (z para cima)
 let qRef = null
 let orientacaoIniciada = false
-const GANHO_GRAVIDADE = 2 // quanto a gravidade puxa a inclinação de volta (maior = menos deriva, mais tremido)
+const GANHO_GRAVIDADE = 1.5 // quanto a gravidade puxa a inclinação de volta, com o ZENI parado
+const TOLERANCIA_G = 0.12 // longe de 1 g por mais que isto, o acelerômetro não corrige a inclinação
 
 function atualizarOrientacao(p) {
   const n = Math.hypot(p.ax, p.ay, p.az)
@@ -420,23 +393,21 @@ function atualizarOrientacao(p) {
     // começa já inclinado como o sensor está (sem rotação em torno da vertical)
     const r = Math.atan2(p.ay, p.az)
     const pt = Math.atan2(-p.ax, Math.hypot(p.ay, p.az))
-    const qr = [Math.sin(r / 2), 0, 0, Math.cos(r / 2)]
-    const qp = [0, Math.sin(pt / 2), 0, Math.cos(pt / 2)]
-    qAtual = qNorm(qMul(qp, qr))
+    qAtual = qNorm(qMul([0, Math.sin(pt / 2), 0, Math.cos(pt / 2)], [Math.sin(r / 2), 0, 0, Math.cos(r / 2)]))
     orientacaoIniciada = true
     return
   }
   const rad = Math.PI / 180
   let w = [p.gx * rad, p.gy * rad, p.gz * rad]
-  if (n > 0.7 && n < 1.3) {
-    // "para cima" estimado, no corpo do sensor; o erro é o produto vetorial com a aceleração medida
-    const v = qMul(qMul(qConj(qAtual), [0, 0, 1, 0]), qAtual)
+  const confianca = Math.max(0, 1 - Math.abs(n - 1) / TOLERANCIA_G)
+  if (confianca > 0) {
+    const v = qMul(qMul(qConj(qAtual), [0, 0, 1, 0]), qAtual) // "para cima" estimado, no corpo do sensor
     const a = [p.ax / n, p.ay / n, p.az / n]
     const e = [a[1] * v[2] - a[2] * v[1], a[2] * v[0] - a[0] * v[2], a[0] * v[1] - a[1] * v[0]]
-    w = w.map((x, i) => x + GANHO_GRAVIDADE * e[i])
+    const k = GANHO_GRAVIDADE * confianca * confianca
+    w = w.map((x, i) => x + k * e[i])
   }
-  const dt = 1 / HZ
-  const ang = Math.hypot(...w) * dt
+  const ang = Math.hypot(...w) / HZ
   if (ang > 0) {
     const s = Math.sin(ang / 2) / (Math.hypot(...w) || 1)
     qAtual = qNorm(qMul(qAtual, [w[0] * s, w[1] * s, w[2] * s, Math.cos(ang / 2)]))
@@ -451,6 +422,97 @@ export function orientacaoRelativa() {
   if (!qRef) marcarReferencia()
   return qMul(qConj(qRef), qAtual)
 }
+
+// ---------- Processamento por exercício ----------
+let modo = 'geral'
+// Chamado pelo exercício ao começar (e com null ao sair): escolhe o sensor certo para o movimento pedido.
+export function definirExercicio(id) {
+  modo = (id && MODO_DO_EXERCICIO[id]) || 'geral'
+  processador.zerar()
+}
+export const modoAtual = () => modo
+
+function criarProcessador() {
+  let f = null
+  let janela = []
+  let variancia = [0, 0, 0] // para descobrir o eixo principal do giro
+  let aquecendo = 0 // os filtros levam ~1 s para assentar: nesse tempo o tremor não conta
+  let velocidade = 0 // m/s na vertical
+  let semTremor = 0 // amostras: depois de uma batida, o tremido fica de fora por um instante
+  let envelope = 0
+  return {
+    zerar() {
+      f = null
+      janela = []
+      variancia = [0, 0, 0]
+      velocidade = 0
+      envelope = 0
+    },
+    adicionar(p) {
+      if (!f) {
+        f = { alta: [0, 1, 2].map(() => passaAlta4(AJUSTE.corteLento)), vertical: passaBaixa(4), wz: passaBaixa(AJUSTE.corteLento) }
+        aquecendo = HZ
+      }
+      const g = [p.gx, p.gy, p.gz]
+      const rapido = [0, 0, 0]
+      const lento = [0, 0, 0]
+      for (let i = 0; i < 3; i++) {
+        rapido[i] = f.alta[i](g[i])
+        lento[i] = g[i] - rapido[i] // o resto é o movimento de propósito
+        variancia[i] = variancia[i] * 0.99 + 0.01 * lento[i] * lento[i]
+      }
+      if (aquecendo > 0) aquecendo -= 1
+
+      // Aceleração no mundo, sem a gravidade. Batidas cortadas: só o sobe-desce conta.
+      const norma = Math.hypot(p.ax, p.ay, p.az)
+      const batida = norma > AJUSTE.batida
+      if (batida) semTremor = 8 // 160 ms
+      const aMundo = girar(qAtual, [p.ax, p.ay, p.az])
+      const azLin = Math.max(-1, Math.min(1, aMundo[2] - 1)) // g
+      let az = f.vertical(batida ? 0 : azLin)
+      if (Math.abs(az) < 0.02) az = 0 // zona morta: um grau de erro na inclinação já "vaza" 0,017 g de gravidade
+      // velocidade vertical com "vazamento" (passa-alta de 0,3 Hz): integrar aceleração deriva, isto a traz de volta a 0
+      velocidade += az * 9.81 * (1 / HZ)
+      velocidade -= velocidade * 2 * Math.PI * 0.3 * (1 / HZ)
+      // parado de verdade (sem giro e com 1 g certinho): a velocidade é zero
+      if (Math.hypot(...g) < 8 && Math.abs(norma - 1) < 0.03) velocidade *= 0.8
+
+      // giro em torno da vertical do mundo (F)
+      const wz = f.wz(girar(qAtual, g)[2])
+
+      if (semTremor > 0) semTremor -= 1
+      const tremido = aquecendo > 0 || semTremor > 0 ? 0 : Math.hypot(...rapido)
+      janela.push({ lento, wz, velocidade, tremido })
+    },
+    // Fecha a janela atual (chamado a cada 250 ms). null se não chegou nada (sinal caído).
+    fecharJanela() {
+      if (!janela.length) return null
+      const n = janela.length
+      const media = (fn) => janela.reduce((s, j) => s + fn(j), 0) / n
+      const eixo = variancia.indexOf(Math.max(...variancia))
+      const pico = (fn) => janela.reduce((m, j) => Math.max(m, Math.abs(fn(j))), 0)
+      const cheioVel = modo === 'batida' ? AJUSTE.velocidadeBatida : AJUSTE.velocidadeCheia
+      const giro = pico((j) => Math.hypot(...j.lento)) / AJUSTE.giroCheio
+      const giroSinal = media((j) => j.lento[eixo]) / AJUSTE.giroCheio
+      const vel = media((j) => j.velocidade) / cheioVel
+      const velAbs = pico((j) => j.velocidade) / cheioVel
+      const wz = media((j) => j.wz) / AJUSTE.giroVerticalCheio
+      const wzAbs = pico((j) => j.wz) / AJUSTE.giroVerticalCheio
+      const tremor = media((j) => j.tremido) / AJUSTE.tremorCheio
+      janela = []
+      let tamanho
+      let oscilacao
+      if (modo === 'giro') [tamanho, oscilacao] = [giro, giroSinal]
+      else if (modo === 'vertical' || modo === 'batida') [tamanho, oscilacao] = [velAbs, vel]
+      else if (modo === 'giroVertical') [tamanho, oscilacao] = [wzAbs, wz]
+      else [tamanho, oscilacao] = velAbs > giro ? [velAbs, vel] : [giro, giroSinal]
+      envelope = Math.max(tamanho, envelope * AJUSTE.esquecimento)
+      const lim = (v) => Math.max(0, Math.min(100, v * 100))
+      return { tamanho: lim(envelope), oscilacao: Math.max(-1, Math.min(1, oscilacao)), tremor: lim(tremor) }
+    },
+  }
+}
+const processador = criarProcessador()
 export const fecharJanela = () => processador.fecharJanela()
 export const ultimo = () => ultimoPacote
 
