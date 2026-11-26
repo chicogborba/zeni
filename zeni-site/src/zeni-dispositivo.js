@@ -382,8 +382,14 @@ let orientacaoIniciada = false
 const GANHO_GRAVIDADE = 1.5 // quanto a gravidade puxa a inclinação de volta, com o ZENI parado
 const TOLERANCIA_G = 0.12 // longe de 1 g por mais que isto, o acelerômetro não corrige a inclinação
 
+// Quanto o acelerômetro deste ZENI lê parado (o "1 g" dele). Um MPU barato erra alguns por cento; comparar com 1 g
+// exato tirava a correção da inclinação e deixava o ângulo errado. Aprende devagar, só com o ZENI sem girar.
+let normaG = 1
+export const gravidadeLida = () => normaG
+
 function atualizarOrientacao(p) {
   const n = Math.hypot(p.ax, p.ay, p.az)
+  if (Math.hypot(p.gx, p.gy, p.gz) < 5 && Math.abs(n - normaG) < 0.15) normaG += 0.02 * (n - normaG)
   if (!orientacaoIniciada && n > 0.5) {
     // começa já inclinado como o sensor está (sem rotação em torno da vertical)
     const r = Math.atan2(p.ay, p.az)
@@ -394,7 +400,7 @@ function atualizarOrientacao(p) {
   }
   const rad = Math.PI / 180
   let w = [p.gx * rad, p.gy * rad, p.gz * rad]
-  const confianca = Math.max(0, 1 - Math.abs(n - 1) / TOLERANCIA_G)
+  const confianca = Math.max(0, 1 - Math.abs(n - normaG) / TOLERANCIA_G)
   if (confianca > 0) {
     const v = qMul(qMul(qConj(qAtual), [0, 0, 1, 0]), qAtual) // "para cima" estimado, no corpo do sensor
     const a = [p.ax / n, p.ay / n, p.az / n]
@@ -537,25 +543,38 @@ export function rotacaoDoZeni() {
 
 // Espera o ZENI ficar parado por `ms` e devolve a aceleração média (a direção da gravidade nos eixos do sensor).
 // `condicao(acel)` pode exigir uma posição (ex.: deitado). Rejeita com 'tempo' depois de `limiteMs`.
+// "Parado" é RELATIVO: giro baixo e aceleração sem variar. Não compara com 1 g, porque o acelerômetro de um MPU
+// barato erra alguns centésimos de g conforme a posição (deitado, a leitura podia dar 1,07 g e nunca contava).
+// Um tremido curto (até 160 ms) não zera a contagem.
+const TOLERANCIA_TREMIDO = 8 // amostras ruins seguidas que ainda não zeram
 function esperarParado(ms, { condicao = () => true, limiteMs = 20000, aoProgresso } = {}) {
   return new Promise((resolve, reject) => {
     let inicio = null
     let soma = [0, 0, 0]
     let n = 0
+    let ruins = 0
+    let media = null // aceleração filtrada, para ver se ela está variando
     const fim = setTimeout(() => {
       parar()
       reject(new Error('tempo'))
     }, limiteMs)
+    const zerar = () => {
+      inicio = null
+      soma = [0, 0, 0]
+      n = 0
+      aoProgresso?.(0)
+    }
     const parar = aoPacote((p) => {
       const a = [p.ax, p.ay, p.az]
-      const parado = Math.hypot(p.gx, p.gy, p.gz) < 6 && Math.abs(Math.hypot(...a) - 1) < 0.06 && condicao(unit(a))
+      media = media ? media.map((v, i) => v + 0.15 * (a[i] - v)) : [...a]
+      const variando = Math.hypot(a[0] - media[0], a[1] - media[1], a[2] - media[2])
+      const parado = Math.hypot(p.gx, p.gy, p.gz) < 10 && variando < 0.05 && condicao(unit(a))
       if (!parado) {
-        inicio = null
-        soma = [0, 0, 0]
-        n = 0
-        aoProgresso?.(0)
+        ruins += 1
+        if (ruins > TOLERANCIA_TREMIDO || !condicao(unit(a))) zerar()
         return
       }
+      ruins = 0
       inicio ??= p.t
       soma = soma.map((v, i) => v + a[i])
       n += 1
@@ -567,6 +586,13 @@ function esperarParado(ms, { condicao = () => true, limiteMs = 20000, aoProgress
       }
     })
   })
+}
+
+// Para os desenhos: o ZENI já está deitado (mais de 60° longe do "de pé" calibrado)?
+export function estaDeitado() {
+  const p = ultimoPacote
+  if (!p || !cimaNoSensor) return false
+  return ponto(unit([p.ax, p.ay, p.az]), unit(cimaNoSensor)) < 0.5
 }
 
 // Passo 1 (e "Ajustar o ZENI"): de pé e parado por `ms`.
@@ -641,14 +667,14 @@ function criarProcessador() {
       const batida = norma > AJUSTE.batida
       if (batida) semTremor = 8 // 160 ms
       const aMundo = girar(qAtual, [p.ax, p.ay, p.az])
-      const azLin = Math.max(-1, Math.min(1, aMundo[2] - 1)) // g
+      const azLin = Math.max(-1, Math.min(1, (aMundo[2] - normaG) / normaG)) // g
       let az = f.vertical(batida ? 0 : azLin)
       if (Math.abs(az) < 0.02) az = 0 // zona morta: um grau de erro na inclinação já "vaza" 0,017 g de gravidade
       // velocidade vertical com "vazamento" (passa-alta de 0,3 Hz): integrar aceleração deriva, isto a traz de volta a 0
       velocidade += az * 9.81 * (1 / HZ)
       velocidade -= velocidade * 2 * Math.PI * 0.3 * (1 / HZ)
       // parado de verdade (sem giro e com 1 g certinho): a velocidade é zero
-      if (Math.hypot(...g) < 8 && Math.abs(norma - 1) < 0.03) velocidade *= 0.8
+      if (Math.hypot(...g) < 8 && Math.abs(norma - normaG) < 0.03) velocidade *= 0.8
 
       // giro em torno da vertical do mundo (F)
       const wz = f.wz(girar(qAtual, g)[2])

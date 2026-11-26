@@ -46,6 +46,13 @@ export default function Conectar() {
   const [tentativa, setTentativa] = useState(0)
   const [restam, setRestam] = useState(SEGUNDOS_NA_MESA)
   const [progresso, setProgresso] = useState(0)
+  // No passo de deitar: o desenho para na posição deitada assim que o ZENI de verdade está deitado
+  const [deitado, setDeitado] = useState(false)
+  useEffect(() => {
+    if (estado !== 'deitar') return undefined
+    const id = setInterval(() => setDeitado(dispositivo.estaDeitado()), 150)
+    return () => clearInterval(id)
+  }, [estado])
 
   // Simulação: a busca termina sozinha em "conectado"
   useEffect(() => {
@@ -258,10 +265,10 @@ export default function Conectar() {
       >
         <h2 className="conectar-titulo">Agora deite o ZENI</h2>
         <p className="conectar-texto">Deite o ZENI na mesa com a ponta de cima apontando para longe de você, e solte.</p>
-        <GuiaPosicao passo="deitar" pronto={progresso > 0} />
+        <GuiaPosicao passo="deitar" pronto={deitado} />
         {tela === 'deitar' ? (
           <div className="teste-barra" role="progressbar" aria-label="Aprendendo" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progresso * 100)}>
-            <span className="teste-barra-rotulo">Parado</span>
+            <span className="teste-barra-rotulo">{deitado ? 'Parado' : 'Deite'}</span>
             <span className="teste-barra-trilho">
               <span className="teste-barra-cheio" style={{ transform: `scaleX(${progresso})` }} />
             </span>

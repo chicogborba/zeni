@@ -18,7 +18,7 @@ export default function PainelTecnico() {
 ${z.hz} Hz  perdidos ${z.perdidos} (${perda}%)
 roll ${f(z.roll, 1)}°  pitch ${f(z.pitch, 1)}°  (sensor)
 lado ${f(inc.lado, 1)}°  frente ${f(inc.frente, 1)}°  (ZENI)  montagem ${calibrado() ? (temFrente() ? 'completa' : 'só de pé') : 'nenhuma'}
-acel ${f(p?.ax)} ${f(p?.ay)} ${f(p?.az)} g
+acel ${f(p?.ax)} ${f(p?.ay)} ${f(p?.az)} g  |a| ${f(p ? Math.hypot(p.ax, p.ay, p.az) : 0)}
 giro ${f(p?.gx, 1)} ${f(p?.gy, 1)} ${f(p?.gz, 1)} °/s
 bateria ${z.bateria ?? 'sem medida'}  cal ${CAL[z.calibracao] ?? z.calibracao}  flags ${z.flags.toString(2).padStart(5, '0')}`}
     </div>
