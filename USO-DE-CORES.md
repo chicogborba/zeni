@@ -167,3 +167,4 @@ Texto corrido e valores (`text-primary`), texto dos botões, texto de avisos (in
 | 26/11/2026 | Exportar vira menu suspenso aberto para cima: fundo `cinza-100` com `--brilho-interno`, texto `text-primary`, ícones `text-brand`. |
 | 26/11/2026 | Logo da marca na Home (`src/assets/zeni-logo.svg`). |
 | 26/11/2026 | Logo da Home em `text-brand` (`blue-800`), aplicado por máscara em vez da cor `#161616` do arquivo; tamanho reduzido em 50% (24 px para 12 px de altura); depois +20% (14,4 px). |
+| 26/11/2026 | Tela de entrada nova: gradiente linear `cinza-100` (topo), `cinza-300` (40%) e `blue-800` (base); logo em `white` por máscara. |

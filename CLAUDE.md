@@ -15,6 +15,7 @@ Seguir `docs/fluxo-do-app.md`. Ordem de prioridade: a seção "Decisões do grup
     - O exercício do dia em tela cheia.
     - A nota em modal centralizado.
 - Menu suspenso do Exportar (26/11): em Minha evolução, Exportar abre um menu suspenso que abre só para cima, a partir do botão, com "Salvar em PDF" e "Enviar link" (cada um com ícone). Não há mais bottom sheet de Exportar.
+- Tela de entrada (26/11): ao abrir o app, gradiente linear de cinza (topo) a azul escuro (base); o logo sobe devagar de baixo, cresce e some em fade-out lento (4 s); cerca de 200 ms depois entra a Home. Só ao abrir o app.
 - Pequenas exceções de layout (25/11): em Minha evolução, Exportar (amarelo) à esquerda e Voltar (preto) à direita, lado a lado, 64 px (exceção ao padrão de ação dupla de 26/11, que põe Voltar à esquerda; decisão de 26/11 para essa tela).
 - Alvos de toque grandes, feitos para mão com tremor. Os tamanhos exatos estão na seção 7 do design system., e vale também para os botões duplos (Voltar + outra ação) em bottom sheets: lado a lado, 64 px de altura (design system, 6.1).
 - Linguagem leiga, sem termos técnicos. O glossário está na seção 10 do design system.

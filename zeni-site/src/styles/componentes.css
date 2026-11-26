@@ -1255,3 +1255,63 @@
 .andamento .personagem {
   flex: 1;
 }
+
+/* ---------- Tela de entrada (26/11) ---------- */
+.abertura {
+  position: fixed;
+  inset: 0;
+  z-index: 10; /* acima de tudo, inclusive painéis */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--cinza-100) 0%, var(--cinza-300) 40%, var(--brand-blue-800) 100%);
+  transition: opacity 300ms ease-out;
+}
+.abertura--saindo {
+  opacity: 0;
+}
+.abertura-logo {
+  width: min(62vw, 280px);
+  aspect-ratio: 1480.98 / 254.69;
+  background: var(--white);
+  mask: var(--logo) center / contain no-repeat;
+  -webkit-mask: var(--logo) center / contain no-repeat;
+  opacity: 0;
+  animation: abertura-logo 4s ease-in-out forwards;
+}
+/* Sobe devagar de baixo, cresce (aproxima) e some devagar no fim */
+@keyframes abertura-logo {
+  0% {
+    opacity: 0;
+    transform: translateY(38vh) scale(0.7);
+  }
+  25% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-4vh) scale(1.35);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .abertura-logo {
+    animation-name: abertura-logo-calmo;
+    animation-duration: 2s;
+  }
+  @keyframes abertura-logo-calmo {
+    0% {
+      opacity: 0;
+    }
+    40%,
+    60% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+}

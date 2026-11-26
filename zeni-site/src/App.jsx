@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import Abertura from './componentes/Abertura.jsx'
 import AvisoLembrete from './componentes/AvisoLembrete.jsx'
 import { telaDoExercicio } from './fluxo.js'
 import { lembreteDeAgora, lerLembretes } from './lembretes.js'
@@ -11,6 +12,7 @@ function Telas() {
   const Home = TELAS.home
   const Atual = TELAS[tela.nome] ?? EmConstrucao
   const painelAberto = tela.nome !== 'home'
+  const [abrindo, setAbrindo] = useState(true) // tela de entrada, só ao abrir o app
 
   // Lembretes: a cada 15 s vê se algum é para este minuto (só com o app aberto na v1)
   const [lembrete, setLembrete] = useState(null)
@@ -35,6 +37,7 @@ function Telas() {
 
   return (
     <div className="app">
+      {abrindo && <Abertura onFim={() => setAbrindo(false)} />}
       {/* A Home fica por baixo do painel; enquanto ele está aberto, não recebe toque nem foco. */}
       <div inert={painelAberto}>
         <Home />
