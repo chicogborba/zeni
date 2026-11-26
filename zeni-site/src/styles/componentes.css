@@ -285,27 +285,35 @@
 /* ---------- Minha evolução: alternador de período e rodapé com dois botões lado a lado (25/11) ---------- */
 .seletor {
   display: flex;
-  gap: var(--space-4);
+  gap: 0;
+  height: 36px; /* toggle de 36 px (26/11); a área de toque de 64 px vem do ::before */
+  padding: 0;
+  border-radius: var(--radius-full);
+  background: var(--blue-600-50);
 }
 .seletor-opcao {
+  position: relative;
   flex: 1;
-  min-height: var(--target-min);
-  padding: var(--space-2) var(--space-4);
-  border: var(--stroke) solid var(--border-strong);
-  border-radius: var(--radius-md);
+  border: 0;
+  border-radius: var(--radius-full);
   font: var(--type-botao);
   color: var(--text-primary);
   transition:
     transform var(--dur-press) ease-out,
-    background-color var(--dur-press) ease-out;
+    background-color var(--dur-press) ease-out,
+    color var(--dur-press) ease-out;
+}
+.seletor-opcao::before {
+  content: '';
+  position: absolute;
+  inset: -14px 0; /* 36 + 28 = 64 px de altura de toque */
 }
 .seletor-opcao:active {
   transform: scale(var(--press-scale));
 }
 .seletor-opcao--ativa {
-  background: var(--bg-inverse);
-  border-color: var(--bg-inverse);
-  color: var(--text-on-inverse);
+  background: var(--brand-blue-600);
+  color: var(--white);
 }
 
 .so-impressao {

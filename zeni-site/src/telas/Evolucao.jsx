@@ -199,7 +199,11 @@ export default function Evolucao() {
     <PainelInferior
       titulo="Minha evolução"
       rodape={
-        <AcoesDuplas voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }} acao={{ rotulo: 'Exportar', onClick: () => setExportando(true) }} />
+        <AcoesDuplas
+          voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }}
+          acao={{ rotulo: 'Exportar', onClick: () => setExportando(true) }}
+          primaria="voltar" /* exceção de 26/11 nesta tela: Exportar à esquerda e Voltar à direita */
+        />
       }
     >
       <h2 className="conectar-titulo so-impressao">Minha evolução</h2>
