@@ -12,8 +12,12 @@
 # (só se rodar a opção b ou c; na opção a, salve você com Ctrl+S).
 # Os clipes viram "Actions" (aba Animation / Dope Sheet > Action Editor). Todos ficam guardados (fake user).
 #
-# Para devolver ao app depois de editar no Blender: File > Export > glTF 2.0 (.glb), com "Animation" ligado,
-# "Always Sample Animations" ligado e "Skinning" ligado, e substitua src/assets/zeni-personagem.glb.
+# Base: scripts/fonte/zeni-personagem-montado.glb, o modelo SEM os ajustes de forma (o .glb do app já os tem).
+#
+# Para levar os ajustes de forma (QUEIXO, OMBROS, SOVACO, BRACOS) ao app, mude os valores abaixo e rode, na pasta zeni-site:
+#        sh scripts/aplicar-ajustes.sh
+# Ele troca só as posições dos vértices em src/assets/zeni-personagem.glb; ossos, pesos e clipes ficam iguais.
+# Não use File > Export do Blender para isso: ele muda a orientação dos ossos e reamostra os clipes (docs/rig-atual.md).
 # Requisitos do app (nomes de ossos e de clipes, escala em metros): docs/rig-atual.md.
 #
 # QUEIXO: desfaz o "canto" da mandíbula puxado para a direita (controles QUEIXO_* logo abaixo, no topo).
@@ -58,12 +62,15 @@ BRACOS_JUNTAR = 0.0
 # Valores são frações do comprimento do braço (ombro até cotovelo, ~0,27 m). 0 em DESCER desliga.
 OMBROS_DESCER = 0.13        # quanto o topo do ombro desce (0.13 = ~3,5 cm). Ainda alto: aumente
 OMBROS_PESCOCO = 0.5        # 0 a 1: quanto a base do pescoço acompanha (1 = desce junto com o ombro)
+OMBROS_ESTREITAR = 0.16     # puxa a ponta do ombro e o alto do braço para dentro (ombro menos largo). Ainda largo: aumente
+OMBROS_PONTA = 0.08         # desce a mais só a ponta do ombro (o "calombo" acima do braço). Ainda quadrado: aumente
 
 # SOVACO: baixa e abre o sovaco. Valores são frações do comprimento do braço (osso UpperArm), então valem para qualquer escala.
 # Se o sovaco ainda estiver alto demais, aumente SOVACO_DESCER. Se ainda estiver colado no tronco, aumente SOVACO_ABRIR.
 # Se a região mexida ficar grande ou pequena demais, mude SOVACO_RAIO. 0 em DESCER e ABRIR desliga o ajuste.
-SOVACO_DESCER = 0.25        # quanto o sovaco desce (0.25 = um quarto do braço)
-SOVACO_ABRIR = 0.06         # quanto o braço se afasta do tronco na região do sovaco
+SOVACO_DESCER = -0.04       # quanto o sovaco desce (negativo sobe: -0.04 = ~1 cm para cima)
+SOVACO_TRONCO = 0.18        # alarga a lateral do tronco embaixo do braço (fecha o vão do sovaco, blusa menos colada)
+SOVACO_ABRIR = 0.0          # quanto o braço se afasta do tronco na região do sovaco
 SOVACO_RAIO = 0.60          # tamanho da região afetada, com transição suave nas bordas
 SOVACO_PONTO_ALTURA = 0.30  # onde está o centro do sovaco, abaixo do ombro (fração do braço)
 SOVACO_PONTO_DENTRO = 0.15  # e o quanto ele está para dentro, na direção do tronco
@@ -74,11 +81,12 @@ SOVACO_PONTO_DENTRO = 0.15  # e o quanto ele está para dentro, na direção do 
 PROJETO = "/Users/georgialirahoffmann/1001projects/zeni/zeni-site"
 try:
     candidato = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
-    if os.path.isfile(os.path.join(candidato, "src", "assets", "zeni-personagem.glb")):
+    if os.path.isfile(os.path.join(candidato, "scripts", "fonte", "zeni-personagem-montado.glb")):
         PROJETO = candidato
 except NameError:
     pass
-GLB = os.path.join(PROJETO, "src", "assets", "zeni-personagem.glb")
+# Base SEM os ajustes de forma (o .glb do app já os tem; abrir ele aplicaria tudo duas vezes).
+GLB = os.path.join(PROJETO, "scripts", "fonte", "zeni-personagem-montado.glb")
 BLEND = os.path.join(PROJETO, "scripts", "zeni-personagem.blend")
 
 if not os.path.isfile(GLB):
@@ -262,7 +270,7 @@ def corrigir_queixo(esqueleto, corpo):
 # Ombros: desce ombros e base do pescoço; queixo, orelhas e cabelo de cima ficam. Ver OMBROS no topo.
 # ---------------------------------------------------------------------------------------------
 def ajustar_ombros(esqueleto, corpo):
-    if OMBROS_DESCER == 0:
+    if OMBROS_DESCER == 0 and OMBROS_PONTA == 0 and OMBROS_ESTREITAR == 0:
         return
     me = corpo.data
     m = corpo.matrix_world.inverted() @ esqueleto.matrix_world
@@ -285,7 +293,14 @@ def ajustar_ombros(esqueleto, corpo):
         if fz <= 0:
             continue
         fh = OMBROS_PESCOCO + (1 - OMBROS_PESCOCO) * _entre(lado, 0.045, 0.045 + dx_ombro * 0.55)
-        c.z -= descer * fz * fh
+        # ponta: cresce do meio do trapézio até a junta do ombro; só acima da junta, sumindo pelo braço abaixo
+        fp = _entre(lado, dx_ombro * 0.45, dx_ombro) * _entre(c.z, ombro.z - comp * 0.35, ombro.z + comp * 0.05)
+        c.z -= (descer * fh + comp * OMBROS_PONTA * fp) * fz
+        # estreitar: da metade do trapézio para fora, do alto do ombro até o meio do braço (some rumo ao cotovelo)
+        fe = _entre(lado, dx_ombro * 0.55, dx_ombro) * _entre(c.z, ombro.z - comp * 0.5, ombro.z - comp * 0.1)
+        fe *= _suave((teto - c.z) / faixa)
+        if fe > 0:
+            c.x -= (1.0 if c.x > centro_x else -1.0) * comp * OMBROS_ESTREITAR * fe
     me.update()
     print("Ombros ajustados.")
 
@@ -323,7 +338,7 @@ def juntar_bracos(esqueleto, corpo):
 # Sovaco: desloca os vértices perto do centro do sovaco para baixo e para fora, com transição suave.
 # ---------------------------------------------------------------------------------------------
 def ajustar_sovaco(esqueleto, corpo):
-    if SOVACO_DESCER == 0 and SOVACO_ABRIR == 0:
+    if SOVACO_DESCER == 0 and SOVACO_ABRIR == 0 and SOVACO_TRONCO == 0:
         return
     me = corpo.data
     m = corpo.matrix_world.inverted() @ esqueleto.matrix_world
@@ -348,6 +363,7 @@ def ajustar_sovaco(esqueleto, corpo):
             peso_braco = min(1.0, sum(g.weight for g in v.groups if g.group in grupos_braco))
             v.co += Vector((0.0, 0.0, -1.0)) * (comp * SOVACO_DESCER * f)    # desce
             v.co -= dentro * (comp * SOVACO_ABRIR * f * peso_braco)           # só o braço vai para fora
+            v.co -= dentro * (comp * SOVACO_TRONCO * f * (1.0 - peso_braco))  # e o tronco embaixo dele também
     me.update()
     print("Sovaco ajustado.")
 
@@ -371,6 +387,7 @@ esqueleto = next(o for o in bpy.data.objects if o.type == "ARMATURE")
 malhas = [o for o in bpy.data.objects if o.type == "MESH"]
 corpo = next((o for o in malhas if o.name.startswith("Corpo")), malhas[0])
 
+ANTES = [v.co.copy() for v in corpo.data.vertices]   # para a exportação ao app (passo 7)
 corrigir_queixo(esqueleto, corpo)      # primeiro: usa as alturas originais
 ajustar_ombros(esqueleto, corpo)
 ajustar_sovaco(esqueleto, corpo)
@@ -416,11 +433,27 @@ print("Ossos:", [b.name for b in esqueleto.data.bones])
 print("Clipes:", [a.name for a in acoes])
 
 # ---------------------------------------------------------------------------------------------
+# 7. levar ao app: com a variável ZENI_AJUSTES_JSON, grava os vértices movidos (posição antes e depois, normal nova),
+#    em coordenadas do glTF. scripts/aplicar-ajustes.sh usa isso para trocar só esses vértices no .glb do app,
+#    sem mexer em ossos, pesos ou clipes.
+# ---------------------------------------------------------------------------------------------
+if os.environ.get("ZENI_AJUSTES_JSON"):
+    import json
+    movidos = []
+    for v, o in zip(corpo.data.vertices, ANTES):
+        if (v.co - o).length > 1e-7:
+            n = v.normal                                       # Blender (x, y, z) -> glTF (x, z, -y)
+            movidos.append([o.x, o.z, -o.y, v.co.x, v.co.z, -v.co.y, n.x, n.z, -n.y])
+    with open(os.environ["ZENI_AJUSTES_JSON"], "w") as arq:
+        json.dump(movidos, arq)
+    print("Vértices movidos gravados:", len(movidos))
+
+# ---------------------------------------------------------------------------------------------
 # 6. salvar o .blend só nas opções b e c (terminal). No editor de texto (opção a), salve você com Ctrl+S.
 # ---------------------------------------------------------------------------------------------
 area = getattr(bpy.context, "area", None)
 rodando_no_editor_de_texto = area is not None and area.type == "TEXT_EDITOR"
-if not rodando_no_editor_de_texto:
+if not rodando_no_editor_de_texto and not os.environ.get("ZENI_AJUSTES_JSON"):
     os.makedirs(os.path.dirname(BLEND), exist_ok=True)
     bpy.ops.wm.save_as_mainfile(filepath=BLEND)
     print("Salvo em", BLEND)

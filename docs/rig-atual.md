@@ -1,6 +1,6 @@
 # Rig atual do personagem (contrato do modelo)
 
-Arquivo: `zeni-site/src/assets/zeni-personagem.glb`. Hoje ele vem do **Blender** (`zeni-site/scripts/fonte/zeni-personagem-blender.glb`, exportado por você a partir do rig gerado por código) e passa por três scripts, que `scripts/montar-personagem.sh` roda em ordem (na pasta `zeni-site`): `alinhar-ossos.mjs`, `ajustar-clipes.mjs` e `adicionar-dedos.mjs`. O primeiro acerta os ossos do braço à malha (a malha do Blender tem os braços inclinados ~11° para dentro e os ossos estavam no lugar antigo; sem esse passo o ZENI sai da mão e o giro do punho gira fora do braço). O segundo reescreve as poses de A e D (seção 3). O terceiro cria os ossos dos dedos e a pegada do ZENI (seção 9). O ponto de partida é `node scripts/preparar-modelo.mjs`, que gera o rig e os clipes a partir de `scripts/fonte/wii-fit-camisa-lisa.glb` (saída em `scripts/zeni-personagem-gerado.glb`). Código que usa o arquivo: `zeni-site/src/componentes/PersonagemExercicio.jsx`.
+Arquivo: `zeni-site/src/assets/zeni-personagem.glb`. Hoje ele vem do **Blender** (`zeni-site/scripts/fonte/zeni-personagem-blender.glb`, exportado por você a partir do rig gerado por código) e passa por quatro passos, que `scripts/montar-personagem.sh` roda em ordem (na pasta `zeni-site`): `alinhar-ossos.mjs`, `ajustar-clipes.mjs`, `adicionar-dedos.mjs` e `aplicar-ajustes.sh` (seção 12). O primeiro acerta os ossos do braço à malha (a malha do Blender tem os braços inclinados ~11° para dentro e os ossos estavam no lugar antigo; sem esse passo o ZENI sai da mão e o giro do punho gira fora do braço). O segundo reescreve as poses de A e D (seção 3). O terceiro cria os ossos dos dedos e a pegada do ZENI (seção 9). O ponto de partida é `node scripts/preparar-modelo.mjs`, que gera o rig e os clipes a partir de `scripts/fonte/wii-fit-camisa-lisa.glb` (saída em `scripts/zeni-personagem-gerado.glb`). Código que usa o arquivo: `zeni-site/src/componentes/PersonagemExercicio.jsx`.
 
 **Durações dos clipes:** o arquivo do Blender tem clipes ~21% mais curtos (A 1,9 s, B 2,53 s, C 0,8 s, D 0,93 s, E 0,8 s, F 1,27 s). O componente ajusta o tempo de cada clipe às durações abaixo ao carregar (`DURACAO_CLIPE_S`), então a tabela da seção 3 continua valendo para o app.
 
@@ -129,3 +129,13 @@ Três clipes além dos seis, mesma estrutura (mesmos ossos, 30 fps, 2,4 s de cic
 | `I_alcancar_a_frente` | da mão perto do corpo (cotovelo ~90°) até o braço esticado na horizontal à frente (~165°) e volta; o oposto do D |
 
 Ângulos e duração no topo do bloco "clipes novos" do script (`G`, `H`, `I`, `DUR_NOVOS`).
+
+## 12. Ajustes de forma: queixo, ombros e sovaco (scripts/aplicar-ajustes.sh)
+
+`adicionar-dedos.mjs` grava o modelo sem ajustes em `scripts/fonte/zeni-personagem-montado.glb`. `aplicar-ajustes.sh` abre essa base no Blender (sem janela) com `scripts/abrir-no-blender.py`, aplica os ajustes de forma e troca **só as posições e normais dos vértices movidos** em `src/assets/zeni-personagem.glb`. Ossos, pesos, clipes e nós ficam idênticos (por isso não se usa o File > Export do Blender, que muda a orientação dos ossos e reamostra os clipes).
+
+- **Queixo** (`QUEIXO*`): o giro de 66° da cabeça (seção 1, passo 3) pegava a mandíbula só em parte e o canto dela ficava puxado para a direita; o ajuste completa o giro na mandíbula, sem tocar nuca, cabelo e olhos.
+- **Ombros** (`OMBROS_DESCER`, `OMBROS_PESCOCO`, `OMBROS_PONTA`, `OMBROS_ESTREITAR`): descem os ombros (~3,5 cm) e mais a ponta do ombro (~2 cm), e a base do pescoço pela metade; a ponta do ombro e o alto do braço vêm ~4 cm para dentro. Queixo, orelhas e cabelo ficam, o pescoço alonga.
+- **Sovaco** (`SOVACO_DESCER` negativo sobe, `SOVACO_TRONCO`): sobe ~1 cm, não afasta o braço e alarga a lateral do tronco embaixo dele (~5 cm no centro), fechando o vão entre braço e tronco.
+- **Sovaco** (`SOVACO_*`) e **braços** (`BRACOS_JUNTAR`, hoje 0: girar só a malha quebra as mãos nos clipes).
+- Para mudar: editar os valores no topo de `abrir-no-blender.py` e rodar `sh scripts/aplicar-ajustes.sh` na pasta `zeni-site`. Se o modelo for remontado, `montar-personagem.sh` já roda este passo no fim.
