@@ -12,7 +12,12 @@ function Telas() {
   const Home = TELAS.home
   const Atual = TELAS[tela.nome] ?? EmConstrucao
   const painelAberto = tela.nome !== 'home'
-  const [abrindo, setAbrindo] = useState(true) // tela de entrada, só ao abrir o app
+  const [abrindo, setAbrindo] = useState(true) // tela de entrada: ao abrir o app e ao tocar no logo da Home (26/11)
+  useEffect(() => {
+    const rever = () => setAbrindo(true)
+    window.addEventListener('zeni:abertura', rever)
+    return () => window.removeEventListener('zeni:abertura', rever)
+  }, [])
 
   // Lembretes: a cada 15 s vê se algum é para este minuto (só com o app aberto na v1)
   const [lembrete, setLembrete] = useState(null)

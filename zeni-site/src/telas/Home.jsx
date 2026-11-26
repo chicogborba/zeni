@@ -96,7 +96,7 @@ export default function Home() {
     <main className="tela tela--home">
       <AvisoConexao />
       <header className="home-topo">
-        <button type="button" className="home-logo-botao" aria-label="ZENI: ver o carregamento" onClick={() => ir('carregamento')}>
+        <button type="button" className="home-logo-botao" aria-label="ZENI: ver a tela de entrada" onClick={() => window.dispatchEvent(new Event('zeni:abertura'))}>
           <span className="home-logo" aria-hidden="true" style={{ '--logo': `url(${logo})` }} />
         </button>
         <div className="home-topo-direita">

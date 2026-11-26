@@ -1,6 +1,6 @@
 // Tela de entrada (26/11): ao abrir o app, gradiente linear de cinza (em cima) a azul escuro (embaixo).
 // Só o gradiente por 300 ms; então o logo surge no centro, se aproxima de quem olha (cresce) e some em fade-out lento.
-// Cerca de 200 ms depois, a tela sai e a Home aparece. Só aparece ao abrir o app, não a cada volta à Home.
+// Cerca de 200 ms depois, a tela sai e a Home aparece. Aparece ao abrir o app e ao tocar no logo da Home, não a cada volta à Home.
 import { useEffect, useState } from 'react'
 import logo from '../assets/zeni-logo.svg'
 
