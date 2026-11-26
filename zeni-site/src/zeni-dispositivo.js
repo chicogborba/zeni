@@ -132,6 +132,7 @@ function aoNotificarDados(evento) {
   const mudouCal = p.calibracao !== estado.calibracao
   estado.calibracao = p.calibracao
   processador.adicionar(p)
+  atualizarOrientacao(p)
   ouvintesPacote.forEach((f) => f(p))
   if (mudouBateria || mudouCal) avisar()
 }
@@ -176,6 +177,8 @@ async function abrirGatt() {
   ultimoSeq = null
   janelaHz = { t0: performance.now(), n: 0 }
   processador.zerar()
+  orientacaoIniciada = false
+  qRef = null
   conectadoAgora = true
   tentativaReconexao = 0
   estado.nome = aparelho.name
@@ -299,6 +302,9 @@ export const AJUSTE = {
   giroCheio: 120, // °/s de giro que já valem tamanho 100 (girar o punho de lado a lado em ~1 s)
   aceleracaoCheia: 0.45, // g de aceleração (sem a gravidade) que já valem tamanho 100 (levantar, tocar na mesa)
   tremorCheio: 25, // °/s de tremido que já valem tremor 100
+  // Como o MPU está montado dentro do ZENI: rotação (graus, x-y-z) que leva os eixos do sensor aos do ZENI 3D, cujo
+  // eixo longo é o y. Padrão: o z do sensor ao longo do ZENI. Se o fantasma girar no eixo errado, ajuste aqui.
+  montagem: [-90, 0, 0],
   corteLento: 3.5, // Hz: abaixo disto é movimento de propósito; acima é tremido (tremor de Parkinson: 4 a 6 Hz)
 }
 
@@ -386,6 +392,65 @@ function criarProcessador() {
   }
 }
 const processador = criarProcessador()
+
+// ---------- Orientação 3D (para o "fantasma" do ZENI na animação) ----------
+// O roll/pitch do firmware não vê o giro em torno da vertical (girar o punho com o ZENI de pé). Aqui o giro dos três
+// eixos é integrado num quatérnio, com a gravidade corrigindo a inclinação (filtro de Mahony, só a parte proporcional).
+// A rotação em torno da vertical deriva devagar; por isso o fantasma usa a orientação RELATIVA a uma referência marcada
+// no começo de cada exercício (`marcarReferencia`), quando a pessoa segura o ZENI como o personagem.
+const qMul = (a, b) => [
+  a[3] * b[0] + a[0] * b[3] + a[1] * b[2] - a[2] * b[1],
+  a[3] * b[1] - a[0] * b[2] + a[1] * b[3] + a[2] * b[0],
+  a[3] * b[2] + a[0] * b[1] - a[1] * b[0] + a[2] * b[3],
+  a[3] * b[3] - a[0] * b[0] - a[1] * b[1] - a[2] * b[2],
+]
+const qConj = (q) => [-q[0], -q[1], -q[2], q[3]]
+const qNorm = (q) => {
+  const n = Math.hypot(...q) || 1
+  return q.map((v) => v / n)
+}
+let qAtual = [0, 0, 0, 1] // do corpo do sensor para o mundo (z para cima)
+let qRef = null
+let orientacaoIniciada = false
+const GANHO_GRAVIDADE = 2 // quanto a gravidade puxa a inclinação de volta (maior = menos deriva, mais tremido)
+
+function atualizarOrientacao(p) {
+  const n = Math.hypot(p.ax, p.ay, p.az)
+  if (!orientacaoIniciada && n > 0.5) {
+    // começa já inclinado como o sensor está (sem rotação em torno da vertical)
+    const r = Math.atan2(p.ay, p.az)
+    const pt = Math.atan2(-p.ax, Math.hypot(p.ay, p.az))
+    const qr = [Math.sin(r / 2), 0, 0, Math.cos(r / 2)]
+    const qp = [0, Math.sin(pt / 2), 0, Math.cos(pt / 2)]
+    qAtual = qNorm(qMul(qp, qr))
+    orientacaoIniciada = true
+    return
+  }
+  const rad = Math.PI / 180
+  let w = [p.gx * rad, p.gy * rad, p.gz * rad]
+  if (n > 0.7 && n < 1.3) {
+    // "para cima" estimado, no corpo do sensor; o erro é o produto vetorial com a aceleração medida
+    const v = qMul(qMul(qConj(qAtual), [0, 0, 1, 0]), qAtual)
+    const a = [p.ax / n, p.ay / n, p.az / n]
+    const e = [a[1] * v[2] - a[2] * v[1], a[2] * v[0] - a[0] * v[2], a[0] * v[1] - a[1] * v[0]]
+    w = w.map((x, i) => x + GANHO_GRAVIDADE * e[i])
+  }
+  const dt = 1 / HZ
+  const ang = Math.hypot(...w) * dt
+  if (ang > 0) {
+    const s = Math.sin(ang / 2) / (Math.hypot(...w) || 1)
+    qAtual = qNorm(qMul(qAtual, [w[0] * s, w[1] * s, w[2] * s, Math.cos(ang / 2)]))
+  }
+}
+
+export function marcarReferencia() {
+  qRef = [...qAtual]
+}
+// Rotação desde a referência, no corpo do sensor: [x, y, z, w]. Sem referência, marca agora.
+export function orientacaoRelativa() {
+  if (!qRef) marcarReferencia()
+  return qMul(qConj(qRef), qAtual)
+}
 export const fecharJanela = () => processador.fecharJanela()
 export const ultimo = () => ultimoPacote
 

@@ -96,7 +96,10 @@ export default function Exercicio() {
     dados.current = { amostras: [], oscilacao: [], tremores: [], pausas: 0 }
     desdeAmostra.current = 0
     jaComecou.current = true
-    if (real) dispositivo.fecharJanela() // descarta o movimento de antes do Começar
+    if (real) {
+      dispositivo.fecharJanela() // descarta o movimento de antes do Começar
+      dispositivo.marcarReferencia() // o fantasma do ZENI parte da posição em que a pessoa está segurando agora
+    }
     setEstado('andamento')
   }
 
@@ -273,7 +276,7 @@ export default function Exercicio() {
           <h2 className="instrucao-nome">{exercicio.nome}</h2>
           <div className="instrucao-figura">
             <Suspense fallback={null}>
-              <PersonagemExercicio exercicio={exercicio} parado={parado} pulso={exercicio.grupo === 'ritmo'} />
+              <PersonagemExercicio exercicio={exercicio} parado={parado} pulso={exercicio.grupo === 'ritmo'} fantasma={real} />
             </Suspense>
           </div>
           <p className="instrucao-legenda">{exercicio.legenda}</p>
@@ -363,7 +366,7 @@ export default function Exercicio() {
           <h2 className="instrucao-nome">{exercicio.nome}</h2>
           <div className="instrucao-figura">
             <Suspense fallback={null}>
-              <PersonagemExercicio exercicio={exercicio} parado={parado} pulso={exercicio.grupo === 'ritmo'} />
+              <PersonagemExercicio exercicio={exercicio} parado={parado} pulso={exercicio.grupo === 'ritmo'} fantasma={real} />
             </Suspense>
           </div>
           <p className="instrucao-legenda">{exercicio.legenda}</p>
@@ -435,7 +438,7 @@ export default function Exercicio() {
           aria-hidden="true"
         />
         <Suspense fallback={null}>
-          <PersonagemExercicio exercicio={exercicio} parado={parado} />
+          <PersonagemExercicio exercicio={exercicio} parado={parado} fantasma={real} />
         </Suspense>
       </div>
     </PainelInferior>

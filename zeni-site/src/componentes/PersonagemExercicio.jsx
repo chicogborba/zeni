@@ -14,6 +14,7 @@ import * as THREE from 'three'
 import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { clone as clonarComEsqueleto } from 'three/examples/jsm/utils/SkeletonUtils.js'
 import modelo from '../assets/zeni-personagem.glb?url'
+import { AJUSTE, conectado as zeniConectadoAgora, marcarReferencia, orientacaoRelativa } from '../zeni-dispositivo.js'
 
 const CLIPES = {
   A: 'A_girar_o_punho',
@@ -172,7 +173,37 @@ function medirMesa(raiz, zeni, clip, socket) {
   return achado
 }
 
-function Personagem({ exercicio, parado, vista }) {
+// Fantasma do ZENI real: uma cópia translúcida, na mão do personagem, virada como o ZENI de verdade está agora em relação
+// ao começo do exercício. Se a pessoa faz igual à animação, o fantasma e o ZENI sólido andam juntos; se não, ela vê a
+// diferença. O sensor não mede posição (só giro e inclinação), por isso o fantasma acompanha a mão do personagem.
+function FantasmaZeni({ zeni }) {
+  const ref = useRef(null)
+  const cor = useMemo(() => token('--brand-amarelo-400'), [])
+  const montagem = useMemo(() => new THREE.Quaternion().setFromEuler(new THREE.Euler(...AJUSTE.montagem.map(THREE.MathUtils.degToRad))), [])
+  const tmp = useMemo(() => ({ d: new THREE.Quaternion(), inv: new THREE.Quaternion(), alvo: new THREE.Quaternion(), p: new THREE.Vector3() }), [])
+  useEffect(() => marcarReferencia(), [])
+  useFrame(() => {
+    const f = ref.current
+    if (!f) return
+    f.visible = zeniConectadoAgora()
+    if (!f.visible) return
+    zeni.getWorldPosition(tmp.p)
+    f.position.copy(tmp.p)
+    // ZENI de pé (mundo) = identidade (encaixarZeni). Rotação do sensor levada aos eixos do ZENI: M · d · M⁻¹
+    tmp.d.fromArray(orientacaoRelativa())
+    tmp.inv.copy(montagem).invert()
+    tmp.alvo.copy(montagem).multiply(tmp.d).multiply(tmp.inv)
+    f.quaternion.slerp(tmp.alvo, 0.5) // suaviza um pouco o tremido na tela
+  })
+  return (
+    // desenhado por cima da mão (depthTest desligado) e um pouco maior, para ler como um contorno brilhante
+    <mesh ref={ref} geometry={zeni.geometry} renderOrder={10} scale={1.08}>
+      <meshStandardMaterial color={cor} emissive={cor} emissiveIntensity={0.5} roughness={1} metalness={0} transparent opacity={0.5} depthWrite={false} depthTest={false} />
+    </mesh>
+  )
+}
+
+function Personagem({ exercicio, parado, vista, fantasma }) {
   const gltf = useGLTF(modelo, false, false)
   const invalidate = useThree((s) => s.invalidate)
 
@@ -285,6 +316,7 @@ function Personagem({ exercicio, parado, vista }) {
   return (
     <>
       <primitive object={raiz} />
+      {fantasma && <FantasmaZeni zeni={zeni} />}
       {mesa && (
         // linha de mesa suave, na altura onde a base do ZENI toca no ponto mais baixo do movimento
         <mesh position={[mesa.x, mesa.y - 0.005, mesa.z]} rotation={[0, angulo, 0]}>
@@ -323,7 +355,8 @@ function Luzes() {
   )
 }
 
-export default function PersonagemExercicio({ exercicio, parado, pulso = false, vista = VISTA }) {
+// `fantasma`: mostra o ZENI real (translúcido) junto da animação. Só com o ZENI de verdade conectado.
+export default function PersonagemExercicio({ exercicio, parado, pulso = false, vista = VISTA, fantasma = false }) {
   const [visivel, setVisivel] = useState(() => !document.hidden)
   useEffect(() => {
     const f = () => setVisivel(!document.hidden)
@@ -339,7 +372,7 @@ export default function PersonagemExercicio({ exercicio, parado, pulso = false, 
       <div className="personagem-quadro">
       <Canvas
         dpr={[1, 2]} // devicePixelRatio limitado a 2
-        frameloop={parado ? 'demand' : visivel ? 'always' : 'never'}
+        frameloop={!visivel ? 'never' : parado && !fantasma ? 'demand' : 'always'}
         gl={{ alpha: true, antialias: true }}
         camera={{ position: vista.posicao, fov: 29, near: 0.1, far: 20 }}
         onCreated={({ camera }) => camera.lookAt(...vista.alvo)}
@@ -347,7 +380,7 @@ export default function PersonagemExercicio({ exercicio, parado, pulso = false, 
         <Camera vista={vista} />
         <Luzes />
         <Suspense fallback={null}>
-          <Personagem exercicio={exercicio} parado={parado} vista={vista} />
+          <Personagem exercicio={exercicio} parado={parado} vista={vista} fantasma={fantasma} />
         </Suspense>
       </Canvas>
       </div>
