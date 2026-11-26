@@ -35,7 +35,7 @@ export default function Aparencia({ onVoltar }) {
       onFechar={desfazer}
       rodape={
         <AcoesDuplas
-          voltar={{ rotulo: 'Voltar ao jeito anterior', onClick: desfazer }}
+          voltar={{ rotulo: mudou ? 'Voltar ao jeito anterior' : 'Voltar', onClick: desfazer }} // sem mudança: só "Voltar"
           acao={{ rotulo: 'Confirmar', onClick: confirmar, desativado: !mudou }}
         />
       }
