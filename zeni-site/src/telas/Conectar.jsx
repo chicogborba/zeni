@@ -74,7 +74,6 @@ export default function Conectar() {
           <CheckIcon className="icone" />
         </span>
         <h2 className="conectar-titulo">Conectado</h2>
-        <p className="conectar-texto">O ZENI vibrou suavemente.</p>
         <p className="conectar-destaque">Apoie o ZENI na mesa por 3 segundos.</p>
       </PainelInferior>
     )
