@@ -58,7 +58,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | Fundo da página (`.app`, vale para todas as telas) | `cinza-50` |
 | Bulb de fundo (`.home-bulb`) | `--grad-bulb`: porcelana (centro) até transparente |
 | Avatar e pílula do ZENI | fundo `bg-page`; ícones (pessoa e bateria) `text-brand`; texto da pílula `text-primary`; "ZENI desconectado" em `cinza-700` |
-| **Painel do dashboard** (`.home-dados`) | **gradiente 160°, `cinza-200` (0%) a `cinza-100` (100%)**; glow interno `--brilho-interno` |
+| **Painel do dashboard** (`.home-dados`) | **gradiente radial (elipse), `cinza-200` no centro a `cinza-100` nas bordas**; glow interno `--brilho-interno` |
 | **Cartões de suavidade e ritmo** (`.dado`) | gradiente 160°, `cinza-50` a `cinza-200`; glow interno `--brilho-interno` |
 | Número do dashboard (com valor e estado vazio "–") | `blue-800` |
 | Rótulos "suavidade" e "ritmo" | `text-brand` (blue-800) |
@@ -144,3 +144,4 @@ Texto corrido e valores (`text-primary`), texto dos botões, texto de avisos (in
 | 26/11/2026 | Números grandes do dashboard: de `cinza-900` (com valor) e `cinza-700` (vazio) para `blue-700`. |
 | 26/11/2026 | Números grandes do dashboard: de `blue-700` para `blue-800`. |
 | 26/11/2026 | Títulos (h1 a h3 e títulos dos cartões), rótulos (dashboard, gráfico, campos, contadores) e ícones (cartões da home, avatar, bateria, chevron, avisos de informação e atenção): de `cinza-900`, `cinza-800`, `cinza-700` e `blue-700` para `text-brand` (novo token, `blue-800`). |
+| 26/11/2026 | Painel do dashboard: de gradiente linear 160° para radial, `cinza-200` no centro e `cinza-100` nas bordas (mais claro nas bordas). |
