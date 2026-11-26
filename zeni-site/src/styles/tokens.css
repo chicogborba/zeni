@@ -6,7 +6,7 @@
 
 /* Fontes (protótipo; no produto, hospedar os arquivos localmente) */
 @import url("https://api.fontshare.com/v2/css?f[]=chillax@500,600&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap");
 
 :root {
   /* Cinzas (neutros) */

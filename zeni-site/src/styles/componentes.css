@@ -840,7 +840,7 @@
 }
 .nota-media .rotulo-caps {
   color: inherit;
-  font-weight: 500; /* rótulo em medium, número em bold */
+  font-weight: 300; /* rótulo em light, número em bold */
 }
 .nota-media-valor {
   font: var(--type-apoio);
