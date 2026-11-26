@@ -244,11 +244,7 @@ export default function Conectar() {
           <CheckIcon className="icone" />
         </span>
         <h2 className="conectar-titulo">Conectado</h2>
-        {simulado ? (
-          <p className="conectar-texto">O ZENI vibrou suavemente.</p>
-        ) : (
-          zeni.bateria !== null && <p className="conectar-texto">{`Bateria do ZENI: ${zeni.bateria}%`}</p>
-        )}
+        {!simulado && zeni.bateria !== null && <p className="conectar-texto">{`Bateria do ZENI: ${zeni.bateria}%`}</p>}
         <p className="conectar-destaque">
           {naMesa || simulado ? 'Deixe o ZENI de pé na mesa, parado, e toque em Pronto.' : 'Segure o ZENI de pé, parado, e toque em Pronto.'}
         </p>
