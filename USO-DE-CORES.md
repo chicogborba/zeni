@@ -166,4 +166,4 @@ Texto corrido e valores (`text-primary`), texto dos botões, texto de avisos (in
 | 26/11/2026 | Alternador 7 / 30 dias vira toggle: trilho `blue-600` a 50% (token novo `--blue-600-50`), opção escolhida `blue-600` com texto `white`, a outra com `text-primary`. Antes: bordas `border-strong` e escolhida `bg-inverse`. |
 | 26/11/2026 | Exportar vira menu suspenso aberto para cima: fundo `cinza-100` com `--brilho-interno`, texto `text-primary`, ícones `text-brand`. |
 | 26/11/2026 | Logo da marca na Home (`src/assets/zeni-logo.svg`). |
-| 26/11/2026 | Logo da Home em `text-brand` (`blue-800`), aplicado por máscara em vez da cor `#161616` do arquivo; tamanho reduzido em 50% (24 px para 12 px de altura). |
+| 26/11/2026 | Logo da Home em `text-brand` (`blue-800`), aplicado por máscara em vez da cor `#161616` do arquivo; tamanho reduzido em 50% (24 px para 12 px de altura); depois +20% (14,4 px). |

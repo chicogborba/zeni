@@ -500,7 +500,7 @@
 .home-logo {
   /* O logo é uma máscara: a cor vem do token text-brand (blue-800), não do arquivo */
   flex: none;
-  height: 12px; /* era 24 px; menos 50% */
+  height: 14.4px; /* 12 px + 20% (era 24 px, depois 12 px) */
   aspect-ratio: 1480.98 / 254.69;
   background: var(--text-brand);
   mask: var(--logo) center / contain no-repeat;
