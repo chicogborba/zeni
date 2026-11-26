@@ -330,10 +330,10 @@
   grid-row: 2;
   font: var(--type-numero-grande);
   font-size: min(calc(61px * var(--escala-texto, 1)), 50cqw); /* 64 px menos 2 pt; 3 dígitos cabem em 50% da largura */
-  color: var(--brand-blue-700); /* números grandes em blue-700 (26/11); antes cinza-700 no estado vazio */
+  color: var(--brand-blue-800); /* números grandes em blue-800 (26/11); antes cinza-700 no estado vazio */
 }
 .dado--com-valor .dado-numero {
-  color: var(--brand-blue-700); /* com valor: bold (no token); era cinza-900 */
+  color: var(--brand-blue-800); /* com valor: bold (no token); era cinza-900 */
 }
 
 .dado-rotulo {
