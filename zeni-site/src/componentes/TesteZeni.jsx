@@ -29,9 +29,9 @@ export default function TesteZeni() {
   const vivo = useMovimentoAoVivo({ janelas: true })
   const sentindo = zeni.conectado && vivo.recebendo && (zeni.flags & FLAG.sensorOk) !== 0
   const bateria = zeni.bateria
-  // O desenho segue a inclinação do ZENI em relação à posição de pé (limitada, para não virar de ponta-cabeça)
+  // Dois desenhos com a inclinação ABSOLUTA do ZENI: de frente (para a direita = direita da pessoa) e de lado (a pessoa
+  // à esquerda; para a direita = para longe dela). Limitada para não virar de ponta-cabeça.
   const lim = (v, m) => Math.max(-m, Math.min(m, v))
-  const giro = `perspective(600px) rotateX(${lim(-vivo.frente, 70)}deg) rotateZ(${lim(vivo.lado, 170)}deg)`
   const [ajuste, setAjuste] = useState(null) // null | número de 0 a 1 (segurando) | 'ok'
   const ajustar = async () => {
     setAjuste(0)
@@ -45,9 +45,22 @@ export default function TesteZeni() {
 
   return (
     <div className="teste">
-      <div className="teste-mostrador" aria-hidden="true">
-        <div className="teste-brilho" style={{ '--movimento': vivo.tamanho / 100 }} />
-        <img className="teste-zeni" src={silhueta} alt="" style={{ transform: giro }} />
+      <div className="teste-vistas" aria-hidden="true">
+        <div className="teste-vista">
+          <div className="teste-mostrador">
+            <div className="teste-brilho" style={{ '--movimento': vivo.tamanho / 100 }} />
+            <img className="teste-zeni" src={silhueta} alt="" style={{ transform: `rotate(${lim(vivo.lado, 170)}deg)` }} />
+          </div>
+          <span className="teste-vista-rotulo">De frente</span>
+        </div>
+        <div className="teste-vista">
+          <div className="teste-mostrador">
+            <div className="teste-brilho" style={{ '--movimento': vivo.tamanho / 100 }} />
+            <span className="teste-voce">você</span>
+            <img className="teste-zeni" src={silhueta} alt="" style={{ transform: `rotate(${lim(vivo.frente, 170)}deg)` }} />
+          </div>
+          <span className="teste-vista-rotulo">De lado</span>
+        </div>
       </div>
       <p className="conectar-destaque">Mexa o ZENI: o desenho mexe junto.</p>
       <div className="teste-barra" role="meter" aria-label="Movimento" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(vivo.tamanho)}>

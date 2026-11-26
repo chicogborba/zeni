@@ -1505,3 +1505,94 @@
 .teste-ajustar {
   width: 100%;
 }
+
+/* ---------- Guia de posição da calibração ---------- */
+.guia {
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  align-self: center;
+}
+.guia-voce circle,
+.guia-voce path {
+  fill: var(--cinza-200);
+}
+.guia-voce text,
+.guia-seta text {
+  font: var(--type-apoio);
+  font-size: 15px;
+  fill: var(--text-rotulo);
+}
+.guia-mesa {
+  stroke: var(--cinza-400);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+.guia-seta path {
+  fill: none;
+  stroke: var(--text-brand);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.guia-zeni {
+  transform-box: view-box;
+}
+/* tomba 90° para longe da pessoa, fica deitado, volta (loop de 3,2 s) */
+.guia--deitar .guia-zeni {
+  animation: guia-tombar 3.2s ease-in-out infinite;
+}
+.guia--pronto .guia-zeni {
+  animation: none;
+  transform: rotate(90deg);
+}
+@keyframes guia-tombar {
+  0%, 20% {
+    transform: rotate(0deg);
+  }
+  50%, 85% {
+    transform: rotate(90deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .guia--deitar .guia-zeni {
+    animation: none;
+    transform: rotate(90deg);
+  }
+}
+
+/* Teste ao vivo: duas vistas, de frente e de lado */
+.teste-vistas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  width: 100%;
+}
+.teste-vista {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+.teste-vista .teste-mostrador {
+  width: 140px;
+  height: 140px;
+}
+.teste-vista .teste-zeni {
+  height: 104px;
+}
+.teste-vista-rotulo {
+  font: var(--type-apoio);
+  color: var(--text-rotulo);
+}
+.teste-voce {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  translate: 0 -50%;
+  font: var(--type-apoio);
+  font-size: 11px;
+  color: var(--text-rotulo);
+}

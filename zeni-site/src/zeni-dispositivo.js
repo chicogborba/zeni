@@ -178,7 +178,6 @@ async function abrirGatt() {
   janelaHz = { t0: performance.now(), n: 0 }
   processador.zerar()
   orientacaoIniciada = false
-  qRef = null
   conectadoAgora = true
   tentativaReconexao = 0
   estado.nome = aparelho.name
@@ -379,7 +378,6 @@ const qNorm = (q) => {
 }
 const girar = (q, v) => qMul(qMul(q, [v[0], v[1], v[2], 0]), qConj(q)).slice(0, 3) // vetor do corpo para o mundo
 let qAtual = [0, 0, 0, 1] // do corpo do sensor para o mundo (z para cima)
-let qRef = null
 let orientacaoIniciada = false
 const GANHO_GRAVIDADE = 1.5 // quanto a gravidade puxa a inclinação de volta, com o ZENI parado
 const TOLERANCIA_G = 0.12 // longe de 1 g por mais que isto, o acelerômetro não corrige a inclinação
@@ -411,29 +409,35 @@ function atualizarOrientacao(p) {
   }
 }
 
-// Posição de referência = o ZENI DE PÉ, parado. Vale como verdade, seja qual for a leitura do acelerômetro: o MPU pode
-// estar montado torto dentro do ZENI. A calibração tem dois passos:
-//   1. de pé e parado: a gravidade medida no sensor vira o eixo longo do ZENI ("para cima")
-//   2. deitado na mesa, com a ponta de cima apontando para longe da pessoa: a gravidade agora sai pelas "costas" do
-//      ZENI (o lado virado para a pessoa). Com isso o fantasma sabe o que é inclinar para frente e para o lado.
-// O passo 2 fica guardado no aparelho. Sem ele, só o eixo longo é conhecido (o giro em torno dele fica arbitrário).
-// A cada Começar e em "Ajustar o ZENI", o passo 1 é refeito: a posição daquele momento é tomada como de pé.
-const CHAVE_COSTAS = 'zeni:v1:zeni-costas'
-let costasNoSensor = (() => {
+// ---------- Como o sensor está montado no ZENI (calibração) ----------
+// O MPU pode estar torto dentro do ZENI. A calibração, feita uma vez e guardada no aparelho, descobre os eixos do ZENI
+// nos eixos do sensor:
+//   1. de pé e parado: a gravidade medida vira o eixo longo do ZENI ("para cima")
+//   2. deitado na mesa, com a ponta de cima apontando para longe da pessoa: a gravidade sai agora pelas "costas" do
+//      ZENI (o lado virado para a pessoa), o que define frente e lados
+// Com isso a inclinação mostrada é ABSOLUTA: o ângulo real do ZENI em relação à vertical, tirado da gravidade (que não
+// deriva). Só a direção em torno da vertical (para onde o ZENI "aponta" no chão) não tem referência física; ela é
+// zerada a cada Começar (`zerarDirecao`), com a frente do ZENI voltada para a tela.
+const CHAVE_MONTAGEM = 'zeni:v1:zeni-montagem'
+const montagemGuardada = (() => {
   try {
-    const v = JSON.parse(localStorage.getItem(CHAVE_COSTAS))
-    return Array.isArray(v) && v.length === 3 ? v : null
+    const v = JSON.parse(localStorage.getItem(CHAVE_MONTAGEM))
+    return v && Array.isArray(v.cima) ? v : null
   } catch {
     return null
   }
 })()
-let cimaNoSensor = null
+let cimaNoSensor = montagemGuardada?.cima ?? null
+let costasNoSensor = montagemGuardada?.costas ?? null
 let qMontagem = [0, 0, 0, 1] // do sensor para o ZENI 3D (eixo longo = y, frente = +z, costas = −z)
+let qDirecao = [0, 0, 0, 1] // gira em torno da vertical para a frente do ZENI ficar voltada para a tela
 const ouvintesReferencia = new Set()
 export function aoMarcarReferencia(f) {
   ouvintesReferencia.add(f)
   return () => ouvintesReferencia.delete(f)
 }
+export const calibrado = () => cimaNoSensor !== null
+export const temFrente = () => costasNoSensor !== null
 
 const unit = (v) => {
   const n = Math.hypot(...v) || 1
@@ -482,20 +486,53 @@ function montar() {
     const perp = c.map((v, i) => v - ponto(c, y) * y[i])
     if (Math.hypot(...perp) > 0.3) {
       const z = unit(perp.map((v) => -v))
-      const x = vetorial(y, z)
-      qMontagem = quaternioDasLinhas(x, y, z)
+      qMontagem = quaternioDasLinhas(vetorial(y, z), y, z)
       return
     }
   }
   qMontagem = rotacaoEntre(y, [0, 1, 0])
 }
+montar()
 
-// Instantâneo: "agora o ZENI está de pé". Usa a gravidade filtrada da orientação 3D.
-export function marcarReferencia() {
-  qRef = [...qAtual]
-  cimaNoSensor = girar(qConj(qAtual), [0, 0, 1])
-  montar()
-  ouvintesReferencia.forEach((f) => f())
+function guardarMontagem() {
+  try {
+    localStorage.setItem(CHAVE_MONTAGEM, JSON.stringify({ cima: cimaNoSensor, costas: costasNoSensor }))
+  } catch {
+    // sem armazenamento: vale só nesta visita
+  }
+}
+
+// Do mundo da orientação (z para cima) para o mundo do 3D (y para cima): −90° em torno de x
+const Q_PARA_3D = [-Math.SQRT1_2, 0, 0, Math.SQRT1_2]
+
+// Orientação do ZENI no mundo do 3D, sem a direção zerada e sem espelho
+function zeniNoMundo() {
+  if (!cimaNoSensor) {
+    // nunca calibrado: toma a posição de agora como de pé (melhor que nada; a conexão pede a calibração)
+    cimaNoSensor = girar(qConj(qAtual), [0, 0, 1])
+    montar()
+  }
+  return qMul(Q_PARA_3D, qMul(qAtual, qConj(qMontagem)))
+}
+
+// Zera a direção em torno da vertical: a frente do ZENI passa a apontar para a tela. Chamado a cada Começar.
+// Não mexe na inclinação, que é absoluta.
+export function zerarDirecao() {
+  const q = zeniNoMundo()
+  let f = girar(q, [0, 0, 1]) // frente do ZENI no mundo
+  if (Math.hypot(f[0], f[2]) < 0.3) f = girar(q, [0, -1, 0]) // ZENI quase deitado: usa o "pé" no lugar da frente
+  const ang = Math.atan2(f[0], f[2]) // giro da frente a partir de +z, em torno de y
+  qDirecao = [0, Math.sin(-ang / 2), 0, Math.cos(-ang / 2)]
+  ouvintesReferencia.forEach((fn) => fn())
+}
+export const marcarReferencia = zerarDirecao // nome antigo
+
+// Orientação do ZENI para a tela: [x, y, z, w] no mundo do 3D (y para cima, z para a câmera), como um espelho
+export function rotacaoDoZeni() {
+  const [x, y, z, w] = qMul(qDirecao, zeniNoMundo())
+  // Espelho: o personagem está de frente para a pessoa. A direita da pessoa fica à direita na tela e "para longe de
+  // mim" (frente do ZENI, +z) vem para a câmera, como num espelho. Refletir o eixo x de uma rotação é (x, −y, −z, w).
+  return [x, -y, -z, w]
 }
 
 // Espera o ZENI ficar parado por `ms` e devolve a aceleração média (a direção da gravidade nos eixos do sensor).
@@ -534,11 +571,10 @@ function esperarParado(ms, { condicao = () => true, limiteMs = 20000, aoProgress
 
 // Passo 1 (e "Ajustar o ZENI"): de pé e parado por `ms`.
 export async function calibrarDePe(ms = 1500, aoProgresso) {
-  const cima = await esperarParado(ms, { aoProgresso })
-  qRef = [...qAtual]
-  cimaNoSensor = cima
+  cimaNoSensor = await esperarParado(ms, { aoProgresso })
   montar()
-  ouvintesReferencia.forEach((f) => f())
+  guardarMontagem()
+  zerarDirecao()
 }
 
 // Passo 2: deitado (pelo menos 60° longe do "de pé") e parado. Guarda as costas no aparelho.
@@ -547,30 +583,17 @@ export async function calibrarDeitado(ms = 1500, aoProgresso) {
   const cima = unit(cimaNoSensor)
   const costas = await esperarParado(ms, { condicao: (a) => ponto(a, cima) < 0.5, aoProgresso, limiteMs: 30000 })
   costasNoSensor = costas
-  try {
-    localStorage.setItem(CHAVE_COSTAS, JSON.stringify(costas))
-  } catch {
-    // sem armazenamento: vale só nesta visita
-  }
   montar()
-}
-export const temFrente = () => costasNoSensor !== null
-
-// Rotação do ZENI desde a referência (de pé), nos eixos do ZENI 3D: [x, y, z, w]. Sem referência, marca agora.
-export function rotacaoDoZeni() {
-  if (!qRef) marcarReferencia()
-  const d = qMul(qConj(qRef), qAtual) // no corpo do sensor
-  const [x, y, z, w] = qMul(qMul(qMontagem, d), qConj(qMontagem))
-  // Espelho: o personagem está de frente para a pessoa, então a tela mostra como um espelho. A direita da pessoa fica à
-  // direita na tela (esquerda e direita trocam; frente e trás não). Refletir o eixo x de uma rotação é (x, −y, −z, w).
-  return [x, -y, -z, w]
+  guardarMontagem()
+  zerarDirecao()
 }
 
-// Inclinação do ZENI em relação à posição de pé, em graus: para o lado e para frente/trás (para o desenho 2D)
+// Inclinação ABSOLUTA do ZENI em relação à vertical, em graus, já no sentido da pessoa:
+//   lado   + = para a direita da pessoa      frente + = para longe da pessoa (− = para trás)
 export function inclinacaoDoZeni() {
   const cima = girar(rotacaoDoZeni(), [0, 1, 0])
   const grau = 180 / Math.PI
-  return { lado: Math.atan2(cima[0], cima[1]) * grau, frente: Math.atan2(cima[2], cima[1]) * grau }
+  return { lado: Math.atan2(cima[0], cima[1]) * grau, frente: Math.atan2(cima[2], cima[1]) * grau, total: Math.acos(Math.max(-1, Math.min(1, cima[1]))) * grau }
 }
 
 // ---------- Processamento por exercício ----------

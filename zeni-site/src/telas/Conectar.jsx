@@ -15,6 +15,7 @@ import Aviso from '../componentes/Aviso.jsx'
 import Botao from '../componentes/Botao.jsx'
 import PainelInferior from '../componentes/PainelInferior.jsx'
 import TelaEspera from '../componentes/TelaEspera.jsx'
+import GuiaPosicao from '../componentes/GuiaPosicao.jsx'
 import TesteZeni from '../componentes/TesteZeni.jsx'
 import { useNavegacao } from '../navegacao.jsx'
 import { BATERIA_SIMULADA } from '../fluxo.js'
@@ -103,7 +104,16 @@ export default function Conectar() {
       return
     }
     try {
+      // O ZENI mede o repouso do giroscópio (3 s) e, ao mesmo tempo, o app mede a gravidade: o "para cima" do ZENI
+      const dePe = dispositivo.calibrarDePe(2000).then(
+        () => true,
+        () => false,
+      )
       const r = await dispositivo.calibrar()
+      if (r === 'ok' && !(await dePe)) {
+        setEstado('mexeu')
+        return
+      }
       if (r !== 'ok') {
         setEstado(r === 'sem-sensor' ? 'sem-sensor' : 'mexeu')
         return
@@ -113,8 +123,7 @@ export default function Conectar() {
       setEstado('erro')
       return
     }
-    // Passo 1 feito: estava de pé e parado. Essa é a posição de pé de verdade.
-    dispositivo.marcarReferencia()
+    // Passo 1 feito: estava de pé e parado. Essa é a posição de pé de verdade (guardada no aparelho).
     deitar()
   }
 
@@ -218,6 +227,7 @@ export default function Conectar() {
           zeni.bateria !== null && <p className="conectar-texto">{`Bateria do ZENI: ${zeni.bateria}%`}</p>
         )}
         <p className="conectar-destaque">Deixe o ZENI de pé na mesa, parado, e toque em Pronto.</p>
+        {!simulado && <GuiaPosicao passo="de-pe" />}
       </PainelInferior>
     )
   }
@@ -227,6 +237,7 @@ export default function Conectar() {
       <PainelInferior titulo="Posição inicial">
         <h2 className="conectar-titulo">Fique parado</h2>
         <p className="conectar-texto">O ZENI está aprendendo como fica de pé.</p>
+        {!simulado && <GuiaPosicao passo="de-pe" pronto />}
         <p className="conectar-numero" aria-live="polite">
           {restam}
         </p>
@@ -247,6 +258,7 @@ export default function Conectar() {
       >
         <h2 className="conectar-titulo">Agora deite o ZENI</h2>
         <p className="conectar-texto">Deite o ZENI na mesa com a ponta de cima apontando para longe de você, e solte.</p>
+        <GuiaPosicao passo="deitar" pronto={progresso > 0} />
         {tela === 'deitar' ? (
           <div className="teste-barra" role="progressbar" aria-label="Aprendendo" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progresso * 100)}>
             <span className="teste-barra-rotulo">Parado</span>
