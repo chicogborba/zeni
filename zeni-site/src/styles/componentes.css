@@ -1502,3 +1502,6 @@
 .pilula--fraca .pilula-icone {
   color: var(--cinza-700);
 }
+.teste-ajustar {
+  width: 100%;
+}

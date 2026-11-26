@@ -324,9 +324,6 @@ export const AJUSTE = {
   tremorCheio: 25, // °/s de tremido que valem tremor 100
   corteLento: 3.5, // Hz: abaixo disto é movimento de propósito; acima é tremido (tremor de Parkinson: 4 a 6 Hz)
   batida: 1.8, // g: acima disto é batida na mesa (D), não movimento
-  // Como o MPU está montado dentro do ZENI: rotação (graus, x-y-z) que leva os eixos do sensor aos do ZENI 3D, cujo
-  // eixo longo é o y. Padrão: o z do sensor ao longo do ZENI. Se o fantasma girar no eixo errado, ajuste aqui.
-  montagem: [-90, 0, 0],
 }
 
 // Passa-alta Butterworth de 4ª ordem (duas biquads, fórmulas do "Audio EQ Cookbook"). Separa o tremido (3 a 12 Hz)
@@ -414,13 +411,163 @@ function atualizarOrientacao(p) {
   }
 }
 
+// Posição de referência = o ZENI DE PÉ, parado. Vale como verdade, seja qual for a leitura do acelerômetro: o MPU pode
+// estar montado torto dentro do ZENI. A calibração tem dois passos:
+//   1. de pé e parado: a gravidade medida no sensor vira o eixo longo do ZENI ("para cima")
+//   2. deitado na mesa, com a ponta de cima apontando para longe da pessoa: a gravidade agora sai pelas "costas" do
+//      ZENI (o lado virado para a pessoa). Com isso o fantasma sabe o que é inclinar para frente e para o lado.
+// O passo 2 fica guardado no aparelho. Sem ele, só o eixo longo é conhecido (o giro em torno dele fica arbitrário).
+// A cada Começar e em "Ajustar o ZENI", o passo 1 é refeito: a posição daquele momento é tomada como de pé.
+const CHAVE_COSTAS = 'zeni:v1:zeni-costas'
+let costasNoSensor = (() => {
+  try {
+    const v = JSON.parse(localStorage.getItem(CHAVE_COSTAS))
+    return Array.isArray(v) && v.length === 3 ? v : null
+  } catch {
+    return null
+  }
+})()
+let cimaNoSensor = null
+let qMontagem = [0, 0, 0, 1] // do sensor para o ZENI 3D (eixo longo = y, frente = +z, costas = −z)
+const ouvintesReferencia = new Set()
+export function aoMarcarReferencia(f) {
+  ouvintesReferencia.add(f)
+  return () => ouvintesReferencia.delete(f)
+}
+
+const unit = (v) => {
+  const n = Math.hypot(...v) || 1
+  return v.map((x) => x / n)
+}
+const ponto = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
+const vetorial = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]
+
+// Menor rotação que leva o vetor unitário `de` ao vetor unitário `para`
+function rotacaoEntre(de, para) {
+  const d = ponto(de, para)
+  if (d < -0.9999) return [1, 0, 0, 0] // opostos: meia volta em torno de x
+  const c = vetorial(de, para)
+  return qNorm([c[0], c[1], c[2], 1 + d])
+}
+
+// Quatérnio de uma matriz de rotação cujas LINHAS são x, y, z do ZENI escritos nos eixos do sensor
+function quaternioDasLinhas(x, y, z) {
+  const [m00, m01, m02] = x
+  const [m10, m11, m12] = y
+  const [m20, m21, m22] = z
+  const tr = m00 + m11 + m22
+  let q
+  if (tr > 0) {
+    const s = Math.sqrt(tr + 1) * 2
+    q = [(m21 - m12) / s, (m02 - m20) / s, (m10 - m01) / s, s / 4]
+  } else if (m00 > m11 && m00 > m22) {
+    const s = Math.sqrt(1 + m00 - m11 - m22) * 2
+    q = [s / 4, (m01 + m10) / s, (m02 + m20) / s, (m21 - m12) / s]
+  } else if (m11 > m22) {
+    const s = Math.sqrt(1 + m11 - m00 - m22) * 2
+    q = [(m01 + m10) / s, s / 4, (m12 + m21) / s, (m02 - m20) / s]
+  } else {
+    const s = Math.sqrt(1 + m22 - m00 - m11) * 2
+    q = [(m02 + m20) / s, (m12 + m21) / s, s / 4, (m10 - m01) / s]
+  }
+  return qNorm(q)
+}
+
+function montar() {
+  if (!cimaNoSensor) return
+  const y = unit(cimaNoSensor)
+  if (costasNoSensor) {
+    // costas, sem a parte ao longo do eixo longo; a frente do ZENI (+z) é o oposto
+    const c = costasNoSensor
+    const perp = c.map((v, i) => v - ponto(c, y) * y[i])
+    if (Math.hypot(...perp) > 0.3) {
+      const z = unit(perp.map((v) => -v))
+      const x = vetorial(y, z)
+      qMontagem = quaternioDasLinhas(x, y, z)
+      return
+    }
+  }
+  qMontagem = rotacaoEntre(y, [0, 1, 0])
+}
+
+// Instantâneo: "agora o ZENI está de pé". Usa a gravidade filtrada da orientação 3D.
 export function marcarReferencia() {
   qRef = [...qAtual]
+  cimaNoSensor = girar(qConj(qAtual), [0, 0, 1])
+  montar()
+  ouvintesReferencia.forEach((f) => f())
 }
-// Rotação desde a referência, no corpo do sensor: [x, y, z, w]. Sem referência, marca agora.
-export function orientacaoRelativa() {
+
+// Espera o ZENI ficar parado por `ms` e devolve a aceleração média (a direção da gravidade nos eixos do sensor).
+// `condicao(acel)` pode exigir uma posição (ex.: deitado). Rejeita com 'tempo' depois de `limiteMs`.
+function esperarParado(ms, { condicao = () => true, limiteMs = 20000, aoProgresso } = {}) {
+  return new Promise((resolve, reject) => {
+    let inicio = null
+    let soma = [0, 0, 0]
+    let n = 0
+    const fim = setTimeout(() => {
+      parar()
+      reject(new Error('tempo'))
+    }, limiteMs)
+    const parar = aoPacote((p) => {
+      const a = [p.ax, p.ay, p.az]
+      const parado = Math.hypot(p.gx, p.gy, p.gz) < 6 && Math.abs(Math.hypot(...a) - 1) < 0.06 && condicao(unit(a))
+      if (!parado) {
+        inicio = null
+        soma = [0, 0, 0]
+        n = 0
+        aoProgresso?.(0)
+        return
+      }
+      inicio ??= p.t
+      soma = soma.map((v, i) => v + a[i])
+      n += 1
+      aoProgresso?.(Math.min(1, (p.t - inicio) / ms))
+      if (p.t - inicio >= ms) {
+        clearTimeout(fim)
+        parar()
+        resolve(unit(soma.map((v) => v / n)))
+      }
+    })
+  })
+}
+
+// Passo 1 (e "Ajustar o ZENI"): de pé e parado por `ms`.
+export async function calibrarDePe(ms = 1500, aoProgresso) {
+  const cima = await esperarParado(ms, { aoProgresso })
+  qRef = [...qAtual]
+  cimaNoSensor = cima
+  montar()
+  ouvintesReferencia.forEach((f) => f())
+}
+
+// Passo 2: deitado (pelo menos 60° longe do "de pé") e parado. Guarda as costas no aparelho.
+export async function calibrarDeitado(ms = 1500, aoProgresso) {
+  if (!cimaNoSensor) throw new Error('sem-de-pe')
+  const cima = unit(cimaNoSensor)
+  const costas = await esperarParado(ms, { condicao: (a) => ponto(a, cima) < 0.5, aoProgresso, limiteMs: 30000 })
+  costasNoSensor = costas
+  try {
+    localStorage.setItem(CHAVE_COSTAS, JSON.stringify(costas))
+  } catch {
+    // sem armazenamento: vale só nesta visita
+  }
+  montar()
+}
+export const temFrente = () => costasNoSensor !== null
+
+// Rotação do ZENI desde a referência (de pé), nos eixos do ZENI 3D: [x, y, z, w]. Sem referência, marca agora.
+export function rotacaoDoZeni() {
   if (!qRef) marcarReferencia()
-  return qMul(qConj(qRef), qAtual)
+  const d = qMul(qConj(qRef), qAtual) // no corpo do sensor
+  return qMul(qMul(qMontagem, d), qConj(qMontagem))
+}
+
+// Inclinação do ZENI em relação à posição de pé, em graus: para o lado e para frente/trás (para o desenho 2D)
+export function inclinacaoDoZeni() {
+  const cima = girar(rotacaoDoZeni(), [0, 1, 0])
+  const grau = 180 / Math.PI
+  return { lado: Math.atan2(cima[0], cima[1]) * grau, frente: Math.atan2(cima[2], cima[1]) * grau }
 }
 
 // ---------- Processamento por exercício ----------

@@ -62,6 +62,7 @@ export default function Exercicio() {
   const [desfazer, setDesfazer] = useState(false)
   const [motivoPausa, setMotivoPausa] = useState('pessoa') // 'pessoa' | 'dificuldade'
   const [bateria, setBateria] = useState(false)
+  const [ajuste, setAjuste] = useState(0) // "Ajustar o ZENI": quanto tempo já ficou parado de pé (0 a 1)
 
   const exercicio = serie[indice]
   const ritmoSeg = exercicio.ritmoSeg ?? ritmoHabitualSeg
@@ -90,6 +91,16 @@ export default function Exercicio() {
     return () => clearTimeout(id)
   }, [estado, tentativaBusca, real])
 
+  // "Ajustar o ZENI" (ZENI real): segurar de pé e parado por 1,5 s. Essa vira a posição de pé do fantasma e das medidas.
+  const ajustar = () => {
+    setAjuste(0)
+    setEstado('ajustando')
+    dispositivo
+      .calibrarDePe(1500, setAjuste)
+      .catch(() => {})
+      .finally(() => setEstado((e) => (e === 'ajustando' ? 'instrucao' : e)))
+  }
+
   // Começa um exercício: zera o relógio e os dados de movimento
   const comecar = () => {
     restamRef.current = duracao
@@ -100,7 +111,7 @@ export default function Exercicio() {
     if (real) {
       dispositivo.definirExercicio(serie[indiceRef.current].id) // giro, vertical ou batida, conforme o exercício
       dispositivo.fecharJanela() // descarta o movimento de antes do Começar
-      dispositivo.marcarReferencia() // o fantasma do ZENI parte da posição em que a pessoa está segurando agora
+      dispositivo.marcarReferencia() // a posição de agora é tomada como "de pé": dela partem o fantasma e as medidas
     }
     setEstado('andamento')
   }
@@ -270,7 +281,14 @@ export default function Exercicio() {
         alturaTotal
         onFechar={() => {}}
         rodape={
-          <AcoesDuplas voltar={{ rotulo: 'Voltar', onClick: encerrarSessao }} acao={{ rotulo: 'Começar', onClick: comecar }} />
+          <>
+            {real && (
+              <Botao variante="vazado" onClick={ajustar}>
+                Ajustar o ZENI
+              </Botao>
+            )}
+            <AcoesDuplas voltar={{ rotulo: 'Voltar', onClick: encerrarSessao }} acao={{ rotulo: 'Começar', onClick: comecar }} />
+          </>
         }
       >
         <div className="instrucao">
@@ -282,6 +300,31 @@ export default function Exercicio() {
             </Suspense>
           </div>
           <p className="instrucao-legenda">{exercicio.legenda}</p>
+        </div>
+      </PainelInferior>
+    )
+  }
+
+  // Ajustar o ZENI: segurar de pé, parado
+  if (estado === 'ajustando') {
+    return (
+      <PainelInferior
+        titulo="Ajustar o ZENI"
+        alturaTotal
+        onFechar={() => setEstado('instrucao')}
+        rodape={
+          <Botao variante="voltar" onClick={() => setEstado('instrucao')}>
+            Voltar
+          </Botao>
+        }
+      >
+        <h2 className="conectar-titulo">Segure o ZENI de pé</h2>
+        <p className="conectar-texto">Do jeito que você vai começar, parado, por um instante.</p>
+        <div className="teste-barra" role="progressbar" aria-label="Parado" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(ajuste * 100)}>
+          <span className="teste-barra-rotulo">Parado</span>
+          <span className="teste-barra-trilho">
+            <span className="teste-barra-cheio" style={{ transform: `scaleX(${ajuste})` }} />
+          </span>
         </div>
       </PainelInferior>
     )

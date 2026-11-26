@@ -3,7 +3,8 @@
 //
 // Com Bluetooth no navegador, é o ZENI de verdade (src/zeni-dispositivo.js): a lista de aparelhos só abre depois de um
 // toque, por isso há a tela "Ligue o ZENI" antes da busca. A posição inicial é medida pelo próprio ZENI: se ele se
-// mexer durante os 3 segundos, a tela pede para tentar de novo. No fim, o teste ao vivo mostra que tudo funciona.
+// mexer durante os 3 segundos, a tela pede para tentar de novo. Depois, deitado com a ponta para longe: o app aprende o
+// que é "para frente" (zeni-dispositivo.js, calibrarDeitado). No fim, o teste ao vivo mostra que tudo funciona.
 // Sem Bluetooth (iPhone no Safari, navegador antigo), a tela explica e oferece "Experimentar sem o ZENI", que segue a
 // simulação da v1.
 // TODO (fluxo-do-app.md, ponto em aberto 3): o pedido de permissão do Bluetooth é a própria lista do navegador.
@@ -43,6 +44,7 @@ export default function Conectar() {
   const [erro, setErro] = useState(null)
   const [tentativa, setTentativa] = useState(0)
   const [restam, setRestam] = useState(SEGUNDOS_NA_MESA)
+  const [progresso, setProgresso] = useState(0)
 
   // Simulação: a busca termina sozinha em "conectado"
   useEffect(() => {
@@ -102,14 +104,36 @@ export default function Conectar() {
     }
     try {
       const r = await dispositivo.calibrar()
-      if (r === 'ok') {
-        guardarConexao()
-        setEstado('pronto')
-      } else setEstado(r === 'sem-sensor' ? 'sem-sensor' : 'mexeu')
+      if (r !== 'ok') {
+        setEstado(r === 'sem-sensor' ? 'sem-sensor' : 'mexeu')
+        return
+      }
     } catch {
       setErro('falhou')
       setEstado('erro')
+      return
     }
+    // Passo 1 feito: estava de pé e parado. Essa é a posição de pé de verdade.
+    dispositivo.marcarReferencia()
+    deitar()
+  }
+
+  // Passo 2: deitado com a ponta para longe da pessoa. Ensina ao app o que é "para frente" (fica guardado).
+  const deitar = async () => {
+    setProgresso(0)
+    setEstado('deitar')
+    try {
+      await dispositivo.calibrarDeitado(1500, setProgresso)
+      guardarConexao()
+      setEstado('pronto')
+    } catch {
+      setEstado((e) => (e === 'deitar' ? 'deitar-demorou' : e))
+    }
+  }
+
+  const pularDeitar = () => {
+    guardarConexao()
+    setEstado('pronto')
   }
 
   const experimentarSem = () => {
@@ -119,7 +143,7 @@ export default function Conectar() {
   }
 
   // Caiu a conexão no meio do caminho: mostra o aviso calmo de "se desconectou" (Tentar de novo volta ao começo)
-  const caiu = !simulado && !zeni.conectado && ['conectado', 'aprendendo', 'pronto', 'ligado'].includes(estado)
+  const caiu = !simulado && !zeni.conectado && ['conectado', 'aprendendo', 'deitar', 'deitar-demorou', 'pronto', 'ligado'].includes(estado)
   const tela = caiu ? 'erro' : estado
   const motivo = caiu ? 'caiu' : erro
 
@@ -193,7 +217,7 @@ export default function Conectar() {
         ) : (
           zeni.bateria !== null && <p className="conectar-texto">{`Bateria do ZENI: ${zeni.bateria}%`}</p>
         )}
-        <p className="conectar-destaque">Apoie o ZENI na mesa por 3 segundos e toque em Pronto.</p>
+        <p className="conectar-destaque">Deixe o ZENI de pé na mesa, parado, e toque em Pronto.</p>
       </PainelInferior>
     )
   }
@@ -202,10 +226,37 @@ export default function Conectar() {
     return (
       <PainelInferior titulo="Posição inicial">
         <h2 className="conectar-titulo">Fique parado</h2>
-        <p className="conectar-texto">O ZENI está aprendendo a sua posição inicial.</p>
+        <p className="conectar-texto">O ZENI está aprendendo como fica de pé.</p>
         <p className="conectar-numero" aria-live="polite">
           {restam}
         </p>
+      </PainelInferior>
+    )
+  }
+
+  if (tela === 'deitar' || tela === 'deitar-demorou') {
+    return (
+      <PainelInferior
+        titulo="Agora deite o ZENI"
+        rodape={
+          <AcoesDuplas
+            voltar={{ rotulo: 'Voltar', onClick: voltarAoInicio }}
+            acao={tela === 'deitar' ? { rotulo: 'Pular', onClick: pularDeitar } : { rotulo: 'Tentar de novo', onClick: deitar }}
+          />
+        }
+      >
+        <h2 className="conectar-titulo">Agora deite o ZENI</h2>
+        <p className="conectar-texto">Deite o ZENI na mesa com a ponta de cima apontando para longe de você, e solte.</p>
+        {tela === 'deitar' ? (
+          <div className="teste-barra" role="progressbar" aria-label="Aprendendo" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progresso * 100)}>
+            <span className="teste-barra-rotulo">Parado</span>
+            <span className="teste-barra-trilho">
+              <span className="teste-barra-cheio" style={{ transform: `scaleX(${progresso})` }} />
+            </span>
+          </div>
+        ) : (
+          <p className="conectar-destaque">Não percebi o ZENI deitado. Tente de novo ou toque em Voltar.</p>
+        )}
       </PainelInferior>
     )
   }
@@ -220,7 +271,7 @@ export default function Conectar() {
         <h2 className="conectar-titulo">{mexeu ? 'O ZENI se mexeu' : 'O ZENI não sente o movimento'}</h2>
         <p className="conectar-texto">
           {mexeu
-            ? 'Deixe o ZENI deitado na mesa, sem encostar, e tente de novo.'
+            ? 'Deixe o ZENI de pé na mesa, sem encostar, e tente de novo.'
             : 'Desligue e ligue o ZENI. Se continuar assim, ele precisa de conserto.'}
         </p>
       </PainelInferior>

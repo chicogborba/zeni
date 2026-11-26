@@ -2,8 +2,10 @@
 // técnicos, que a conexão, o sensor de movimento e a bateria estão certos.
 // Usado em Conectar (depois da posição inicial e em "Conexão com o ZENI" quando já está conectado).
 import { Battery0Icon, Battery50Icon, Battery100Icon, CheckIcon, SignalIcon } from '@heroicons/react/24/outline'
+import { useState } from 'react'
 import silhueta from '../assets/zeni-silhueta.svg'
-import { FLAG } from '../zeni-dispositivo.js'
+import Botao from './Botao.jsx'
+import { calibrarDePe, FLAG } from '../zeni-dispositivo.js'
 import { useMovimentoAoVivo, useZeni } from '../usarZeni.js'
 
 function Linha({ ok, Icone, children }) {
@@ -27,9 +29,19 @@ export default function TesteZeni() {
   const vivo = useMovimentoAoVivo({ janelas: true })
   const sentindo = zeni.conectado && vivo.recebendo && (zeni.flags & FLAG.sensorOk) !== 0
   const bateria = zeni.bateria
-  // O desenho segue a inclinação do ZENI (limitada, para não virar de ponta-cabeça na tela)
+  // O desenho segue a inclinação do ZENI em relação à posição de pé (limitada, para não virar de ponta-cabeça)
   const lim = (v, m) => Math.max(-m, Math.min(m, v))
-  const giro = `perspective(600px) rotateX(${lim(vivo.pitch, 70)}deg) rotateZ(${lim(-vivo.roll, 170)}deg)`
+  const giro = `perspective(600px) rotateX(${lim(-vivo.frente, 70)}deg) rotateZ(${lim(vivo.lado, 170)}deg)`
+  const [ajuste, setAjuste] = useState(null) // null | número de 0 a 1 (segurando) | 'ok'
+  const ajustar = async () => {
+    setAjuste(0)
+    try {
+      await calibrarDePe(1500, setAjuste)
+      setAjuste('ok')
+    } catch {
+      setAjuste(null)
+    }
+  }
 
   return (
     <div className="teste">
@@ -43,6 +55,11 @@ export default function TesteZeni() {
         <span className="teste-barra-trilho">
           <span className="teste-barra-cheio" style={{ transform: `scaleX(${vivo.tamanho / 100})` }} />
         </span>
+      </div>
+      <div className="teste-ajustar">
+        <Botao variante="vazado" onClick={ajustar} desativado={typeof ajuste === 'number'}>
+          {typeof ajuste === 'number' ? 'Segure de pé, parado…' : ajuste === 'ok' ? 'Pronto: esta é a posição de pé' : 'Ajustar o ZENI'}
+        </Botao>
       </div>
       <ul className="teste-lista">
         <Linha ok={zeni.conectado} Icone={SignalIcon}>

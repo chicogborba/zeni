@@ -18,15 +18,18 @@ export function useZeni() {
 // Ângulos e movimento ao vivo, a ~15 quadros por segundo (não re-renderiza a cada pacote de 50 Hz).
 // `janelas`: true quando esta tela é a dona das janelas de movimento (fora do exercício).
 export function useMovimentoAoVivo({ janelas = false } = {}) {
-  const [vivo, setVivo] = useState({ roll: 0, pitch: 0, tamanho: 0, tremor: 0, recebendo: false })
+  const [vivo, setVivo] = useState({ roll: 0, pitch: 0, lado: 0, frente: 0, tamanho: 0, tremor: 0, recebendo: false })
   useEffect(() => {
     let ultimaJanela = { tamanho: 0, tremor: 0 }
     const id = setInterval(() => {
       const p = zeni.ultimo()
       if (janelas) ultimaJanela = zeni.fecharJanela() ?? ultimaJanela
+      const inclinacao = p ? zeni.inclinacaoDoZeni() : { lado: 0, frente: 0 }
       setVivo({
         roll: p?.roll ?? 0,
         pitch: p?.pitch ?? 0,
+        lado: inclinacao.lado,
+        frente: inclinacao.frente,
         tamanho: ultimaJanela.tamanho,
         tremor: ultimaJanela.tremor,
         recebendo: !!p && performance.now() - p.t < 500,

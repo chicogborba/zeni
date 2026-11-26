@@ -14,7 +14,7 @@ import * as THREE from 'three'
 import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { clone as clonarComEsqueleto } from 'three/examples/jsm/utils/SkeletonUtils.js'
 import modelo from '../assets/zeni-personagem.glb?url'
-import { AJUSTE, conectado as zeniConectadoAgora, marcarReferencia, orientacaoRelativa } from '../zeni-dispositivo.js'
+import { conectado as zeniConectadoAgora, rotacaoDoZeni } from '../zeni-dispositivo.js'
 
 const CLIPES = {
   A: 'A_girar_o_punho',
@@ -175,13 +175,11 @@ function medirMesa(raiz, zeni, clip, socket) {
 
 // Fantasma do ZENI real: uma cópia translúcida, na mão do personagem, virada como o ZENI de verdade está agora em relação
 // ao começo do exercício. Se a pessoa faz igual à animação, o fantasma e o ZENI sólido andam juntos; se não, ela vê a
-// diferença. O sensor não mede posição (só giro e inclinação), por isso o fantasma acompanha a mão do personagem.
+// diferença. A posição de pé de referência vem de zeni-dispositivo.js (marcarReferencia). O sensor não mede posição (só giro e inclinação), por isso o fantasma acompanha a mão do personagem.
 function FantasmaZeni({ zeni }) {
   const ref = useRef(null)
   const cor = useMemo(() => token('--brand-amarelo-400'), [])
-  const montagem = useMemo(() => new THREE.Quaternion().setFromEuler(new THREE.Euler(...AJUSTE.montagem.map(THREE.MathUtils.degToRad))), [])
-  const tmp = useMemo(() => ({ d: new THREE.Quaternion(), inv: new THREE.Quaternion(), alvo: new THREE.Quaternion(), p: new THREE.Vector3() }), [])
-  useEffect(() => marcarReferencia(), [])
+  const tmp = useMemo(() => ({ alvo: new THREE.Quaternion(), p: new THREE.Vector3() }), [])
   useFrame(() => {
     const f = ref.current
     if (!f) return
@@ -189,10 +187,8 @@ function FantasmaZeni({ zeni }) {
     if (!f.visible) return
     zeni.getWorldPosition(tmp.p)
     f.position.copy(tmp.p)
-    // ZENI de pé (mundo) = identidade (encaixarZeni). Rotação do sensor levada aos eixos do ZENI: M · d · M⁻¹
-    tmp.d.fromArray(orientacaoRelativa())
-    tmp.inv.copy(montagem).invert()
-    tmp.alvo.copy(montagem).multiply(tmp.d).multiply(tmp.inv)
+    // ZENI de pé (mundo) = identidade (encaixarZeni); a referência de pé é marcada em Começar e em "Ajustar o ZENI"
+    tmp.alvo.fromArray(rotacaoDoZeni())
     f.quaternion.slerp(tmp.alvo, 0.5) // suaviza um pouco o tremido na tela
   })
   return (
