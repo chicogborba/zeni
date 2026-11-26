@@ -1278,13 +1278,13 @@
   mask: var(--logo) center / contain no-repeat;
   -webkit-mask: var(--logo) center / contain no-repeat;
   opacity: 0;
-  animation: abertura-logo 4s ease-in-out forwards;
+  animation: abertura-logo 3s ease-in-out 300ms forwards; /* 300 ms só do gradiente, depois o logo surge */
 }
-/* Sobe devagar de baixo, cresce (aproxima) e some devagar no fim */
+/* Surge no centro, cresce (aproxima) e some devagar no fim */
 @keyframes abertura-logo {
   0% {
     opacity: 0;
-    transform: translateY(38vh) scale(0.7);
+    transform: scale(0.75);
   }
   25% {
     opacity: 1;
@@ -1294,13 +1294,14 @@
   }
   100% {
     opacity: 0;
-    transform: translateY(-4vh) scale(1.35);
+    transform: scale(1.35);
   }
 }
 @media (prefers-reduced-motion: reduce) {
   .abertura-logo {
     animation-name: abertura-logo-calmo;
     animation-duration: 2s;
+    animation-delay: 300ms;
   }
   @keyframes abertura-logo-calmo {
     0% {
