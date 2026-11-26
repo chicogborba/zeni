@@ -7,6 +7,7 @@
 // Salvar em PDF: impressão do navegador. Enviar link: Web Share API com texto-resumo; sem suporte, copia o texto.
 // O link real depende do backend (v2). TODO (design system, pendência 10): layout do PDF em aberto.
 import { useState } from 'react'
+import { ArrowDownTrayIcon, ShareIcon } from '@heroicons/react/24/outline'
 import AcoesDuplas from '../componentes/AcoesDuplas.jsx'
 import Botao from '../componentes/Botao.jsx'
 import LinhaNavegacao from '../componentes/LinhaNavegacao.jsx'
@@ -177,11 +178,11 @@ export default function Evolucao() {
         }
       >
         <h2 className="conectar-titulo">Exportar</h2>
-        <div className="linhas">
-          <LinhaNavegacao chevron={false} onClick={salvarPdf}>
+        <div className="linhas linhas--sem-divisoria">
+          <LinhaNavegacao Icone={ArrowDownTrayIcon} onClick={salvarPdf}>
             Salvar em PDF
           </LinhaNavegacao>
-          <LinhaNavegacao chevron={false} onClick={enviarLink}>
+          <LinhaNavegacao Icone={ShareIcon} onClick={enviarLink}>
             Enviar link
           </LinhaNavegacao>
         </div>
