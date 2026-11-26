@@ -498,9 +498,13 @@
 }
 /* Topo da Home (26/11): logo da marca à esquerda; bateria e avatar à direita, o avatar no canto */
 .home-logo {
-  height: 24px;
-  width: auto;
+  /* O logo é uma máscara: a cor vem do token text-brand (blue-800), não do arquivo */
   flex: none;
+  height: 12px; /* era 24 px; menos 50% */
+  aspect-ratio: 1480.98 / 254.69;
+  background: var(--text-brand);
+  mask: var(--logo) center / contain no-repeat;
+  -webkit-mask: var(--logo) center / contain no-repeat;
 }
 .home-topo-direita {
   display: flex;

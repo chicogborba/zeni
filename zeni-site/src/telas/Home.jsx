@@ -96,7 +96,7 @@ export default function Home() {
     <main className="tela tela--home">
       <AvisoConexao />
       <header className="home-topo">
-        <img className="home-logo" src={logo} alt="ZENI" />
+        <span className="home-logo" role="img" aria-label="ZENI" style={{ '--logo': `url(${logo})` }} />
         <div className="home-topo-direita">
           <PilulaZeni />
           <MenuAvatar
