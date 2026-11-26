@@ -252,7 +252,6 @@
 .ia-etiqueta,
 .voz-indicador,
 .seletor-opcao--ativa,
-.dia--ligado,
 .alternador-trilho {
   box-shadow: var(--brilho-interno);
 }
@@ -889,12 +888,16 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-1);
-  color: var(--text-primary);
+  /* não escolhido: cinza-600 (26/11); texto branco, 5,4:1 */
+  background: var(--cinza-600);
+  border-color: var(--cinza-600);
+  color: var(--text-on-inverse);
 }
 
-/* O dia escolhido muda de fundo e ganha um visto: não depende só da cor */
+/* O dia escolhido muda de cor (blue-600) e ganha um visto: não depende só da cor */
 .dia--ligado {
-  background: var(--bg-inverse);
+  background: var(--brand-blue-600);
+  border-color: var(--brand-blue-600);
   color: var(--text-on-inverse);
 }
 

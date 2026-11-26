@@ -17,7 +17,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | `cinza-300` | #ADBABD |
 | `cinza-400` | #91A2A6 (sem uso) |
 | `cinza-500` | #758B8F |
-| `cinza-600` | #5E7073 (sem uso) |
+| `cinza-600` | #5E7073 (dias não escolhidos do lembrete) |
 | `cinza-700` | #475557 |
 | `cinza-800` | #30393B |
 | `cinza-900` | #1A1F20 |
@@ -27,7 +27,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 `brand-amarelo-50` #FEFDF1 · `-100` #FDFADD · `-200` #FAF4AD · `-300` #F7ED7E · `-400` #F4E64D · `-500` #F1E01D
 
 ### Azul da marca
-`brand-blue-50` #F0FBFF (sem uso direto) · `-100` #E3F7FF · `-200` #B3E9FF · `-600` #0080B2 (só a 40%, no cartão "minha evolução") · `-700` #005B80 (links) · `-800` #00374D (números do dashboard e etiqueta de IA)
+`brand-blue-50` #F0FBFF (sem uso direto) · `-100` #E3F7FF · `-200` #B3E9FF · `-600` #0080B2 (a 40% no cartão "minha evolução"; cheio nos dias escolhidos do lembrete) · `-700` #005B80 (links) · `-800` #00374D (números do dashboard e etiqueta de IA)
 
 ### Tons únicos
 `brand-bruma` #98B5BE · `brand-seixo` #C4C4C4 · `brand-porcelana` #F5FAFE
@@ -95,7 +95,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 | Linha de navegação | texto `text-primary`; divisor `border-subtle`; chevron `text-brand`; pressionada `bg-subtle` |
 | Menu do avatar | fundo `bg-page`; item pressionado `bg-subtle` |
 | Alternador (liga/desliga) | borda `border-strong`; bolinha `bg-inverse`; ligado: trilho `bg-accent`; estado em `text-secondary` |
-| Seletor de dias (lembretes) | borda `border-strong`; ligado: fundo `bg-inverse`, texto `text-on-inverse` |
+| Seletor de dias (lembretes) | não escolhido: fundo e borda `cinza-600`, texto `text-on-inverse`; escolhido: fundo e borda `blue-600` (#0080B2), texto `text-on-inverse` e visto; sem brilho interno |
 | Campos | borda `border-strong`; fundo `bg-page`; rótulo `text-brand` |
 | Selo (nota) | fundo `bg-accent`, texto `text-on-accent` |
 | Modal central | fundo `bg-page`; película `--scrim`; texto de apoio `text-secondary` |
@@ -117,7 +117,7 @@ Regras gerais: só tokens, nunca hex solto fora de `tokens.css`; sem vermelho ne
 
 ## 4.1 Brilho interno
 
-`--brilho-interno` (branco 70%, 30 px, interno) está em: painel do dashboard, cartões de dados, cartões da home, e agora em componentes de fundo colorido ou escuro: avisos, selo, etiqueta de IA, indicador de voz, opção ativa do seletor de período, dias ligados e trilho do alternador. **Os botões (`.botao`, incluindo os das ações duplas dos bottom sheets) não têm brilho nem gradiente.** Componentes de fundo branco (painel, modal, menu, avatar, pílula, campos) também não mostram o brilho (seria branco sobre branco).
+`--brilho-interno` (branco 70%, 30 px, interno) está em: painel do dashboard, cartões de dados, cartões da home, e agora em componentes de fundo colorido ou escuro: avisos, selo, etiqueta de IA, indicador de voz, opção ativa do seletor de período e trilho do alternador (os dias do lembrete não têm brilho desde 26/11). **Os botões (`.botao`, incluindo os das ações duplas dos bottom sheets) não têm brilho nem gradiente.** Componentes de fundo branco (painel, modal, menu, avatar, pílula, campos) também não mostram o brilho (seria branco sobre branco).
 
 ## 5.1 Títulos
 
@@ -125,7 +125,7 @@ Todos os `h1`, `h2` e `h3` usam `text-brand` (regra em `base.css`), assim como `
 
 ## 6. Tokens definidos, sem uso
 
-`cinza-400`, `cinza-600`, `blue-50` (fora dos gradientes), `grad-cinza-card` (o painel do dashboard agora é `cinza-100` chapado), `grad-amarelo-card`, `grad-azul-card`, `grad-bruma-card`.
+`cinza-400`, `blue-50` (fora dos gradientes), `grad-cinza-card` (o painel do dashboard agora é `cinza-100` chapado), `grad-amarelo-card`, `grad-azul-card`, `grad-bruma-card`.
 
 ## 6.1 Fora da regra de `text-brand` (continuam como estavam)
 
@@ -152,3 +152,4 @@ Texto corrido e valores (`text-primary`), texto dos botões, texto de avisos (in
 | 26/11/2026 | Painel do dashboard: centro do radial movido de 50% / 50% para 30% / 25%, deixando o canto superior esquerdo mais escuro. |
 | 26/11/2026 | Padronização: `.icone` todo em `text-brand`; `.conectar-destaque`, `.conectar-numero` e `.hora-valor` em `text-brand`; brilho interno em avisos, selo, etiqueta de IA, indicador de voz, seletor ativo, dias ligados e trilho do alternador; botões duplos: Voltar preto à esquerda, principal amarelo à direita, em todos os bottom sheets. |
 | 26/11/2026 | Botões (`.botao`) sem brilho interno nem gradiente, em qualquer lugar (inclusive nos bottom sheets). |
+| 26/11/2026 | Dias do lembrete: escolhidos em `blue-600`, não escolhidos em `cinza-600` (antes `bg-inverse` e branco com contorno); sem brilho interno. |
