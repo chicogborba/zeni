@@ -3,6 +3,7 @@ import Abertura from './componentes/Abertura.jsx'
 import AvisoLembrete from './componentes/AvisoLembrete.jsx'
 import { telaDoExercicio } from './fluxo.js'
 import { lembreteDeAgora, lerLembretes } from './lembretes.js'
+import AvisoWeb from './telas/AvisoWeb.jsx'
 import { NavegacaoProvider, useNavegacao } from './navegacao.jsx'
 import EmConstrucao from './telas/EmConstrucao.jsx'
 import { TELAS } from './telas/index.js'
@@ -61,7 +62,19 @@ function Telas() {
   )
 }
 
+// Computador = tela larga com mouse (ponteiro preciso). Celular e tablet em pé seguem para o app.
+const CONSULTA_COMPUTADOR = '(min-width: 900px) and (pointer: fine)'
+const ehComputador = () => window.matchMedia(CONSULTA_COMPUTADOR).matches
+
 export default function App() {
+  const [computador, setComputador] = useState(ehComputador)
+  useEffect(() => {
+    const consulta = window.matchMedia(CONSULTA_COMPUTADOR)
+    const mudou = () => setComputador(consulta.matches)
+    consulta.addEventListener('change', mudou)
+    return () => consulta.removeEventListener('change', mudou)
+  }, [])
+  if (computador) return <AvisoWeb />
   return (
     <NavegacaoProvider>
       <Telas />

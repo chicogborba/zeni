@@ -175,3 +175,4 @@ Texto corrido e valores (`text-primary`), texto dos botões, texto de avisos (in
 | 26/11/2026 | Fundos dos cartões "minha evolução" e "começar o exercício" e do painel do dashboard a 80% de opacidade (só as cores do fundo, via `color-mix`; texto e ícones a 100%). Cartões de suavidade e ritmo ficam a 100%. |
 | 26/11/2026 | Fundo da Home (`--grad-home`) inteiro a 50% de opacidade, sobre o fundo da página (`cinza-50`). O azul, que já era 60% no token, fica com cerca de 30% efetivos. |
 | 26/11/2026 | Azul do `--grad-home` de 60% para 80%; com o gradiente a 50% na Home, o azul fica com cerca de 40% efetivos. |
+| 26/11/2026 | Aviso do computador (`AvisoWeb`): fundo no gradiente da tela de entrada (`cinza-100`, `cinza-300`, `blue-800`), cartão `bg-page`, título, logo e ícone em `text-brand`, texto em `text-primary`. |

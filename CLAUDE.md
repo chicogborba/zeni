@@ -26,6 +26,7 @@ Seguir `docs/fluxo-do-app.md`. Ordem de prioridade: a seção "Decisões do grup
 ## Escopo da v1 (entrega para a banca)
 
 - Site mobile, feito para tela de celular. Sem PWA nesta versão.
+- Sem versão web (26/11): no computador (tela de 900 px ou mais com mouse) aparece só um aviso de que o site não está disponível e de que é para abrir no celular (`telas/AvisoWeb.jsx`).
 - Sem backend. Os dados (respostas do PAR-Q, histórico, ajustes) ficam guardados no aparelho, simulando o servidor.
 - O ZENI (dispositivo) é simulado: a conexão e os dados de movimento são gerados pelo app. Bluetooth real fica para depois.
 - A IA é simulada por regras simples (sugestão do exercício, nota, resumo, ritmo habitual).

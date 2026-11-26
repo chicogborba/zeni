@@ -1336,3 +1336,36 @@
     }
   }
 }
+
+/* ---------- Aviso do computador (26/11): o site só existe no celular ---------- */
+.aviso-web {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  background: linear-gradient(180deg, var(--cinza-100) 0%, var(--cinza-300) 40%, var(--brand-blue-800) 100%); /* o gradiente da tela de entrada */
+}
+.aviso-web-cartao {
+  width: 100%;
+  max-width: 480px;
+  padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-6);
+  text-align: center;
+  background: var(--bg-page);
+  border-radius: var(--radius-xl);
+}
+.aviso-web-logo {
+  height: 20px;
+  aspect-ratio: 1480.98 / 254.69;
+  background: var(--text-brand);
+  mask: var(--logo) center / contain no-repeat;
+  -webkit-mask: var(--logo) center / contain no-repeat;
+}
+.aviso-web-icone {
+  width: 48px;
+  height: 48px;
+}
