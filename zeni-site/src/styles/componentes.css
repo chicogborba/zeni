@@ -341,6 +341,7 @@
   inset: 0;
   z-index: -1;
   background: var(--grad-home);
+  opacity: 0.5; /* o gradiente inteiro a 50% (26/11); só o fundo, o conteúdo não muda */
 }
 .home-bulb {
   flex: 1;

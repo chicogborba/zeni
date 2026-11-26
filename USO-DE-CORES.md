@@ -173,3 +173,4 @@ Texto corrido e valores (`text-primary`), texto dos botões, texto de avisos (in
 | 26/11/2026 | Topo do gradiente da Home: de `cinza-100` para `cinza-50` (mais claro). |
 | 26/11/2026 | Fundo da Home: azul do gradiente de 30% para 60% de opacidade. |
 | 26/11/2026 | Fundos dos cartões "minha evolução" e "começar o exercício" e do painel do dashboard a 80% de opacidade (só as cores do fundo, via `color-mix`; texto e ícones a 100%). Cartões de suavidade e ritmo ficam a 100%. |
+| 26/11/2026 | Fundo da Home (`--grad-home`) inteiro a 50% de opacidade, sobre o fundo da página (`cinza-50`). O azul, que já era 60% no token, fica com cerca de 30% efetivos. |
